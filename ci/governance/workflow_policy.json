@@ -79,7 +79,7 @@
       "yaml-validation.yml",
       "recursive-build.yml",
       "docs-build.yml",
-      "nextjs.yml"
+      "deploy-docs.yml"
     ]
   },
   "permission_controls": {
@@ -91,6 +91,7 @@
       "code-quality-pilot.yml",
       "codeql.yml",
       "dependency-review.yml",
+      "deploy-docs.yml",
       "gloob-causal-responder.yml",
       "osv-scanner.yml",
       "post-merge-pr-summary.yml",
@@ -169,6 +170,24 @@
       "pattern": "^bd-workflow-frequency-telemetry\\.yml$",
       "cluster": "ci_governance",
       "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^python-version-ssot-guard\\.yml$",
+      "cluster": "ci_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^python-next-canary\\.yml$",
+      "cluster": "ci_governance",
+      "lifecycle": "scheduled",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^coolprop-next-shadow\\.yml$",
+      "cluster": "specialised",
+      "lifecycle": "scheduled",
       "disposition": "keep"
     },
     {
@@ -258,7 +277,7 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(bridge-ci|codespace-federation|cryoplant-federation|federation-notebook|gbogeb-abacus-integration-ci-cd|creq-federation-ci|federation-delivery-consumer|gloob-causal-responder|w189f-federation-sample4-exact)\\.yml$",
+      "pattern": "^(bridge-ci|codespace-federation|cryoplant-federation|federation-bridge-contract|federation-notebook|gbogeb-abacus-integration-ci-cd|creq-federation-ci|federation-delivery-consumer|gloob-causal-responder|w189f-federation-sample4-exact|ecosystem_worktree_sync_receiver)\\.yml$",
       "cluster": "bridge_federation",
       "lifecycle": "pr_domain",
       "disposition": "keep"
@@ -270,7 +289,7 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(dow-integration-ci-cd|dow-integration|dow-main-cicd|dow-monitoring|dow-scheduled|dow-sprint6-cicd|dow-sut-pipeline|qps-dow-wave01-warmup|qps-w04-dow-receipt|qps-w05-bidder-eval-dow|qps-debug-dow-consumer|qps_m05_dow_independent_consumer|qps-triage-dow-contract|background_orchestrator|sprint-trigger|w306-dow-typed-findings-proof)\\.yml$",
+      "pattern": "^(dow-integration-ci-cd|dow-integration|dow-main-cicd|dow-monitoring|dow-scheduled|dow-sprint6-cicd|dow-sut-pipeline|qps-dow-wave01-warmup|qps-w04-dow-receipt|qps-w05-supplier-eval-dow|qps-debug-dow-consumer|qps_m05_dow_independent_consumer|qps-triage-dow-contract|background_orchestrator|sprint-trigger|w306-dow-typed-findings-proof)\\.yml$",
       "cluster": "dow",
       "lifecycle": "pr_domain",
       "disposition": "keep"
@@ -402,6 +421,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^ldab-scale-fanout\\.yml$",
+      "cluster": "specialised",
+      "lifecycle": "manual",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^testpilot-preflight\\.yml$",
       "cluster": "core_test",
       "lifecycle": "pr_fast",
@@ -506,8 +531,9 @@
     {
       "pattern": "^g3a-n14-phase4-import\\.yml$",
       "cluster": "core_test",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
+      "lifecycle": "manual",
+      "disposition": "keep",
+      "replacement": "W16 epoch via g3a-n15-python-matrix.yml (N14 is a source-bound manual replay)"
     },
     {
       "pattern": "^g3a-n15-python-matrix\\.yml$",
@@ -518,6 +544,12 @@
     {
       "pattern": "^mcw-artifact-cold-build\\.yml$",
       "cluster": "bridge_federation",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^mip-b1b2-sphinx-native-resolver\\.yml$",
+      "cluster": "statistics",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     },
@@ -722,6 +754,18 @@
     {
       "pattern": "^config-surface-audit\\.yml$",
       "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^qps-bt-admission\\.yml$",
+      "cluster": "statistics",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^qps-slide-reviewer-deps\\.yml$",
+      "cluster": "security",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     }

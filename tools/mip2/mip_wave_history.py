@@ -35,21 +35,27 @@ def scoped_file(root: Path, name: object) -> Path:
     return path
 
 
-
 def validate_native_module_coverage(report: dict, module_path: str) -> dict:
     """Fail closed if coverage totals include anything beyond the module."""
     require(isinstance(report, dict), "coverage report must be an object")
-    require(report.get("meta", {}).get("branch_coverage") is True, "branch coverage missing")
+    require(
+        report.get("meta", {}).get("branch_coverage") is True, "branch coverage missing"
+    )
     files = report.get("files")
-    require(isinstance(files, dict) and set(files) == {module_path}, "coverage scope mismatch")
+    require(
+        isinstance(files, dict) and set(files) == {module_path},
+        "coverage scope mismatch",
+    )
     file_summary = files[module_path].get("summary")
     totals = report.get("totals")
-    require(isinstance(file_summary, dict) and isinstance(totals, dict), "coverage totals missing")
+    require(
+        isinstance(file_summary, dict) and isinstance(totals, dict),
+        "coverage totals missing",
+    )
     fields = ("covered_lines", "num_statements", "covered_branches", "num_branches")
     for key in fields:
         require(
-            type(totals.get(key)) is int
-            and totals[key] == file_summary.get(key),
+            type(totals.get(key)) is int and totals[key] == file_summary.get(key),
             "coverage scope/denominator mismatch",
         )
     eligible = totals["num_statements"] + totals["num_branches"]
@@ -118,57 +124,83 @@ def evaluate(manifest: dict, evidence_dir: Path) -> dict:
         for name in ("wave_id", "iteration_id", "pulse_id"):
             require(nonblank(record.get(name)), "missing " + name)
         require(record.get("source_kind") in KINDS, "invalid source kind")
-        require(type(record.get("sequence")) is int and record["sequence"] > 0, "invalid sequence")
+        require(
+            type(record.get("sequence")) is int and record["sequence"] > 0,
+            "invalid sequence",
+        )
         head_sha = record.get("head_sha")
         require(isinstance(head_sha, str) and SHA.fullmatch(head_sha), "invalid SHA")
-        require(type(record.get("run_id")) is int and record["run_id"] > 0, "invalid run ID")
+        require(
+            type(record.get("run_id")) is int and record["run_id"] > 0, "invalid run ID"
+        )
         job_id = record.get("job_id")
-        require(job_id is None or (type(job_id) is int and job_id > 0), "invalid job ID")
+        require(
+            job_id is None or (type(job_id) is int and job_id > 0), "invalid job ID"
+        )
         digest = record.get("receipt_sha256")
         require(isinstance(digest, str) and DIGEST.fullmatch(digest), "invalid digest")
         identity = (record["wave_id"], record["iteration_id"], record["pulse_id"])
         order = (record["wave_id"], record["sequence"])
-        require(identity not in used and order not in seen_sequences, "duplicate pulse identity")
+        require(
+            identity not in used and order not in seen_sequences,
+            "duplicate pulse identity",
+        )
         used.add(identity)
         seen_sequences.add(order)
         path = scoped_file(root, record.get("receipt_path"))
         raw = path.read_bytes()
-        require(bool(raw) and hashlib.sha256(raw).hexdigest() == digest, "receipt bytes mismatch")
+        require(
+            bool(raw) and hashlib.sha256(raw).hexdigest() == digest,
+            "receipt bytes mismatch",
+        )
         receipt = json.loads(raw)
-        require(isinstance(receipt, dict) and receipt.get("schema") == RECEIPT_SCHEMA, "invalid receipt schema")
-        require(receipt.get("repository") == manifest["repository"], "receipt repository mismatch")
+        require(
+            isinstance(receipt, dict) and receipt.get("schema") == RECEIPT_SCHEMA,
+            "invalid receipt schema",
+        )
+        require(
+            receipt.get("repository") == manifest["repository"],
+            "receipt repository mismatch",
+        )
         require(receipt.get("wave_id") == record["wave_id"], "receipt wave mismatch")
         require(receipt.get("head_sha") == record["head_sha"], "receipt SHA mismatch")
-        require(receipt.get("merge_admitted") is not True, "admitted claim needs independent verification")
+        require(
+            receipt.get("merge_admitted") is not True,
+            "admitted claim needs independent verification",
+        )
         output.append(parse_metrics(record, receipt))
     output.sort(key=lambda value: (value["wave_id"], value["sequence"]))
     waves = []
     for wave_id in sorted({row["wave_id"] for row in output}):
         group = [row for row in output if row["wave_id"] == wave_id]
-        waves.append({
-            "wave_id": wave_id,
-            "pulse_count": len(group),
-            "distinct_run_ids": len({row["run_id"] for row in group}),
-            "synthetic_pulses": sum(
-                row["source_kind"] == "SYNTHETIC_CONTROL" for row in group
-            ),
-            "coverage_gains_verified": "UNKNOWN",
-            "root_closures_verified": "UNKNOWN",
-            "latest_pulse_id": group[-1]["pulse_id"],
-            "open_root_observations": [
-                row["root_counts_from_receipt"].get("open", "UNKNOWN")
-                for row in group
-            ],
-            "first_red_manifestations": [
-                row["first_red_manifestations"] for row in group
-            ],
-        })
+        waves.append(
+            {
+                "wave_id": wave_id,
+                "pulse_count": len(group),
+                "distinct_run_ids": len({row["run_id"] for row in group}),
+                "synthetic_pulses": sum(
+                    row["source_kind"] == "SYNTHETIC_CONTROL" for row in group
+                ),
+                "coverage_gains_verified": "UNKNOWN",
+                "root_closures_verified": "UNKNOWN",
+                "latest_pulse_id": group[-1]["pulse_id"],
+                "open_root_observations": [
+                    row["root_counts_from_receipt"].get("open", "UNKNOWN")
+                    for row in group
+                ],
+                "first_red_manifestations": [
+                    row["first_red_manifestations"] for row in group
+                ],
+            }
+        )
     return {
         "schema": "abacus.mip.pulse-history.v1",
         "repository": manifest["repository"],
         "evidence_class": "LOCAL_HASH_VERIFICATION_NOT_GITHUB_ADMISSION",
         "pulse_count": len(output),
-        "synthetic_count": sum(item["source_kind"] == "SYNTHETIC_CONTROL" for item in output),
+        "synthetic_count": sum(
+            item["source_kind"] == "SYNTHETIC_CONTROL" for item in output
+        ),
         "unverified_operational_count": sum(
             item["source_kind"] == "UNVERIFIED_OPERATIONAL" for item in output
         ),
@@ -201,26 +233,30 @@ def render_markdown(history: dict) -> str:
             f"{row['coverage_delta_pp']} | {counts.get('open', 'UNKNOWN')} | "
             f"{row['first_red_manifestations']} | {summary} |"
         )
-    lines.extend([
-        "",
-        "## Per-wave scale census (descriptive, not admitted)",
-        "",
-        "| Wave | Pulses | Distinct CI runs | Synthetic pulses | Latest pulse |",
-        "| --- | ---: | ---: | ---: | --- |",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Per-wave scale census (descriptive, not admitted)",
+            "",
+            "| Wave | Pulses | Distinct CI runs | Synthetic pulses | Latest pulse |",
+            "| --- | ---: | ---: | ---: | --- |",
+        ]
+    )
     for wave in history["waves"]:
         lines.append(
             f"| {wave['wave_id']} | {wave['pulse_count']} | "
             f"{wave['distinct_run_ids']} | {wave['synthetic_pulses']} | "
             f"{wave['latest_pulse_id']} |"
         )
-    lines.extend([
-        "",
-        "*Tests* = pass/fail/skip as **reported in the input payload**, not verified JUnit.",
-        "Operational root closures and main-coverage improvements remain UNKNOWN.",
-        "A real wave requires source-bound runner records and independent admission.",
-        "",
-    ])
+    lines.extend(
+        [
+            "",
+            "*Tests* = pass/fail/skip as **reported in the input payload**, not verified JUnit.",
+            "Operational root closures and main-coverage improvements remain UNKNOWN.",
+            "A real wave requires source-bound runner records and independent admission.",
+            "",
+        ]
+    )
     return "\n".join(lines)
 
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Build W74 runtime rows from real GitHub matrix jobs and probe receipts."""
+
 from __future__ import annotations
 
 import argparse

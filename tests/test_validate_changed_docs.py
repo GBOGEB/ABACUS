@@ -34,8 +34,9 @@ class ValidateChangedDocsTests(unittest.TestCase):
                 return _completed(args)
             raise AssertionError(args)
 
-        with mock.patch.dict(os.environ, env, clear=True), mock.patch.object(
-            docs, "_run", side_effect=fake_run
+        with (
+            mock.patch.dict(os.environ, env, clear=True),
+            mock.patch.object(docs, "_run", side_effect=fake_run),
         ):
             self.assertEqual(
                 docs._github_diff_ranges()[:3],
@@ -52,9 +53,7 @@ class ValidateChangedDocsTests(unittest.TestCase):
                 missing_sha
             ):
                 seen["cat_file"] += 1
-                return _completed(
-                    args, returncode=1 if seen["cat_file"] == 1 else 0
-                )
+                return _completed(args, returncode=1 if seen["cat_file"] == 1 else 0)
             if args[:2] == ["git", "fetch"]:
                 seen["fetch"].append(args[-1])
                 return _completed(args)
@@ -62,8 +61,9 @@ class ValidateChangedDocsTests(unittest.TestCase):
                 return _completed(args, returncode=1)
             raise AssertionError(args)
 
-        with mock.patch.dict(os.environ, env, clear=True), mock.patch.object(
-            docs, "_run", side_effect=fake_run
+        with (
+            mock.patch.dict(os.environ, env, clear=True),
+            mock.patch.object(docs, "_run", side_effect=fake_run),
         ):
             self.assertEqual(
                 docs._github_diff_ranges()[0],
@@ -85,13 +85,16 @@ class ValidateChangedDocsTests(unittest.TestCase):
                     )
                 return _completed(args, stdout="docs/ok.md\n")
 
-            with mock.patch.object(docs, "REPO_ROOT", root), mock.patch.object(
-                docs,
-                "_github_diff_ranges",
-                return_value=[["bad...HEAD"], ["good..HEAD"]],
-            ), mock.patch.object(docs, "_run", side_effect=fake_run):
+            with (
+                mock.patch.object(docs, "REPO_ROOT", root),
+                mock.patch.object(
+                    docs,
+                    "_github_diff_ranges",
+                    return_value=[["bad...HEAD"], ["good..HEAD"]],
+                ),
+                mock.patch.object(docs, "_run", side_effect=fake_run),
+            ):
                 self.assertEqual(docs.changed_files(), [Path("docs/ok.md")])
-
 
     def test_yaml_duplicate_nested_key_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as d:
@@ -120,9 +123,7 @@ class ValidateChangedDocsTests(unittest.TestCase):
     def test_yaml_invalid_syntax_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
-            (root / "broken.yaml").write_text(
-                "config: [unclosed\n", encoding="utf-8"
-            )
+            (root / "broken.yaml").write_text("config: [unclosed\n", encoding="utf-8")
             with mock.patch.object(docs, "REPO_ROOT", root):
                 self.assertEqual(docs.validate_yaml_structure(["broken.yaml"]), 1)
 
@@ -137,12 +138,12 @@ class ValidateChangedDocsTests(unittest.TestCase):
                     docs.validate_yaml_structure([".github/workflows/x.yml"]), 1
                 )
 
-
-
     def test_yaml_security_semgrep_config_contract(self) -> None:
         config_file = (
             Path(__file__).resolve().parents[1]
-            / ".github" / "security" / "semgrep-yaml-workflows.yml"
+            / ".github"
+            / "security"
+            / "semgrep-yaml-workflows.yml"
         )
         import yaml
 
@@ -174,6 +175,7 @@ class ValidateChangedDocsTests(unittest.TestCase):
             with self.subTest(rule=rule_id):
                 self.assertIsNotNone(re.search(rules[rule_id], sample))
                 self.assertIsNone(re.search(rules[rule_id], "permissions: read"))
+
 
 if __name__ == "__main__":
     unittest.main()

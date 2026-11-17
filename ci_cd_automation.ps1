@@ -5,28 +5,28 @@
 param(
     [Parameter(Mandatory=$false)]
     [int]$PR,
-    
+
     [Parameter(Mandatory=$false)]
     [switch]$Watch,
-    
+
     [Parameter(Mandatory=$false)]
     [switch]$CreateIssues,
-    
+
     [Parameter(Mandatory=$false)]
     [switch]$MonitorCD,
-    
+
     [Parameter(Mandatory=$false)]
     [string]$Environment = "all",
-    
+
     [Parameter(Mandatory=$false)]
     [switch]$Analyze,
-    
+
     [Parameter(Mandatory=$false)]
     [switch]$Track,
-    
+
     [Parameter(Mandatory=$false)]
     [switch]$Report,
-    
+
     [Parameter(Mandatory=$false)]
     [int]$Days = 30
 )
@@ -47,7 +47,7 @@ function Write-ColorOutput {
 
 function Test-GitHubAuth {
     Write-ColorOutput "🔐 Checking GitHub authentication..." $InfoColor
-    
+
     try {
         $authStatus = gh auth status 2>&1
         if ($LASTEXITCODE -eq 0) {
@@ -60,13 +60,13 @@ function Test-GitHubAuth {
         Write-ColorOutput "Please run: gh auth login" $WarningColor
         return $false
     }
-    
+
     return $false
 }
 
 function Get-RepositoryInfo {
     Write-ColorOutput "📦 Getting repository information..." $InfoColor
-    
+
     try {
         $remoteUrl = git remote get-url origin 2>&1
         if ($remoteUrl -match "github\.com[:/](.+)/(.+?)(?:\.git)?$") {
@@ -84,7 +84,7 @@ function Get-RepositoryInfo {
         Write-ColorOutput "❌ Could not determine repository" $ErrorColor
         return $null
     }
-    
+
     return $null
 }
 
@@ -94,19 +94,19 @@ function Start-CIMonitoring {
         [bool]$WatchMode,
         [bool]$CreateIssuesFlag
     )
-    
+
     Write-ColorOutput "`n🔍 Starting CI Monitoring for PR #$PRNumber..." $InfoColor
-    
+
     $args = @("--pr", $PRNumber)
-    
+
     if ($WatchMode) {
         $args += "--watch"
     }
-    
+
     if ($CreateIssuesFlag) {
         $args += "--create-issues"
     }
-    
+
     python ci_monitor_local.py @args
 }
 
@@ -114,17 +114,17 @@ function Start-CDMonitoring {
     param(
         [string]$Env = "all"
     )
-    
+
     Write-ColorOutput "`n📦 Starting CD Monitoring..." $InfoColor
-    
+
     $args = @()
-    
+
     if ($Env -ne "all") {
         $args += "--environment", $Env
     }
-    
+
     $args += "--report"
-    
+
     python cd_monitor.py @args
 }
 
@@ -132,17 +132,17 @@ function Start-Tracking {
     param(
         [int]$PRNumber
     )
-    
+
     Write-ColorOutput "`n📊 Starting GitHub Tracking for PR #$PRNumber..." $InfoColor
-    
+
     # Sync PR data
     Write-ColorOutput "  Syncing PR data..." $InfoColor
     python github_tracking_manager.py --sync-pr $PRNumber
-    
+
     # Sync CI runs
     Write-ColorOutput "  Syncing CI runs..." $InfoColor
     python github_tracking_manager.py --sync-ci $PRNumber
-    
+
     Write-ColorOutput "✅ Tracking complete" $SuccessColor
 }
 
@@ -151,19 +151,19 @@ function Start-Analysis {
         [int]$PRNumber,
         [int]$DaysToAnalyze
     )
-    
+
     Write-ColorOutput "`n🔍 Starting Analysis..." $InfoColor
-    
+
     if ($PRNumber -gt 0) {
         # Analyze specific PR
         Write-ColorOutput "  Analyzing PR #$PRNumber for missed opportunities..." $InfoColor
         python github_tracking_manager.py --analyze $PRNumber
     }
-    
+
     # Analyze workflows
     Write-ColorOutput "  Analyzing workflows (last $DaysToAnalyze days)..." $InfoColor
     python workflow_analyzer.py --days $DaysToAnalyze
-    
+
     Write-ColorOutput "✅ Analysis complete" $SuccessColor
 }
 
@@ -171,9 +171,9 @@ function Generate-Report {
     param(
         [int]$PRNumber
     )
-    
+
     Write-ColorOutput "`n📊 Generating Reports..." $InfoColor
-    
+
     if ($PRNumber -gt 0) {
         # PR-specific report
         Write-ColorOutput "  Generating PR #$PRNumber report..." $InfoColor
@@ -184,15 +184,15 @@ function Generate-Report {
         Write-ColorOutput "  Generating overall report..." $InfoColor
         python github_tracking_manager.py --report
     }
-    
+
     # CD report
     Write-ColorOutput "  Generating CD report..." $InfoColor
     python cd_monitor.py --report --save-report cd_report.json
-    
+
     # Workflow analysis report
     Write-ColorOutput "  Generating workflow analysis..." $InfoColor
     python workflow_analyzer.py --save-report workflow_analysis.json
-    
+
     Write-ColorOutput "✅ Reports generated" $SuccessColor
     Write-ColorOutput "`nReport files:" $InfoColor
     Write-ColorOutput "  - github_tracking_state.json" $InfoColor
@@ -209,26 +209,26 @@ function Show-Usage {
     Write-ColorOutput "    .\ci_cd_automation.ps1 -PR 15" $SuccessColor
     Write-ColorOutput "    .\ci_cd_automation.ps1 -PR 15 -Watch" $SuccessColor
     Write-ColorOutput "    .\ci_cd_automation.ps1 -PR 15 -CreateIssues" $SuccessColor
-    
+
     Write-ColorOutput "`n  CD Monitoring:" $InfoColor
     Write-ColorOutput "    .\ci_cd_automation.ps1 -MonitorCD" $SuccessColor
     Write-ColorOutput "    .\ci_cd_automation.ps1 -MonitorCD -Environment production" $SuccessColor
-    
+
     Write-ColorOutput "`n  Tracking:" $InfoColor
     Write-ColorOutput "    .\ci_cd_automation.ps1 -PR 15 -Track" $SuccessColor
-    
+
     Write-ColorOutput "`n  Analysis:" $InfoColor
     Write-ColorOutput "    .\ci_cd_automation.ps1 -Analyze" $SuccessColor
     Write-ColorOutput "    .\ci_cd_automation.ps1 -PR 15 -Analyze" $SuccessColor
     Write-ColorOutput "    .\ci_cd_automation.ps1 -Analyze -Days 90" $SuccessColor
-    
+
     Write-ColorOutput "`n  Reports:" $InfoColor
     Write-ColorOutput "    .\ci_cd_automation.ps1 -Report" $SuccessColor
     Write-ColorOutput "    .\ci_cd_automation.ps1 -PR 15 -Report" $SuccessColor
-    
+
     Write-ColorOutput "`n  Combined:" $InfoColor
     Write-ColorOutput "    .\ci_cd_automation.ps1 -PR 15 -Track -Analyze -Report" $SuccessColor
-    
+
     Write-ColorOutput "`nParameters:" $InfoColor
     Write-ColorOutput "  -PR <number>        PR number to monitor/track" $InfoColor
     Write-ColorOutput "  -Watch              Watch CI status continuously" $InfoColor
@@ -271,7 +271,7 @@ if ($PR -gt 0) {
         Start-Tracking -PRNumber $PR
         $actionTaken = $true
     }
-    
+
     if ($Watch -or $CreateIssues -or (-not $Track -and -not $Analyze -and -not $Report)) {
         Start-CIMonitoring -PRNumber $PR -WatchMode $Watch -CreateIssuesFlag $CreateIssues
         $actionTaken = $true

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Evaluate repeatability of W77 phase-normalized runtime features."""
+
 from __future__ import annotations
 
 import argparse
@@ -47,9 +48,7 @@ def validate(receipts: list[dict]) -> list[dict]:
         if len(subset) != 3 or {int(row["repeat"]) for row in subset} != {1, 2, 3}:
             raise ValueError(f"unbalanced W77 repeat panel for {sha}")
         feature_hashes = {str(row["feature_row_sha256"]) for row in subset}
-        counters = {
-            json.dumps(row["work_counters"], sort_keys=True) for row in subset
-        }
+        counters = {json.dumps(row["work_counters"], sort_keys=True) for row in subset}
         if len(feature_hashes) != 1 or len(counters) != 1:
             raise ValueError(f"source-state identity drift across repeats for {sha}")
     return receipts
@@ -126,7 +125,9 @@ def rank_stability(rows: list[dict], feature: str) -> dict:
         right_values = [lookup[(right, sha)] for sha in shas]
         rho = pearson(ranks(left_values), ranks(right_values))
         pairs.append({"repeats": [left, right], "spearman_rho": rho})
-    observed = [item["spearman_rho"] for item in pairs if item["spearman_rho"] is not None]
+    observed = [
+        item["spearman_rho"] for item in pairs if item["spearman_rho"] is not None
+    ]
     return {
         "pairs": pairs,
         "median_spearman_rho": statistics.median(observed) if observed else None,

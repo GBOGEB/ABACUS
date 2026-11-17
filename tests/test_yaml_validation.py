@@ -4,11 +4,12 @@
 # Description: Auto-generated version header
 """
 
+import json
+from pathlib import Path
+from typing import Any, Dict, List
+
 import pytest
 import yaml
-from pathlib import Path
-from typing import Dict, Any, List
-import json
 
 
 class TestCIWorkflowYAML:
@@ -42,8 +43,9 @@ class TestCIWorkflowYAML:
         triggers = config.get("on", config.get(True, {}))
 
         if isinstance(triggers, dict):
-            assert set(triggers) == {"workflow_dispatch"}, \
-                "Legacy ci.yml must remain workflow_dispatch-only"
+            assert set(triggers) == {
+                "workflow_dispatch"
+            }, "Legacy ci.yml must remain workflow_dispatch-only"
         else:
             pytest.fail("Legacy ci.yml requires explicit workflow_dispatch mapping")
 
@@ -82,7 +84,9 @@ class TestCIWorkflowYAML:
 
         for job_name, job_config in jobs.items():
             steps = job_config.get("steps", [])
-            checkout_steps = [s for s in steps if "actions/checkout" in str(s.get("uses", ""))]
+            checkout_steps = [
+                s for s in steps if "actions/checkout" in str(s.get("uses", ""))
+            ]
             assert len(checkout_steps) > 0, f"Job {job_name} should checkout code"
 
     def test_ci_workflow_test_step(self):
@@ -129,8 +133,9 @@ class TestCDWorkflowYAML:
 
         jobs = config.get("jobs", {})
 
-        assert set(jobs) == {"dmaic"}, \
-            "cd.yml shall retain the single governed DMAIC handover/export job"
+        assert set(jobs) == {
+            "dmaic"
+        }, "cd.yml shall retain the single governed DMAIC handover/export job"
 
     def test_cd_workflow_environments(self):
         cd_file = Path(".github/workflows/cd.yml")
@@ -141,8 +146,9 @@ class TestCDWorkflowYAML:
 
         for job_name, job_config in jobs.items():
             if "deploy" in job_name.lower():
-                assert "environment" in job_config or "env" in job_config, \
-                    f"Deployment job {job_name} should specify environment"
+                assert (
+                    "environment" in job_config or "env" in job_config
+                ), f"Deployment job {job_name} should specify environment"
 
     def test_cd_workflow_docker_build(self):
         cd_file = Path(".github/workflows/cd.yml")
@@ -152,8 +158,9 @@ class TestCDWorkflowYAML:
         steps = config["jobs"]["dmaic"].get("steps", [])
         step_names = {str(step.get("name", "")) for step in steps}
 
-        assert "Build universal handover archives" in step_names, \
-            "cd.yml shall build the governed universal handover archives"
+        assert (
+            "Build universal handover archives" in step_names
+        ), "cd.yml shall build the governed universal handover archives"
         build_step = next(
             (
                 step
@@ -170,17 +177,15 @@ class TestCDWorkflowYAML:
             "--name DMAIC_V3_3_HANDOVER_ALL"
         ), "cd.yml shall invoke the governed universal archive builder exactly"
         upload_step = next(
-            (
-                step
-                for step in steps
-                if step.get("name") == "Upload universal archives"
-            ),
+            (step for step in steps if step.get("name") == "Upload universal archives"),
             None,
         )
-        assert upload_step is not None, \
-            "cd.yml shall retain the universal archive upload step"
-        assert "actions/upload-artifact" in str(upload_step.get("uses", "")), \
-            "universal archives shall be published with upload-artifact"
+        assert (
+            upload_step is not None
+        ), "cd.yml shall retain the universal archive upload step"
+        assert "actions/upload-artifact" in str(
+            upload_step.get("uses", "")
+        ), "universal archives shall be published with upload-artifact"
         upload_paths = str(upload_step.get("with", {}).get("path", ""))
         assert "handover/DMAIC_V3_3_HANDOVER_ALL.zip" in upload_paths
         assert "handover/DMAIC_V3_3_HANDOVER_ALL.tar.gz" in upload_paths
@@ -189,8 +194,9 @@ class TestCDWorkflowYAML:
 class TestYAMLSyntaxValidation:
 
     def test_all_yaml_files_valid(self):
-        yaml_files = list(Path(".github/workflows").glob("*.yml")) + \
-                     list(Path(".github/workflows").glob("*.yaml"))
+        yaml_files = list(Path(".github/workflows").glob("*.yml")) + list(
+            Path(".github/workflows").glob("*.yaml")
+        )
 
         assert len(yaml_files) > 0, "Should have YAML workflow files"
 
@@ -219,20 +225,16 @@ class TestWorkflowSecurity:
     def test_no_hardcoded_secrets_in_workflows(self):
         yaml_files = list(Path(".github/workflows").glob("*.yml"))
 
-        forbidden_patterns = [
-            "password:",
-            "secret:",
-            "token:",
-            "api_key:"
-        ]
+        forbidden_patterns = ["password:", "secret:", "token:", "api_key:"]
 
         for yaml_file in yaml_files:
             content = yaml_file.read_text(encoding="utf-8").lower()
 
             for pattern in forbidden_patterns:
                 if pattern in content:
-                    assert "secrets." in content or "${" in content, \
-                        f"Potential hardcoded secret in {yaml_file.name}"
+                    assert (
+                        "secrets." in content or "${" in content
+                    ), f"Potential hardcoded secret in {yaml_file.name}"
 
     def test_workflows_use_secrets(self):
         policy_file = Path("ci/governance/workflow_policy.json")
@@ -242,12 +244,14 @@ class TestWorkflowSecurity:
         assert canonical_delivery, "Delivery governance shall name a canonical workflow"
 
         workflow_file = Path(".github/workflows") / canonical_delivery
-        assert workflow_file.exists(), \
-            f"Canonical delivery workflow {canonical_delivery} not found"
+        assert (
+            workflow_file.exists()
+        ), f"Canonical delivery workflow {canonical_delivery} not found"
 
         content = workflow_file.read_text(encoding="utf-8")
-        assert "secrets." in content or "GITHUB_TOKEN" in content, \
-            f"Canonical delivery workflow {canonical_delivery} should use secrets"
+        assert (
+            "secrets." in content or "GITHUB_TOKEN" in content
+        ), f"Canonical delivery workflow {canonical_delivery} should use secrets"
 
 
 class TestWorkflowBestPractices:
@@ -273,8 +277,9 @@ class TestWorkflowBestPractices:
 
             for job_name in jobs.keys():
                 assert job_name, "Workflow job ID shall not be empty"
-                assert job_name.replace("-", "").replace("_", "").isalnum(), \
-                    f"Job ID '{job_name}' should be alphanumeric"
+                assert (
+                    job_name.replace("-", "").replace("_", "").isalnum()
+                ), f"Job ID '{job_name}' should be alphanumeric"
 
     def test_steps_have_names(self):
         yaml_files = list(Path(".github/workflows").glob("*.yml"))
@@ -290,8 +295,9 @@ class TestWorkflowBestPractices:
 
                 for i, step in enumerate(steps):
                     if "name" in step:
-                        assert isinstance(step["name"], str) and step["name"].strip(), \
-                            f"Step {i} in job {job_name} has an empty name"
+                        assert (
+                            isinstance(step["name"], str) and step["name"].strip()
+                        ), f"Step {i} in job {job_name} has an empty name"
 
 
 class TestWorkflowDependencies:
@@ -314,8 +320,9 @@ class TestWorkflowDependencies:
                         needs = [needs]
 
                     for needed_job in needs:
-                        assert needed_job in job_names, \
-                            f"Job {job_name} depends on non-existent job {needed_job}"
+                        assert (
+                            needed_job in job_names
+                        ), f"Job {job_name} depends on non-existent job {needed_job}"
 
 
 class TestWorkflowCaching:
@@ -326,7 +333,9 @@ class TestWorkflowCaching:
         canonical = policy["clusters"]["full_regression"]["canonical"]
         ci_file = Path(".github/workflows") / canonical
 
-        assert ci_file.exists(), f"Canonical full-regression workflow {canonical} not found"
+        assert (
+            ci_file.exists()
+        ), f"Canonical full-regression workflow {canonical} not found"
 
         with open(ci_file, encoding="utf-8") as f:
             config = yaml.safe_load(f)
@@ -347,8 +356,9 @@ class TestWorkflowCaching:
                     has_cache = True
                     break
 
-        assert has_cache, \
-            f"Canonical full-regression workflow {canonical} should cache dependencies"
+        assert (
+            has_cache
+        ), f"Canonical full-regression workflow {canonical} should cache dependencies"
 
 
 class TestWorkflowArtifacts:
@@ -366,11 +376,14 @@ class TestWorkflowArtifacts:
                 steps = job_config.get("steps", [])
 
                 has_test = any("pytest" in str(s.get("run", "")).lower() for s in steps)
-                has_artifact = any("actions/upload-artifact" in str(s.get("uses", "")) for s in steps)
+                has_artifact = any(
+                    "actions/upload-artifact" in str(s.get("uses", "")) for s in steps
+                )
 
                 if has_test and "test" in job_name.lower():
-                    assert has_artifact or True, \
-                        f"Test job {job_name} should upload test artifacts"
+                    assert (
+                        has_artifact or True
+                    ), f"Test job {job_name} should upload test artifacts"
 
 
 class TestYAMLEditorCompatibility:
@@ -380,13 +393,15 @@ class TestYAMLEditorCompatibility:
 
         for yaml_file in yaml_files:
             content = yaml_file.read_text(encoding="utf-8")
-            lines = content.split('\n')
+            lines = content.split("\n")
             block_scalar_content_lines = set()
 
             for token in yaml.scan(content):
                 if getattr(token, "style", None) in ("|", ">"):
                     end_line = token.end_mark.line
-                    if token.end_mark.index == len(content) and not content.endswith("\n"):
+                    if token.end_mark.index == len(content) and not content.endswith(
+                        "\n"
+                    ):
                         end_line += 1
                     block_scalar_content_lines.update(
                         range(token.start_mark.line + 1, end_line)
@@ -397,11 +412,12 @@ class TestYAMLEditorCompatibility:
                     continue
 
                 stripped = line.strip()
-                if stripped and not stripped.startswith('#'):
+                if stripped and not stripped.startswith("#"):
                     leading_spaces = len(line) - len(line.lstrip())
 
-                    assert leading_spaces % 2 == 0, \
-                        f"{yaml_file.name}:{i} - Indentation should be multiple of 2"
+                    assert (
+                        leading_spaces % 2 == 0
+                    ), f"{yaml_file.name}:{i} - Indentation should be multiple of 2"
 
     def test_yaml_no_tabs(self):
         yaml_files = list(Path(".github/workflows").glob("*.yml"))
@@ -417,7 +433,9 @@ class TestYAMLEditorCompatibility:
                 for token in tokens:
                     if getattr(token, "style", None) in ("|", ">"):
                         end_line = token.end_mark.line
-                        if token.end_mark.index == len(content) and not content.endswith("\n"):
+                        if token.end_mark.index == len(
+                            content
+                        ) and not content.endswith("\n"):
                             end_line += 1
                         block_scalar_content_lines.update(
                             range(token.start_mark.line + 1, end_line)
@@ -429,16 +447,18 @@ class TestYAMLEditorCompatibility:
                     and error_line < len(lines)
                     and "\t" in lines[error_line]
                 ):
-                    assert False, \
-                        f"{yaml_file.name}:{error_line + 1} contains tab outside block scalar content"
+                    assert (
+                        False
+                    ), f"{yaml_file.name}:{error_line + 1} contains tab outside block scalar content"
                 raise
 
             for i, line in enumerate(lines, 1):
                 if i - 1 in block_scalar_content_lines:
                     continue
 
-                assert "\t" not in line, \
-                    f"{yaml_file.name}:{i} contains tab outside block scalar content"
+                assert (
+                    "\t" not in line
+                ), f"{yaml_file.name}:{i} contains tab outside block scalar content"
 
     def test_yaml_line_endings(self):
         yaml_files = list(Path(".github/workflows").glob("*.yml"))
@@ -446,8 +466,9 @@ class TestYAMLEditorCompatibility:
         for yaml_file in yaml_files:
             content = yaml_file.read_text(encoding="utf-8")
 
-            assert '\r\n' not in content or True, \
-                f"{yaml_file.name} should use Unix line endings (LF)"
+            assert (
+                "\r\n" not in content or True
+            ), f"{yaml_file.name} should use Unix line endings (LF)"
 
 
 class TestWorkflowPerformance:
@@ -469,14 +490,13 @@ class TestWorkflowPerformance:
 
                     if uses:
                         if uses.startswith("docker://"):
-                            image_ref = uses[len("docker://"):]
+                            image_ref = uses[len("docker://") :]
                             image_name = image_ref.rsplit("/", 1)[-1]
                             has_version = "@" in image_ref or ":" in image_name
                         else:
                             ref = uses.rsplit("@", 1)[-1] if "@" in uses else ""
-                            is_commit_sha = (
-                                len(ref) == 40
-                                and all(char in "0123456789abcdefABCDEF" for char in ref)
+                            is_commit_sha = len(ref) == 40 and all(
+                                char in "0123456789abcdefABCDEF" for char in ref
                             )
                             has_version = (
                                 "@v" in uses
@@ -485,8 +505,7 @@ class TestWorkflowPerformance:
                                 or is_commit_sha
                             )
 
-                        assert has_version, \
-                            f"Action {uses} should specify version"
+                        assert has_version, f"Action {uses} should specify version"
 
 
 class TestDockerComposeYAML:
@@ -501,8 +520,11 @@ class TestDockerComposeYAML:
             assert "version" in config, "docker-compose.yml should specify version"
 
             version = config["version"]
-            assert version in ["3", "3.8", "3.9"], \
-                f"docker-compose version {version} may be outdated"
+            assert version in [
+                "3",
+                "3.8",
+                "3.9",
+            ], f"docker-compose version {version} may be outdated"
 
     def test_docker_compose_service_health(self):
         compose_file = Path("docker-compose.yml")
@@ -515,5 +537,7 @@ class TestDockerComposeYAML:
 
             for service_name, service_config in services.items():
                 if service_name in ["app", "db", "redis"]:
-                    assert "healthcheck" in service_config or "depends_on" in service_config, \
-                        f"Service {service_name} should have healthcheck or dependencies"
+                    assert (
+                        "healthcheck" in service_config
+                        or "depends_on" in service_config
+                    ), f"Service {service_name} should have healthcheck or dependencies"

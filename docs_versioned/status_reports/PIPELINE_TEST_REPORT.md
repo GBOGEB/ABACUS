@@ -83,7 +83,7 @@ Output:
     dmaic_phases_executable: ❌ FAIL
 Exit Code: 0
 
-Note: Phase files check fails because run_phase*.py files are in DMAIC_V3/ 
+Note: Phase files check fails because run_phase*.py files are in DMAIC_V3/
 subdirectory, not in root. This is expected behavior.
 ```
 

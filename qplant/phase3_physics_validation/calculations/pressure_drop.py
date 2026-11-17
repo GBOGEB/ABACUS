@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Pressure Drop Calculations for QPS piping and components."""
-import json, math, os
+import json
+import math
+import os
 
 BASELINE = json.load(open(os.path.join(os.path.dirname(__file__), "..", "engineering_baseline.json")))
 

@@ -14,14 +14,14 @@ metadata:
   status: "planning" # planning, development, testing, deployed, optimizing
   dmaic_phase: "define" # define, measure, analyze, improve, control
   process_maturity: "initial" # initial, managed, defined, quantitatively_managed, optimizing
-  
+
 project_overview:
   vision: "TODO: What problem does this app solve?"
   target_audience: "TODO: Who will use this app?"
   business_value: "TODO: Expected business impact and ROI"
   key_features:
     - "TODO: Feature 1"
-    - "TODO: Feature 2" 
+    - "TODO: Feature 2"
     - "TODO: Feature 3"
   success_metrics:
     - "TODO: How will you measure success?"
@@ -31,7 +31,7 @@ project_overview:
 # DMAIC Process Framework Integration
 dmaic_framework:
   description: "Six Sigma DMAIC methodology integrated with DeepAgent development"
-  
+
   define:
     phase_description: "Define project goals, customer requirements, and process boundaries"
     objectives:
@@ -39,7 +39,7 @@ dmaic_framework:
       - "Identify customer requirements and critical-to-quality factors"
       - "Define process boundaries and stakeholders"
       - "Establish project timeline and resource requirements"
-    
+
     deliverables:
       - name: "Project Charter"
         template: "project_charter.md"
@@ -49,7 +49,7 @@ dmaic_framework:
           - "project_scope"
           - "business_case"
           - "success_criteria"
-      
+
       - name: "Voice of Customer (VOC)"
         template: "voc_analysis.md"
         required_fields:
@@ -57,7 +57,7 @@ dmaic_framework:
           - "requirements_gathering"
           - "critical_to_quality_factors"
           - "customer_journey_mapping"
-      
+
       - name: "SIPOC Diagram"
         template: "sipoc_diagram.md"
         required_fields:
@@ -66,7 +66,7 @@ dmaic_framework:
           - "process_steps"
           - "outputs"
           - "customers"
-    
+
     kpis:
       - name: "Requirements Clarity Score"
         target: ">= 90%"
@@ -77,7 +77,7 @@ dmaic_framework:
       - name: "Scope Definition Completeness"
         target: "100%"
         measurement: "All SIPOC elements defined and validated"
-    
+
     automation_workflows:
       - name: "Requirements Validation"
         trigger: "requirements_updated"
@@ -86,14 +86,14 @@ dmaic_framework:
           - "check_acceptance_criteria"
           - "notify_stakeholders"
           - "update_traceability_matrix"
-      
+
       - name: "Stakeholder Notification"
         trigger: "phase_completion"
         steps:
           - "generate_phase_report"
           - "send_stakeholder_updates"
           - "schedule_review_meeting"
-  
+
   measure:
     phase_description: "Establish baseline measurements and data collection systems"
     objectives:
@@ -101,7 +101,7 @@ dmaic_framework:
       - "Establish baseline measurements"
       - "Implement data collection systems"
       - "Validate measurement system accuracy"
-    
+
     deliverables:
       - name: "Measurement Plan"
         template: "measurement_plan.md"
@@ -110,7 +110,7 @@ dmaic_framework:
           - "data_collection_methods"
           - "measurement_frequency"
           - "data_quality_checks"
-      
+
       - name: "Baseline Assessment"
         template: "baseline_assessment.md"
         required_fields:
@@ -118,7 +118,7 @@ dmaic_framework:
           - "performance_gaps"
           - "benchmark_comparisons"
           - "improvement_opportunities"
-      
+
       - name: "Data Collection System"
         template: "data_collection_setup.md"
         required_fields:
@@ -126,7 +126,7 @@ dmaic_framework:
           - "manual_collection_procedures"
           - "data_validation_rules"
           - "reporting_dashboards"
-    
+
     kpis:
       - name: "Data Collection Accuracy"
         target: ">= 95%"
@@ -137,7 +137,7 @@ dmaic_framework:
       - name: "Baseline Establishment Rate"
         target: "100%"
         measurement: "Percentage of defined KPIs with baseline values"
-    
+
     automation_workflows:
       - name: "Automated Data Collection"
         trigger: "scheduled_interval"
@@ -146,7 +146,7 @@ dmaic_framework:
           - "validate_data_quality"
           - "store_in_data_warehouse"
           - "trigger_anomaly_detection"
-      
+
       - name: "KPI Dashboard Update"
         trigger: "data_collection_complete"
         steps:
@@ -154,7 +154,7 @@ dmaic_framework:
           - "update_dashboard_widgets"
           - "generate_trend_analysis"
           - "send_alerts_if_thresholds_exceeded"
-  
+
   analyze:
     phase_description: "Analyze data to identify root causes and improvement opportunities"
     objectives:
@@ -162,7 +162,7 @@ dmaic_framework:
       - "Identify root causes of performance gaps"
       - "Prioritize improvement opportunities"
       - "Validate hypotheses with data"
-    
+
     deliverables:
       - name: "Statistical Analysis Report"
         template: "statistical_analysis.md"
@@ -171,7 +171,7 @@ dmaic_framework:
           - "trend_analysis"
           - "correlation_analysis"
           - "hypothesis_testing_results"
-      
+
       - name: "Root Cause Analysis"
         template: "root_cause_analysis.md"
         required_fields:
@@ -179,7 +179,7 @@ dmaic_framework:
           - "five_whys_analysis"
           - "pareto_analysis"
           - "validated_root_causes"
-      
+
       - name: "Opportunity Assessment"
         template: "opportunity_assessment.md"
         required_fields:
@@ -187,7 +187,7 @@ dmaic_framework:
           - "impact_effort_matrix"
           - "prioritization_criteria"
           - "recommended_solutions"
-    
+
     kpis:
       - name: "Root Cause Identification Rate"
         target: ">= 80%"
@@ -198,7 +198,7 @@ dmaic_framework:
       - name: "Opportunity Prioritization Completeness"
         target: "100%"
         measurement: "All opportunities assessed and prioritized"
-    
+
     automation_workflows:
       - name: "Automated Statistical Analysis"
         trigger: "sufficient_data_available"
@@ -207,7 +207,7 @@ dmaic_framework:
           - "generate_correlation_matrix"
           - "identify_outliers"
           - "create_analysis_report"
-      
+
       - name: "Root Cause Investigation"
         trigger: "performance_threshold_breach"
         steps:
@@ -215,7 +215,7 @@ dmaic_framework:
           - "gather_relevant_data"
           - "apply_analysis_techniques"
           - "validate_findings"
-  
+
   improve:
     phase_description: "Design and implement solutions to address root causes"
     objectives:
@@ -223,7 +223,7 @@ dmaic_framework:
       - "Implement pilot programs and tests"
       - "Measure improvement effectiveness"
       - "Scale successful improvements"
-    
+
     deliverables:
       - name: "Solution Design Document"
         template: "solution_design.md"
@@ -232,7 +232,7 @@ dmaic_framework:
           - "implementation_plan"
           - "resource_requirements"
           - "risk_mitigation_strategies"
-      
+
       - name: "Pilot Implementation Results"
         template: "pilot_results.md"
         required_fields:
@@ -240,7 +240,7 @@ dmaic_framework:
           - "implementation_timeline"
           - "results_analysis"
           - "lessons_learned"
-      
+
       - name: "Improvement Validation Report"
         template: "improvement_validation.md"
         required_fields:
@@ -248,7 +248,7 @@ dmaic_framework:
           - "statistical_significance"
           - "sustainability_assessment"
           - "scaling_recommendations"
-    
+
     kpis:
       - name: "Improvement Implementation Success Rate"
         target: ">= 85%"
@@ -259,7 +259,7 @@ dmaic_framework:
       - name: "Solution Effectiveness Score"
         target: ">= 80%"
         measurement: "Percentage of solutions meeting expected outcomes"
-    
+
     automation_workflows:
       - name: "Improvement Deployment"
         trigger: "solution_approved"
@@ -268,7 +268,7 @@ dmaic_framework:
           - "execute_deployment_plan"
           - "monitor_implementation_progress"
           - "validate_improvement_results"
-      
+
       - name: "A/B Testing Framework"
         trigger: "pilot_ready"
         steps:
@@ -276,7 +276,7 @@ dmaic_framework:
           - "deploy_variations"
           - "collect_performance_data"
           - "analyze_test_results"
-  
+
   control:
     phase_description: "Sustain improvements and establish ongoing monitoring"
     objectives:
@@ -284,7 +284,7 @@ dmaic_framework:
       - "Create standard operating procedures"
       - "Implement continuous improvement processes"
       - "Transfer ownership to process owners"
-    
+
     deliverables:
       - name: "Control Plan"
         template: "control_plan.md"
@@ -293,7 +293,7 @@ dmaic_framework:
           - "monitoring_procedures"
           - "response_plans"
           - "ownership_assignments"
-      
+
       - name: "Standard Operating Procedures"
         template: "sop_documentation.md"
         required_fields:
@@ -301,7 +301,7 @@ dmaic_framework:
           - "quality_standards"
           - "training_materials"
           - "audit_checklists"
-      
+
       - name: "Continuous Improvement Framework"
         template: "continuous_improvement.md"
         required_fields:
@@ -309,7 +309,7 @@ dmaic_framework:
           - "feedback_mechanisms"
           - "review_cycles"
           - "escalation_procedures"
-    
+
     kpis:
       - name: "Process Stability Index"
         target: ">= 95%"
@@ -320,7 +320,7 @@ dmaic_framework:
       - name: "Continuous Improvement Adoption"
         target: ">= 80%"
         measurement: "Team engagement in improvement activities"
-    
+
     automation_workflows:
       - name: "Continuous Monitoring"
         trigger: "scheduled_monitoring"
@@ -329,7 +329,7 @@ dmaic_framework:
           - "check_control_limits"
           - "generate_control_charts"
           - "alert_on_out_of_control_conditions"
-      
+
       - name: "Improvement Opportunity Detection"
         trigger: "performance_data_analysis"
         steps:
@@ -341,7 +341,7 @@ dmaic_framework:
 # Comprehensive KPI Framework
 kpi_framework:
   description: "Multi-dimensional KPI system for DeepAgent app development"
-  
+
   categories:
     development_kpis:
       description: "Metrics tracking development process efficiency and quality"
@@ -352,35 +352,35 @@ kpi_framework:
           measurement_method: "Count of completed user stories"
           frequency: "Weekly"
           owner: "Development Team"
-          
+
         - name: "Code Quality Score"
           definition: "Composite score of code maintainability and standards compliance"
           target: ">= 85/100"
           measurement_method: "Automated code analysis tools"
           frequency: "Daily"
           owner: "Tech Lead"
-          
+
         - name: "Defect Density"
           definition: "Number of defects per feature or lines of code"
           target: "<= 2 defects per feature"
           measurement_method: "Bug tracking system analysis"
           frequency: "Weekly"
           owner: "QA Team"
-          
+
         - name: "Technical Debt Ratio"
           definition: "Percentage of development time spent on technical debt"
           target: "<= 20%"
           measurement_method: "Time tracking and categorization"
           frequency: "Monthly"
           owner: "Tech Lead"
-          
+
         - name: "Automated Test Coverage"
           definition: "Percentage of code covered by automated tests"
           target: ">= 80%"
           measurement_method: "Test coverage tools"
           frequency: "Daily"
           owner: "Development Team"
-    
+
     deployment_kpis:
       description: "Metrics tracking deployment success and reliability"
       metrics:
@@ -390,35 +390,35 @@ kpi_framework:
           measurement_method: "Deployment pipeline monitoring"
           frequency: "Per deployment"
           owner: "DevOps Team"
-          
+
         - name: "Deployment Frequency"
           definition: "Number of deployments per time period"
           target: ">= 2 per week"
           measurement_method: "Deployment pipeline logs"
           frequency: "Weekly"
           owner: "DevOps Team"
-          
+
         - name: "Mean Time to Deploy"
           definition: "Average time from code commit to production deployment"
           target: "<= 30 minutes"
           measurement_method: "Pipeline timing analysis"
           frequency: "Per deployment"
           owner: "DevOps Team"
-          
+
         - name: "Rollback Rate"
           definition: "Percentage of deployments requiring rollback"
           target: "<= 5%"
           measurement_method: "Deployment tracking system"
           frequency: "Weekly"
           owner: "DevOps Team"
-          
+
         - name: "Environment Consistency Score"
           definition: "Similarity between development, staging, and production environments"
           target: ">= 95%"
           measurement_method: "Infrastructure comparison tools"
           frequency: "Weekly"
           owner: "DevOps Team"
-    
+
     performance_kpis:
       description: "Metrics tracking application performance and reliability"
       metrics:
@@ -428,35 +428,35 @@ kpi_framework:
           measurement_method: "Application Performance Monitoring (APM)"
           frequency: "Real-time"
           owner: "Performance Team"
-          
+
         - name: "System Uptime"
           definition: "Percentage of time system is available and functional"
           target: ">= 99.9%"
           measurement_method: "Uptime monitoring tools"
           frequency: "Real-time"
           owner: "Operations Team"
-          
+
         - name: "Error Rate"
           definition: "Percentage of requests resulting in errors"
           target: "<= 0.1%"
           measurement_method: "Error tracking and logging systems"
           frequency: "Real-time"
           owner: "Development Team"
-          
+
         - name: "Database Performance Index"
           definition: "Composite score of database query performance"
           target: ">= 90/100"
           measurement_method: "Database monitoring tools"
           frequency: "Hourly"
           owner: "Database Team"
-          
+
         - name: "Resource Utilization Rate"
           definition: "Percentage of system resources (CPU, memory, storage) utilized"
           target: "60-80% optimal range"
           measurement_method: "Infrastructure monitoring"
           frequency: "Real-time"
           owner: "Operations Team"
-    
+
     user_engagement_kpis:
       description: "Metrics tracking user adoption and satisfaction"
       metrics:
@@ -466,35 +466,35 @@ kpi_framework:
           measurement_method: "User analytics tracking"
           frequency: "Daily"
           owner: "Product Team"
-          
+
         - name: "User Retention Rate"
           definition: "Percentage of users returning after initial use"
           target: ">= 70% (7-day), >= 40% (30-day)"
           measurement_method: "User behavior analytics"
           frequency: "Weekly"
           owner: "Product Team"
-          
+
         - name: "Feature Adoption Rate"
           definition: "Percentage of users utilizing new features"
           target: ">= 60% within 30 days"
           measurement_method: "Feature usage analytics"
           frequency: "Weekly"
           owner: "Product Team"
-          
+
         - name: "User Satisfaction Score"
           definition: "Average user satisfaction rating"
           target: ">= 4.0/5.0"
           measurement_method: "User surveys and feedback"
           frequency: "Monthly"
           owner: "Product Team"
-          
+
         - name: "Support Ticket Volume"
           definition: "Number of user support requests per time period"
           target: "<= 5% of active users"
           measurement_method: "Support system analytics"
           frequency: "Weekly"
           owner: "Support Team"
-    
+
     business_kpis:
       description: "Metrics tracking business value and ROI"
       metrics:
@@ -504,28 +504,28 @@ kpi_framework:
           measurement_method: "Financial analysis"
           frequency: "Monthly"
           owner: "Finance Team"
-          
+
         - name: "Revenue per User"
           definition: "Average revenue generated per active user"
           target: "Increase by 15% quarterly"
           measurement_method: "Revenue analytics"
           frequency: "Monthly"
           owner: "Business Team"
-          
+
         - name: "Return on Investment (ROI)"
           definition: "Financial return compared to development investment"
           target: ">= 300% within 12 months"
           measurement_method: "Financial analysis"
           frequency: "Quarterly"
           owner: "Finance Team"
-          
+
         - name: "Time to Market"
           definition: "Time from concept to production deployment"
           target: "<= 90 days for MVP"
           measurement_method: "Project timeline tracking"
           frequency: "Per project"
           owner: "Project Manager"
-          
+
         - name: "Customer Acquisition Cost"
           definition: "Cost to acquire each new customer"
           target: "Decrease by 10% quarterly"
@@ -536,7 +536,7 @@ kpi_framework:
 # Recursive Handover Structure
 recursive_handover:
   description: "Multi-level handover structure supporting nested processes and dependencies"
-  
+
   structure:
     level_0_project:
       name: "Project Level Handover"
@@ -548,7 +548,7 @@ recursive_handover:
         - "quality_standards"
         - "risk_assessments"
         - "resource_allocations"
-      
+
       nested_handovers:
         level_1_modules:
           name: "Module Level Handover"
@@ -559,7 +559,7 @@ recursive_handover:
             - "test_cases"
             - "documentation"
             - "dependencies"
-          
+
           nested_handovers:
             level_2_features:
               name: "Feature Level Handover"
@@ -570,7 +570,7 @@ recursive_handover:
                 - "implementation_details"
                 - "test_results"
                 - "user_stories"
-              
+
               nested_handovers:
                 level_3_tasks:
                   name: "Task Level Handover"
@@ -581,7 +581,7 @@ recursive_handover:
                     - "work_artifacts"
                     - "time_tracking"
                     - "quality_checks"
-  
+
   handover_templates:
     project_handover:
       sections:
@@ -591,28 +591,28 @@ recursive_handover:
             - "key_achievements"
             - "outstanding_issues"
             - "recommendations"
-        
+
         - name: "Technical Handover"
           required_fields:
             - "architecture_overview"
             - "technology_stack"
             - "deployment_procedures"
             - "maintenance_requirements"
-        
+
         - name: "Process Handover"
           required_fields:
             - "development_processes"
             - "quality_procedures"
             - "change_management"
             - "escalation_procedures"
-        
+
         - name: "Knowledge Transfer"
           required_fields:
             - "training_materials"
             - "documentation_index"
             - "expert_contacts"
             - "learning_resources"
-    
+
     module_handover:
       sections:
         - name: "Module Overview"
@@ -621,21 +621,21 @@ recursive_handover:
             - "functionality_summary"
             - "integration_points"
             - "performance_characteristics"
-        
+
         - name: "Technical Details"
           required_fields:
             - "code_structure"
             - "api_specifications"
             - "database_schema"
             - "configuration_settings"
-        
+
         - name: "Testing Information"
           required_fields:
             - "test_coverage"
             - "test_procedures"
             - "known_issues"
             - "performance_benchmarks"
-    
+
     feature_handover:
       sections:
         - name: "Feature Description"
@@ -644,14 +644,14 @@ recursive_handover:
             - "acceptance_criteria"
             - "business_value"
             - "usage_scenarios"
-        
+
         - name: "Implementation Details"
           required_fields:
             - "code_changes"
             - "database_changes"
             - "configuration_updates"
             - "deployment_notes"
-        
+
         - name: "Validation Results"
           required_fields:
             - "test_execution_results"
@@ -662,11 +662,11 @@ recursive_handover:
 # Automation Workflows and Steps
 automation_framework:
   description: "Comprehensive automation system for DeepAgent development lifecycle"
-  
+
   workflow_categories:
     development_automation:
       description: "Automated workflows for development processes"
-      
+
       workflows:
         - name: "Continuous Integration Pipeline"
           trigger: "code_commit"
@@ -676,45 +676,45 @@ automation_framework:
               parameters:
                 branch: "${trigger.branch}"
                 repository: "${project.repository}"
-            
+
             - name: "Dependency Installation"
               action: "install_dependencies"
               parameters:
                 package_manager: "npm"
                 cache_enabled: true
-            
+
             - name: "Code Quality Check"
               action: "run_linting"
               parameters:
                 linter: "eslint"
                 config: ".eslintrc.json"
                 fail_on_error: true
-            
+
             - name: "Unit Tests"
               action: "run_tests"
               parameters:
                 test_type: "unit"
                 coverage_threshold: 80
                 reporter: "junit"
-            
+
             - name: "Build Application"
               action: "build_app"
               parameters:
                 build_command: "npm run build"
                 output_directory: "dist"
-            
+
             - name: "Security Scan"
               action: "security_scan"
               parameters:
                 scanner: "snyk"
                 severity_threshold: "high"
-            
+
             - name: "Artifact Storage"
               action: "store_artifacts"
               parameters:
                 artifacts: ["dist/**", "test-results/**"]
                 retention_days: 30
-        
+
         - name: "Automated Testing Suite"
           trigger: "build_complete"
           steps:
@@ -724,20 +724,20 @@ automation_framework:
                 test_type: "integration"
                 environment: "test"
                 parallel: true
-            
+
             - name: "API Tests"
               action: "run_api_tests"
               parameters:
                 test_suite: "postman_collection"
                 environment_variables: "test.env"
-            
+
             - name: "UI Tests"
               action: "run_ui_tests"
               parameters:
                 browser: "chrome"
                 headless: true
                 test_suite: "cypress"
-            
+
             - name: "Performance Tests"
               action: "run_performance_tests"
               parameters:
@@ -746,13 +746,13 @@ automation_framework:
                 thresholds:
                   response_time: "200ms"
                   error_rate: "1%"
-            
+
             - name: "Accessibility Tests"
               action: "run_accessibility_tests"
               parameters:
                 tool: "axe-core"
                 standards: ["WCAG2A", "WCAG2AA"]
-        
+
         - name: "Code Review Automation"
           trigger: "pull_request_created"
           steps:
@@ -761,29 +761,29 @@ automation_framework:
               parameters:
                 reviewer: "ai_reviewer"
                 focus_areas: ["security", "performance", "maintainability"]
-            
+
             - name: "Complexity Analysis"
               action: "analyze_complexity"
               parameters:
                 tool: "sonarqube"
                 threshold: 10
-            
+
             - name: "Dependency Check"
               action: "check_dependencies"
               parameters:
                 check_vulnerabilities: true
                 check_licenses: true
                 allowed_licenses: ["MIT", "Apache-2.0", "BSD-3-Clause"]
-            
+
             - name: "Documentation Check"
               action: "check_documentation"
               parameters:
                 required_sections: ["description", "usage", "api"]
                 coverage_threshold: 90
-    
+
     deployment_automation:
       description: "Automated workflows for deployment processes"
-      
+
       workflows:
         - name: "Staging Deployment"
           trigger: "tests_passed"
@@ -794,33 +794,33 @@ automation_framework:
                 environment: "staging"
                 infrastructure: "kubernetes"
                 namespace: "staging"
-            
+
             - name: "Database Migration"
               action: "run_migrations"
               parameters:
                 migration_tool: "flyway"
                 target_version: "latest"
                 rollback_on_failure: true
-            
+
             - name: "Application Deployment"
               action: "deploy_application"
               parameters:
                 deployment_strategy: "blue_green"
                 health_check_url: "/health"
                 timeout: "300s"
-            
+
             - name: "Smoke Tests"
               action: "run_smoke_tests"
               parameters:
                 test_suite: "smoke_tests"
                 timeout: "120s"
-            
+
             - name: "Notification"
               action: "send_notification"
               parameters:
                 channels: ["slack", "email"]
                 message: "Staging deployment completed successfully"
-        
+
         - name: "Production Deployment"
           trigger: "staging_validated"
           approval_required: true
@@ -829,14 +829,14 @@ automation_framework:
               action: "pre_deployment_checks"
               parameters:
                 checks: ["database_backup", "rollback_plan", "monitoring_setup"]
-            
+
             - name: "Blue-Green Deployment"
               action: "blue_green_deploy"
               parameters:
                 environment: "production"
                 traffic_split: "10%"
                 monitoring_duration: "300s"
-            
+
             - name: "Canary Analysis"
               action: "canary_analysis"
               parameters:
@@ -845,22 +845,22 @@ automation_framework:
                   error_rate: "0.1%"
                   response_time: "200ms"
                 duration: "600s"
-            
+
             - name: "Full Traffic Switch"
               action: "switch_traffic"
               parameters:
                 percentage: "100%"
                 rollback_on_failure: true
-            
+
             - name: "Post-deployment Validation"
               action: "post_deployment_validation"
               parameters:
                 validation_suite: "production_validation"
                 timeout: "300s"
-    
+
     monitoring_automation:
       description: "Automated workflows for monitoring and alerting"
-      
+
       workflows:
         - name: "Performance Monitoring"
           trigger: "scheduled_5min"
@@ -870,13 +870,13 @@ automation_framework:
               parameters:
                 sources: ["application", "database", "infrastructure"]
                 metrics: ["response_time", "throughput", "error_rate", "resource_usage"]
-            
+
             - name: "Analyze Trends"
               action: "analyze_trends"
               parameters:
                 time_window: "1h"
                 algorithms: ["moving_average", "anomaly_detection"]
-            
+
             - name: "Generate Alerts"
               action: "generate_alerts"
               parameters:
@@ -887,13 +887,13 @@ automation_framework:
                   - metric: "error_rate"
                     threshold: "1%"
                     severity: "critical"
-            
+
             - name: "Update Dashboards"
               action: "update_dashboards"
               parameters:
                 dashboards: ["performance", "business_metrics"]
                 refresh_interval: "30s"
-        
+
         - name: "Incident Response"
           trigger: "alert_critical"
           steps:
@@ -903,29 +903,29 @@ automation_framework:
                 severity: "${trigger.severity}"
                 description: "${trigger.description}"
                 affected_services: "${trigger.services}"
-            
+
             - name: "Team Notification"
               action: "notify_team"
               parameters:
                 escalation_policy: "on_call_rotation"
                 channels: ["pagerduty", "slack"]
                 urgency: "high"
-            
+
             - name: "Automated Diagnostics"
               action: "run_diagnostics"
               parameters:
                 checks: ["service_health", "dependency_status", "resource_availability"]
                 timeout: "60s"
-            
+
             - name: "Auto-remediation"
               action: "auto_remediate"
               parameters:
                 actions: ["restart_service", "scale_up", "failover"]
                 conditions: ["service_down", "high_load", "dependency_failure"]
-    
+
     quality_automation:
       description: "Automated workflows for quality assurance"
-      
+
       workflows:
         - name: "Quality Gate Validation"
           trigger: "feature_complete"
@@ -938,13 +938,13 @@ automation_framework:
                   maintainability: "A"
                   reliability: "A"
                   security: "A"
-            
+
             - name: "Test Coverage Analysis"
               action: "analyze_test_coverage"
               parameters:
                 minimum_coverage: 80
                 coverage_types: ["line", "branch", "function"]
-            
+
             - name: "Performance Validation"
               action: "validate_performance"
               parameters:
@@ -952,13 +952,13 @@ automation_framework:
                 acceptance_criteria:
                   response_time: "< 200ms"
                   throughput: "> 1000 rps"
-            
+
             - name: "Security Assessment"
               action: "security_assessment"
               parameters:
                 scans: ["sast", "dast", "dependency_check"]
                 severity_threshold: "medium"
-            
+
             - name: "Quality Report Generation"
               action: "generate_quality_report"
               parameters:
@@ -969,7 +969,7 @@ automation_framework:
 # TypeScript Implementation Support
 typescript_implementation:
   description: "TypeScript files and interfaces supporting the enhanced framework"
-  
+
   file_structure:
     - path: "/deepagent/framework.ts"
       description: "Core framework interfaces and types"
@@ -983,7 +983,7 @@ typescript_implementation:
       description: "Recursive handover structure types"
     - path: "/deepagent/index.ts"
       description: "Main export barrel file"
-  
+
   key_interfaces:
     - "IProject"
     - "IDMAICPhase"
@@ -997,7 +997,7 @@ typescript_implementation:
 # Enhanced Workflow with DMAIC Integration
 enhanced_workflow:
   description: "DeepAgent development workflow enhanced with DMAIC methodology"
-  
+
   phases:
     1_define_planning:
       name: "Define & Planning"
@@ -1023,7 +1023,7 @@ enhanced_workflow:
         - "Stakeholder alignment >= 85%"
         - "Requirements clarity >= 90%"
         - "All SIPOC elements defined"
-    
+
     2_measure_initial_build:
       name: "Measure & Initial Build"
       dmaic_phase: "measure"
@@ -1048,7 +1048,7 @@ enhanced_workflow:
         - "Data collection accuracy >= 95%"
         - "Core functionality working"
         - "Performance within acceptable range"
-    
+
     3_analyze_iterative_development:
       name: "Analyze & Iterative Development"
       dmaic_phase: "analyze"
@@ -1073,7 +1073,7 @@ enhanced_workflow:
         - "Feature adoption rate >= 60%"
         - "Performance improvements >= 20%"
         - "Quality metrics within targets"
-    
+
     4_improve_deployment:
       name: "Improve & Deployment"
       dmaic_phase: "improve"
@@ -1098,7 +1098,7 @@ enhanced_workflow:
         - "Performance improvement magnitude >= 20%"
         - "Deployment success rate >= 95%"
         - "User satisfaction >= 4.0/5.0"
-    
+
     5_control_optimization:
       name: "Control & Optimization"
       dmaic_phase: "control"
@@ -1134,7 +1134,7 @@ advanced_capabilities:
       - "Root cause analysis tools"
       - "Continuous improvement workflows"
       - "Performance optimization algorithms"
-    
+
   performance_management:
     description: "Comprehensive performance management system"
     features:
@@ -1143,7 +1143,7 @@ advanced_capabilities:
       - "Predictive analytics"
       - "Automated alerting and response"
       - "Performance optimization recommendations"
-    
+
   quality_assurance:
     description: "Integrated quality assurance framework"
     features:
@@ -1152,7 +1152,7 @@ advanced_capabilities:
       - "Quality metrics tracking"
       - "Defect prediction models"
       - "Quality improvement workflows"
-    
+
   automation_orchestration:
     description: "Advanced automation and orchestration capabilities"
     features:
@@ -1170,21 +1170,21 @@ enhanced_best_practices:
     - "Validate improvements with statistical significance"
     - "Maintain focus on customer value throughout process"
     - "Document lessons learned for future projects"
-  
+
   kpi_management:
     - "Align KPIs with business objectives and user needs"
     - "Use leading and lagging indicators for balanced view"
     - "Regularly review and adjust KPI targets"
     - "Automate KPI collection and reporting where possible"
     - "Create actionable insights from KPI data"
-  
+
   automation_strategy:
     - "Start with high-value, repetitive tasks for automation"
     - "Implement gradual automation to minimize risk"
     - "Monitor automated processes for effectiveness"
     - "Maintain human oversight for critical decisions"
     - "Continuously improve automation based on feedback"
-  
+
   handover_management:
     - "Use recursive structure to ensure complete knowledge transfer"
     - "Validate handover completeness at each level"
@@ -1207,7 +1207,7 @@ enhanced_examples:
       - "Performance monitoring and alerting"
       - "User behavior analysis and optimization"
     initial_prompt: "Create an enterprise dashboard with real-time KPI tracking, DMAIC process integration, and automated performance optimization"
-  
+
   process_improvement_app:
     description: "Application focused on process improvement and optimization"
     dmaic_focus: "Complete DMAIC lifecycle management"
@@ -1230,46 +1230,45 @@ enhanced_checklist:
     - "[ ] SIPOC diagram documented"
     - "[ ] Stakeholder alignment achieved (>= 85%)"
     - "[ ] Success criteria clearly defined"
-  
+
   dmaic_measure:
     - "[ ] KPI tracking system implemented"
     - "[ ] Baseline measurements established"
     - "[ ] Data collection automation configured"
     - "[ ] Measurement system validated (>= 95% accuracy)"
     - "[ ] Performance monitoring dashboards created"
-  
+
   dmaic_analyze:
     - "[ ] Statistical analysis completed"
     - "[ ] Root causes identified and validated"
     - "[ ] Improvement opportunities prioritized"
     - "[ ] Hypothesis testing performed"
     - "[ ] Analysis accuracy verified (>= 90%)"
-  
+
   dmaic_improve:
     - "[ ] Improvement solutions designed"
     - "[ ] Pilot implementations completed"
     - "[ ] Statistical validation performed"
     - "[ ] Improvements scaled successfully"
     - "[ ] Performance gains achieved (>= 20%)"
-  
+
   dmaic_control:
     - "[ ] Control systems implemented"
     - "[ ] Standard operating procedures created"
     - "[ ] Continuous improvement processes established"
     - "[ ] Process stability achieved (>= 95%)"
     - "[ ] Knowledge transfer completed"
-  
+
   automation_implementation:
     - "[ ] Automation workflows designed and tested"
     - "[ ] Event triggers configured and validated"
     - "[ ] Error handling and recovery implemented"
     - "[ ] Performance monitoring for automation enabled"
     - "[ ] Automation effectiveness measured and optimized"
-  
+
   kpi_management:
     - "[ ] KPI framework implemented across all categories"
     - "[ ] Automated data collection configured"
     - "[ ] Real-time dashboards created and accessible"
     - "[ ] Alert thresholds set and tested"
     - "[ ] Regular KPI review process established"
-

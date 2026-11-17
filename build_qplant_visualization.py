@@ -12,7 +12,6 @@ import yaml
 from renderers.mathml_renderer import MathMLRenderer
 from renderers.process_flow_renderer import ProcessFlowRenderer
 
-
 REPO_ROOT = Path(__file__).resolve().parent
 CONTENT_DIR = REPO_ROOT / "content" / "qplant"
 DEFAULT_OUTPUT_PATH = REPO_ROOT / "dist" / "qplant_visualization.html"
@@ -48,7 +47,9 @@ def _render_thermodynamics(thermodynamics_document: Mapping[str, object]) -> str
         )
         display = equation.get("display")
         display_markup = (
-            f'<p class="equation-display">{escape(str(display))}</p>' if isinstance(display, str) else ""
+            f'<p class="equation-display">{escape(str(display))}</p>'
+            if isinstance(display, str)
+            else ""
         )
         rendered.append(
             f"<article><h3>{escape(str(equation['name']))}</h3>{display_markup}{mathml}</article>"

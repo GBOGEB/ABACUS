@@ -1,4 +1,5 @@
 """Validate bounded GitHub issue burndown without inventing causal-root credit."""
+
 from __future__ import annotations
 
 import json
@@ -17,9 +18,10 @@ REPOS = (
 def validate(doc: dict) -> dict:
     if doc.get("schema") != SCHEMA:
         raise ValueError("unrecognized BD census schema")
-    if doc.get("merge_admission") != "HOLD" or doc.get(
-        "authority_transfer"
-    ) is not False:
+    if (
+        doc.get("merge_admission") != "HOLD"
+        or doc.get("authority_transfer") is not False
+    ):
         raise ValueError("unauthorized admission/authority promotion")
     start, end = doc["baseline"], doc["latest"]
     before = start.get("ABACUS_open_issues")
@@ -35,9 +37,10 @@ def validate(doc: dict) -> dict:
         raise ValueError("four-repo population mismatch")
     if end.get("global_all_repo_total") is not None:
         raise ValueError("four repo scope cannot imply global completion")
-    if end.get("canonical_engineering_roots_open") is not None or end.get(
-        "canonical_engineering_roots_closed"
-    ) is not None:
+    if (
+        end.get("canonical_engineering_roots_open") is not None
+        or end.get("canonical_engineering_roots_closed") is not None
+    ):
         raise ValueError("GitHub issues cannot be certified causal roots")
     closed = doc["closure_evidence"]
     duplicates = closed["nine_this_pulse"]
@@ -49,9 +52,11 @@ def validate(doc: dict) -> dict:
     for x in duplicates:
         if x.get("state") != "closed" or x.get("state_reason") != "duplicate":
             raise ValueError("false duplicate ticket disposition")
-        if x.get("engineering_root_credit") != 0 or x.get(
-            "canonical_issue"
-        ) != 1885 or x.get("source_root_status") != "OPEN":
+        if (
+            x.get("engineering_root_credit") != 0
+            or x.get("canonical_issue") != 1885
+            or x.get("source_root_status") != "OPEN"
+        ):
             raise ValueError("duplicate ticket promoted to engineering fix")
         if x.get("historical_broken_hrefs") not in (16, 52):
             raise ValueError("unobserved historical scan regime")
@@ -65,18 +70,17 @@ def validate(doc: dict) -> dict:
     if sum(x["historical_broken_hrefs"] == 16 for x in duplicates) != 4:
         raise ValueError("lost historical 16-link regime")
     for x in completed:
-        if x.get("state_reason") != "completed" or x.get(
-            "proven_engineering_root_closure"
-        ) is not None:
+        if (
+            x.get("state_reason") != "completed"
+            or x.get("proven_engineering_root_closure") is not None
+        ):
             raise ValueError("completed issue promoted without RCA")
     if after - before != end["ABACUS_issue_count_delta"] or (
         before - after != len(duplicates) + len(completed)
     ):
         raise ValueError("issue-count change does not reconcile")
     ages = end["ABACUS_issue_ages"]
-    if sum(ages.values()) != after or sum(
-        start["ABACUS_age_bins"].values()
-    ) != before:
+    if sum(ages.values()) != after or sum(start["ABACUS_age_bins"].values()) != before:
         raise ValueError("ageing cohort denominator mismatch")
     repair = closed["source_repair_head"]
     if len(repair) != 40 or not all(c in "0123456789abcdef" for c in repair):
@@ -98,9 +102,7 @@ def validate(doc: dict) -> dict:
 if __name__ == "__main__":
     root = Path(__file__).resolve().parents[1]
     obj = json.loads(
-        (root / "triage/ABACUS_BD_PULSE2_20261017.json").read_text(
-            encoding="utf-8"
-        )
+        (root / "triage/ABACUS_BD_PULSE2_20261017.json").read_text(encoding="utf-8")
     )
     print(json.dumps(validate(obj), indent=2, sort_keys=True))
     sys.exit(0)

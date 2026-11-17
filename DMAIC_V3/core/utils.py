@@ -9,18 +9,20 @@ import json
 import logging
 import os
 import shutil
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
-from datetime import datetime
 
 
-def setup_logger(name: str, log_file: Optional[Path] = None, level: int = logging.INFO) -> logging.Logger:
+def setup_logger(
+    name: str, log_file: Optional[Path] = None, level: int = logging.INFO
+) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(level)
 
     formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
 
     console_handler = logging.StreamHandler()
@@ -41,7 +43,7 @@ def compute_hash(data: Union[str, bytes, Dict, List]) -> str:
         data = json.dumps(data, sort_keys=True)
 
     if isinstance(data, str):
-        data = data.encode('utf-8')
+        data = data.encode("utf-8")
 
     return hashlib.sha256(data).hexdigest()
 
@@ -62,9 +64,9 @@ def ensure_directory(path: Path) -> Path:
 def safe_write_json(data: Any, file_path: Path, indent: int = 2) -> bool:
     try:
         file_path.parent.mkdir(parents=True, exist_ok=True)
-        temp_path = file_path.with_suffix('.tmp')
+        temp_path = file_path.with_suffix(".tmp")
 
-        with open(temp_path, 'w', encoding='utf-8') as f:
+        with open(temp_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=indent, default=str)
 
         shutil.move(str(temp_path), str(file_path))
@@ -81,7 +83,7 @@ def safe_read_json(file_path: Path) -> Optional[Dict]:
         if not file_path.exists():
             return None
 
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             return json.load(f)
     except Exception as e:
         logging.error(f"Failed to read JSON from {file_path}: {e}")
@@ -155,8 +157,8 @@ def copy_file_with_backup(src: Path, dst: Path, backup_suffix: str = ".bak") -> 
 def archive_directory(src_dir: Path, archive_path: Path) -> bool:
     try:
         archive_path.parent.mkdir(parents=True, exist_ok=True)
-        base_name = str(archive_path.with_suffix(''))
-        shutil.make_archive(base_name, 'zip', src_dir)
+        base_name = str(archive_path.with_suffix(""))
+        shutil.make_archive(base_name, "zip", src_dir)
         return True
     except Exception as e:
         logging.error(f"Failed to archive {src_dir}: {e}")
@@ -195,13 +197,13 @@ def parse_timestamp(timestamp_str: str) -> Optional[datetime]:
 def truncate_string(s: str, max_length: int = 100, suffix: str = "...") -> str:
     if len(s) <= max_length:
         return s
-    return s[:max_length - len(suffix)] + suffix
+    return s[: max_length - len(suffix)] + suffix
 
 
 def sanitize_filename(filename: str) -> str:
     invalid_chars = '<>:"/\\|?*'
     for char in invalid_chars:
-        filename = filename.replace(char, '_')
+        filename = filename.replace(char, "_")
     return filename
 
 

@@ -8,21 +8,14 @@ on:
       - '18_ARTIFACTS_ANALYSIS/artifacts/ARTEFACT_TYPE_GROUPING/PYTHON_code/**'
       - '.github/workflows/dmaic-v3-cognitive-cicd.yml'
   workflow_dispatch:
-    inputs:
-      deployment_target:
-        description: 'Deployment target'
-        required: true
-        default: 'staging'
-        type: choice
-        options:
-          - staging
-          - production
 
 env:
-  PYTHON_VERSION: '3.11'
+  PYTHON_VERSION: '3.14'
   WORKSPACE_ROOT: ${{ github.workspace }}
-  ARIANA_PATH: '18_ARTIFACTS_ANALYSIS/artifacts/ARTEFACT_TYPE_GROUPING/PYTHON_code'
-  DMAIC_PATH: '13_CORE_SYSTEMS/DMAIC/DMAIC_V3'
+  # Bridged: the original 18_ARTIFACTS_ANALYSIS/... and 13_CORE_SYSTEMS/DMAIC/DMAIC_V3 paths never
+  # existed. ARIANA agent init lives in DMAIC_V3/core/dow_ariana_integration.py; DMAIC V3 is DMAIC_V3/.
+  ARIANA_PATH: 'DMAIC_V3/core/dow_ariana_integration.py'
+  DMAIC_PATH: 'DMAIC_V3'
 
 jobs:
   # ============================================================================
@@ -33,21 +26,21 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       validation_status: ${{ steps.validate.outputs.status }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pyyaml
-      
+
       - name: Run PHASE0 Validation
         id: validate
         run: |
@@ -55,26 +48,26 @@ jobs:
           python -c "
           import sys
           from pathlib import Path
-          
+
           print('[PHASE0] Starting validation gate...')
-          
+
           # Check critical paths
           ariana_path = Path('${{ env.ARIANA_PATH }}')
           dmaic_path = Path('${{ env.DMAIC_PATH }}')
-          
+
           if not ariana_path.exists():
               print(f'[ERROR] ARIANA path not found: {ariana_path}')
               sys.exit(1)
-          
+
           if not dmaic_path.exists():
               print(f'[ERROR] DMAIC path not found: {dmaic_path}')
               sys.exit(1)
-          
+
           print('[OK] PHASE0 validation passed')
-          print('::set-output name=status::passed')
           "
+          echo "status=passed" >> "$GITHUB_OUTPUT"
           echo "::endgroup::"
-      
+
       - name: Upload validation report
         uses: actions/upload-artifact@v7
         with:
@@ -93,43 +86,52 @@ jobs:
     if: needs.phase0-validation.outputs.validation_status == 'passed'
     outputs:
       ariana_status: ${{ steps.init-ariana.outputs.status }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
-      - name: Install ARIANA dependencies
+
+      - name: Install dependencies
         run: |
-          if [ -f "${{ env.ARIANA_PATH }}/ariana_requirements.txt" ]; then
-            pip install -r ${{ env.ARIANA_PATH }}/ariana_requirements.txt
-          fi
-      
-      - name: Initialize ARIANA
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      # Bridged: was a presence check of a never-built ariana_init.py that fell back to "using mock"
+      # and always passed. Now runs the real ARIANA agent initialization in
+      # DMAIC_V3/core/dow_ariana_integration.py (DOWArianaIntegration writes DOW/ariana_health.json
+      # and DOW/ariana_sync_config.json) and fails unless the agent health reports active.
+      - name: Initialize ARIANA (DMAIC_V3/core/dow_ariana_integration.py)
         id: init-ariana
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           echo "::group::ARIANA Initialization"
           python -c "
+          import json
           import sys
-          from pathlib import Path
-          
-          print('[ARIANA] Initializing agent...')
-          
-          ariana_path = Path('${{ env.ARIANA_PATH }}')
-          ariana_init = ariana_path / 'ariana_init.py'
-          
-          if ariana_init.exists():
-              print('[OK] ARIANA initialization script found')
-          else:
-              print('[WARNING] ARIANA init script not found, using mock')
-          
-          print('[OK] ARIANA agent initialized')
-          print('::set-output name=status::initialized')
+
+          from DMAIC_V3.config import DMAICConfig
+          from DMAIC_V3.core.state import StateManager
+          from DMAIC_V3.core.handover_bridge import HandoverBridge
+          from DMAIC_V3.core.test_system_bridge import TestSystemBridge
+          from DMAIC_V3.core.dow_ariana_integration import DOWArianaIntegration
+
+          config = DMAICConfig()
+          state = StateManager(config.paths.state_dir)
+          bridge = TestSystemBridge(config, state, HandoverBridge(config, state))
+          integration = DOWArianaIntegration(config, state, bridge)
+          health = json.loads(integration.ariana_health_file.read_text(encoding='utf-8'))
+          if health.get('status') != 'active':
+              print(f'[ERROR] ARIANA health status is {health.get(\"status\")!r}')
+              sys.exit(1)
+          print(f'[OK] ARIANA agent initialized: {integration.ariana_health_file}')
           "
+          echo "status=initialized" >> "$GITHUB_OUTPUT"
           echo "::endgroup::"
 
   # ============================================================================
@@ -142,61 +144,56 @@ jobs:
     if: needs.ariana-initialization.outputs.ariana_status == 'initialized'
     outputs:
       temporal_status: ${{ steps.init-temporal.outputs.status }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
-      - name: Initialize Temporal Runner
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      # Bridged: was a presence check that fell back to "using mock" and always passed. Now
+      # requires DMAIC_V3/temporal_phase_runner.py and proves it loads (imports every phase) via --help.
+      - name: Initialize Temporal Runner (DMAIC_V3/temporal_phase_runner.py)
         id: init-temporal
         run: |
           echo "::group::Temporal Runner Initialization"
-          python -c "
-          import sys
-          from pathlib import Path
-          
-          print('[TEMPORAL] Initializing phase runner...')
-          
-          temporal_path = Path('${{ env.DMAIC_PATH }}') / 'temporal_phase_runner.py'
-          
-          if temporal_path.exists():
-              print('[OK] Temporal Runner found')
-          else:
-              print('[WARNING] Temporal Runner not found, using mock')
-          
-          print('[OK] Temporal Phase Runner initialized')
-          print('::set-output name=status::initialized')
-          "
+          python "${{ env.DMAIC_PATH }}/temporal_phase_runner.py" --help
+          echo "status=initialized" >> "$GITHUB_OUTPUT"
           echo "::endgroup::"
 
   # ============================================================================
   # PHASE 3: Cognitive Loop Integration (CRITICAL - P0)
   # ============================================================================
   cognitive-integration:
-    name: 'P0: Cognitive Loop Integration'
+    # SPEC: core/dmaic_cognitive_orchestrator.py, core/cognitive_injection_registry.py and
+    # core/ariana_temporal_sync.py were never built. Stays red until they exist.
+    name: 'SPEC (never built): P0 Cognitive Loop Integration'
     runs-on: ubuntu-latest
     needs: [ariana-initialization, temporal-initialization]
     outputs:
       cognitive_status: ${{ steps.integrate.outputs.status }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install dependencies
         run: |
           pip install pyyaml
-      
+
       - name: Integrate Cognitive Loop
         id: integrate
         run: |
@@ -205,9 +202,10 @@ jobs:
           python -c "
           import sys
           from pathlib import Path
-          
+
           print('[COGNITIVE] Integrating cognitive loop...')
-          
+          print('SPEC: the three modules below were never built; this check stays red until they exist.')
+
           # Check for cognitive orchestrator
           cognitive_path = Path('core/dmaic_cognitive_orchestrator.py')
           if cognitive_path.exists():
@@ -215,7 +213,7 @@ jobs:
           else:
               print('[ERROR] Cognitive orchestrator not found')
               sys.exit(1)
-          
+
           # Check for injection registry
           registry_path = Path('core/cognitive_injection_registry.py')
           if registry_path.exists():
@@ -223,7 +221,7 @@ jobs:
           else:
               print('[ERROR] Injection registry not found')
               sys.exit(1)
-          
+
           # Check for sync system
           sync_path = Path('core/ariana_temporal_sync.py')
           if sync_path.exists():
@@ -231,39 +229,40 @@ jobs:
           else:
               print('[ERROR] Sync system not found')
               sys.exit(1)
-          
+
           print('[OK] Cognitive loop integrated')
-          print('::set-output name=status::integrated')
           "
+          echo "status=integrated" >> "$GITHUB_OUTPUT"
           echo "::endgroup::"
 
   # ============================================================================
   # PHASE 4: Test Suite Execution (HIGH - P1)
   # ============================================================================
   test-suite:
-    name: 'P1: Test Suite Execution'
+    # SPEC: DMAIC_V3/test_cognitive_orchestrator.py was never built.
+    name: 'SPEC (never built): P1 Test Suite - test_cognitive_orchestrator.py'
     runs-on: ubuntu-latest
     needs: cognitive-integration
     if: needs.cognitive-integration.outputs.cognitive_status == 'integrated'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install dependencies
         run: |
           pip install pytest pytest-asyncio pytest-cov pytest-benchmark pyyaml
-      
+
       - name: Run cognitive orchestrator tests
         run: |
           cd ${{ env.DMAIC_PATH }}
           pytest --benchmark-disable test_cognitive_orchestrator.py -v --cov=core --cov-report=xml --cov-report=term
-      
+
       - name: Upload coverage
         uses: codecov/codecov-action@v7
         with:
@@ -275,29 +274,30 @@ jobs:
   # PHASE 5: Generate Injection Registry (HIGH - P1)
   # ============================================================================
   generate-registry:
-    name: 'P1: Generate Injection Registry'
+    # SPEC: DMAIC_V3/core/cognitive_injection_registry.py was never built.
+    name: 'SPEC (never built): P1 Generate Injection Registry'
     runs-on: ubuntu-latest
     needs: test-suite
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install dependencies
         run: |
           pip install pyyaml
-      
+
       - name: Generate registry files
         run: |
           cd ${{ env.DMAIC_PATH }}
           mkdir -p .dow_cognitive
           python core/cognitive_injection_registry.py
-      
+
       - name: Upload registry artifacts
         uses: actions/upload-artifact@v7
         with:
@@ -308,123 +308,18 @@ jobs:
             ${{ env.DMAIC_PATH }}/.dow_cognitive/deployment_plan.json
 
   # ============================================================================
-  # PHASE 6: Staging Deployment (HIGH - P1)
-  # ============================================================================
-  deploy-staging:
-    name: 'P1: Deploy to Staging'
-    runs-on: ubuntu-latest
-    needs: [test-suite, generate-registry]
-    if: github.ref == 'refs/heads/develop' || github.event.inputs.deployment_target == 'staging'
-    environment:
-      name: staging
-      url: https://staging.dmaic-v3.example.com
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-      
-      - name: Download registry artifacts
-        uses: actions/download-artifact@v8.0.2
-        with:
-          name: injection-registry
-          path: .dow_cognitive
-      
-      - name: Deploy to staging
-        run: |
-          echo "::group::Staging Deployment"
-          echo "[DEPLOY] Deploying to staging environment..."
-          echo "[DEPLOY] Registry files:"
-          ls -la .dow_cognitive/
-          echo "[OK] Staging deployment complete"
-          echo "::endgroup::"
-      
-      - name: Run smoke tests
-        run: |
-          echo "[TEST] Running staging smoke tests..."
-          echo "[OK] Smoke tests passed"
-
-  # ============================================================================
-  # PHASE 7: Production Deployment (CRITICAL - P0)
-  # ============================================================================
-  deploy-production:
-    name: 'P0: Deploy to Production'
-    runs-on: ubuntu-latest
-    needs: deploy-staging
-    if: github.ref == 'refs/heads/main' || github.event.inputs.deployment_target == 'production'
-    environment:
-      name: production
-      url: https://dmaic-v3.example.com
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-      
-      - name: Download registry artifacts
-        uses: actions/download-artifact@v8.0.2
-        with:
-          name: injection-registry
-          path: .dow_cognitive
-      
-      - name: GOD-Level Validation
-        run: |
-          echo "::group::GOD-Level Production Validation"
-          python -c "
-          import json
-          from pathlib import Path
-          
-          print('[GOD] Running production validation...')
-          
-          # Load deployment plan
-          plan_path = Path('.dow_cognitive/deployment_plan.json')
-          if not plan_path.exists():
-              print('[ERROR] Deployment plan not found')
-              exit(1)
-          
-          with open(plan_path) as f:
-              plan = json.load(f)
-          
-          # Verify critical (P0) injection points
-          phase1 = plan['phases'][0]
-          if phase1['priority'] != 'P0':
-              print('[ERROR] Phase 1 is not P0 priority')
-              exit(1)
-          
-          print(f'[OK] Found {phase1[\"count\"]} critical injection points')
-          print('[OK] GOD-level validation passed')
-          "
-          echo "::endgroup::"
-      
-      - name: Deploy to production
-        run: |
-          echo "::group::Production Deployment"
-          echo "[DEPLOY] Deploying to production environment..."
-          echo "[DEPLOY] Registry files:"
-          ls -la .dow_cognitive/
-          echo "[OK] Production deployment complete"
-          echo "::endgroup::"
-      
-      - name: Run production smoke tests
-        run: |
-          echo "[TEST] Running production smoke tests..."
-          echo "[OK] Production smoke tests passed"
-      
-      - name: Notify deployment
-        run: |
-          echo "::notice::Production deployment successful - Cognitive Loop active"
-
-  # ============================================================================
   # PHASE 8: Update Tracking Systems (MEDIUM - P2)
   # ============================================================================
   update-tracking:
     name: 'P2: Update Tracking Systems'
     runs-on: ubuntu-latest
-    needs: [deploy-staging, deploy-production]
+    needs: generate-registry
     if: always()
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Update workstream manifest
         run: |
           echo "::group::Update Tracking"
@@ -432,13 +327,13 @@ jobs:
           import json
           from datetime import datetime
           from pathlib import Path
-          
+
           print('[TRACKING] Updating workstream manifest...')
-          
+
           manifest_path = Path('${{ env.DMAIC_PATH }}/WORKSTREAM_MANIFEST_v2.0.0.md')
           if manifest_path.exists():
               print('[OK] Manifest found')
-          
+
           # Update tracking data
           tracking_data = {
               'last_deployment': datetime.now().isoformat(),
@@ -446,16 +341,16 @@ jobs:
               'commit': '${{ github.sha }}',
               'branch': '${{ github.ref_name }}',
           }
-          
+
           tracking_path = Path('.dow_cognitive/tracking.json')
           tracking_path.parent.mkdir(parents=True, exist_ok=True)
           with open(tracking_path, 'w') as f:
               json.dump(tracking_data, f, indent=2)
-          
+
           print('[OK] Tracking updated')
           "
           echo "::endgroup::"
-      
+
       - name: Upload tracking data
         uses: actions/upload-artifact@v7
         with:

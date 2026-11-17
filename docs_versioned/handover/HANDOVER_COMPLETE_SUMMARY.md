@@ -170,10 +170,10 @@ Phase 5 → Knowledge packs → Temporal DB (final)
 class DebugTelemetry:
     def capture_execution_trace(self):
         # Log function calls, timing
-    
+
     def identify_bottlenecks(self):
         # Detect slow operations
-    
+
     def track_errors(self):
         # Classify error patterns
 ```
@@ -316,7 +316,7 @@ Master_Input/
    ```bash
    # Human-readable overview
    cat HANDOVER_INDEX.yaml
-   
+
    # Machine-readable details
    python -m json.tool HANDOVER_INDEX.json
    ```
@@ -331,7 +331,7 @@ Master_Input/
    ```bash
    # Phase 1 results
    ls -lh DMAIC_V3_OUTPUT/iteration_1/phase1_define/
-   
+
    # Phase 2 results
    ls -lh DMAIC_V3_OUTPUT/iteration_1/phase2_measure/
    ```

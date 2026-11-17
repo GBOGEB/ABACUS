@@ -69,10 +69,10 @@ https://github.com/GBOGEB/ABACUS/compare/main...cicd/recursive-dmaic-v0.4.0
 🚀 Integrate Recursive DMAIC v0.4.0 CI/CD with DOW Pipeline
 ```
 
-**Description**: 
+**Description**:
 Copy content from `.github/PULL_REQUEST_TEMPLATE.md`
 
-**Labels**: 
+**Labels**:
 - `enhancement`
 - `ci/cd`
 - `integration`

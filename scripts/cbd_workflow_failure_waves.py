@@ -3,33 +3,52 @@
 Observational only. Workflow names are *symptoms*, never causal root proof.
 No runner launch, security waiver, authoritative BD mutation or main admission.
 """
+
 import argparse
 import hashlib
 import json
 from collections import defaultdict
 from pathlib import Path
 
-FAMILIES={
-    "CI Workflow Governance":("GOVERNANCE_POLICY","ci/governance/","P0"),
-    "a10-guard":("A10_SECURITY_REVIEW","ci/governance/","P0"),
-    "Bandit Disjoint Census":("BANDIT_CENSUS","tools/everred_v3/","P0"),
-    "CI/CD Test Suite":("INTEGRATED_TEST_SUITE","tests/","P1"),
-    "ABACUS v032 - CI/CD Pipeline":("LEGACY_PIPELINE","ci/","P1"),
-    "CI - ABACUS Matrix":("MATRIX_COMPATIBILITY","DMAIC_V3/","P1"),
-    "Validate Docs (Markdown/YAML/JSON)":("DOCS_LINT","docs/","P2"),
-    "EVERRED V3 Governed Control Plane":("EVERRED_CONTROL","tools/everred_v3/","P1"),
-    "DOW + Recursive DMAIC - Enhanced CI":("DOW_TESTS","tests/","P1"),
-    "DMAIC V3 Test Suite - Continuous Integration":("DMAIC_TESTS","DMAIC_V3/tests/","P1"),
-    "DMAIC V3 Enterprise CI":("ENTERPRISE_MATRIX","DMAIC_V3/","P1"),
+FAMILIES = {
+    "CI Workflow Governance": ("GOVERNANCE_POLICY", "ci/governance/", "P0"),
+    "a10-guard": ("A10_SECURITY_REVIEW", "ci/governance/", "P0"),
+    "Bandit Disjoint Census": ("BANDIT_CENSUS", "tools/everred_v3/", "P0"),
+    "CI/CD Test Suite": ("INTEGRATED_TEST_SUITE", "tests/", "P1"),
+    "ABACUS v032 - CI/CD Pipeline": ("LEGACY_PIPELINE", "ci/", "P1"),
+    "CI - ABACUS Matrix": ("MATRIX_COMPATIBILITY", "DMAIC_V3/", "P1"),
+    "Validate Docs (Markdown/YAML/JSON)": ("DOCS_LINT", "docs/", "P2"),
+    "EVERRED V3 Governed Control Plane": ("EVERRED_CONTROL", "tools/everred_v3/", "P1"),
+    "DOW + Recursive DMAIC - Enhanced CI": ("DOW_TESTS", "tests/", "P1"),
+    "DMAIC V3 Test Suite - Continuous Integration": (
+        "DMAIC_TESTS",
+        "DMAIC_V3/tests/",
+        "P1",
+    ),
+    "DMAIC V3 Enterprise CI": ("ENTERPRISE_MATRIX", "DMAIC_V3/", "P1"),
 }
-P0={"GOVERNANCE_POLICY","A10_SECURITY_REVIEW","BANDIT_CENSUS"}
-FAMILIES.update({
-    "Semgrep": ("SEMGREP_SECURITY", "UNOWNED", "P0"),
-    "OSV-Scanner": ("OSV_SECURITY", "UNOWNED", "P0"),
-    "DMAIC V3 Bridge Integration - Test System": ("DMAIC_BRIDGE", "DMAIC_V3/core/", "P1"),
-})
+P0 = {"GOVERNANCE_POLICY", "A10_SECURITY_REVIEW", "BANDIT_CENSUS"}
+FAMILIES.update(
+    {
+        "Semgrep": ("SEMGREP_SECURITY", "UNOWNED", "P0"),
+        "OSV-Scanner": ("OSV_SECURITY", "UNOWNED", "P0"),
+        "DMAIC V3 Bridge Integration - Test System": (
+            "DMAIC_BRIDGE",
+            "DMAIC_V3/core/",
+            "P1",
+        ),
+    }
+)
+
+
 def sha256(value):
-    return hashlib.sha256(json.dumps(value,sort_keys=True,separators=(",",":"),ensure_ascii=True).encode()).hexdigest()
+    return hashlib.sha256(
+        json.dumps(
+            value, sort_keys=True, separators=(",", ":"), ensure_ascii=True
+        ).encode()
+    ).hexdigest()
+
+
 def _valid_sha(value):
     return (
         isinstance(value, str)
@@ -127,7 +146,10 @@ def validate(d):
         # A rerun can change attempt/conclusion, never the GitHub run's
         # source SHA or workflow. PR aliases for the same run remain allowed.
         immutable = (row["sha"], row["workflow"])
-        if run_id in immutable_run_identity and immutable_run_identity[run_id] != immutable:
+        if (
+            run_id in immutable_run_identity
+            and immutable_run_identity[run_id] != immutable
+        ):
             raise ValueError("conflicting native run provenance across attempts")
         immutable_run_identity[run_id] = immutable
 
@@ -226,9 +248,7 @@ def produce(d):
             ),
         )
         unknown = sum(item["attempt"] is None for item in rows)
-        unique_run_attempts = {
-            (item["run_id"], item["attempt"]) for item in rows
-        }
+        unique_run_attempts = {(item["run_id"], item["attempt"]) for item in rows}
         ledger.append(
             {
                 "candidate_family": family,
@@ -240,9 +260,7 @@ def produce(d):
                     len(unique_run_attempts) if not unknown else None
                 ),
                 "unknown_run_attempt_associations": unknown,
-                "distinct_failed_run_ids": len(
-                    {item["run_id"] for item in rows}
-                ),
+                "distinct_failed_run_ids": len({item["run_id"] for item in rows}),
                 "root_confirmed": False,
                 "first_red_confirmed": False,
                 "repair_committed": False,
@@ -275,9 +293,7 @@ def produce(d):
             path.startswith(lease) or lease.startswith(path) for lease in leases
         )
         status = (
-            "SERIALIZE_PATH_COLLISION"
-            if collision
-            else "READY_FOR_READER_DIAGNOSTIC"
+            "SERIALIZE_PATH_COLLISION" if collision else "READY_FOR_READER_DIAGNOSTIC"
         )
         if entry["priority"] == "P0":
             status = "HOLD_INDEPENDENT_OWNER_REVIEW"
@@ -290,9 +306,7 @@ def produce(d):
                 "path_lease_candidate": path,
                 "scheduler_status": status,
                 "source_mutation_authorized": False,
-                "predicted_unblock_upper_bound_prs": entry[
-                    "unique_prs_affected"
-                ],
+                "predicted_unblock_upper_bound_prs": entry["unique_prs_affected"],
                 "causally_predicted_unblocked_prs": None,
             }
         )
@@ -319,9 +333,7 @@ def produce(d):
                 len(distinct_attempts) if unknown_attempts == 0 else None
             ),
             "unknown_run_attempt_associations": unknown_attempts,
-            "distinct_failed_run_ids": len(
-                {row["run_id"] for row in failure_runs}
-            ),
+            "distinct_failed_run_ids": len({row["run_id"] for row in failure_runs}),
             "duplicate_failed_run_associations": (
                 len(failure_runs) - len(failures_distinct)
             ),

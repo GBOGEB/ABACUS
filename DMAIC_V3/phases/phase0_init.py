@@ -355,7 +355,7 @@ class Phase0Init:
 
         print(f"  Output root: {output_dirs['root']}")
         print(f"  Iteration directory: iteration_{iteration}")
-        print(f"  Phase directories: 6 created [OK]")
+        print("  Phase directories: 6 created [OK]")
 
         return {
             'output_root': str(output_dirs['root']),
@@ -409,8 +409,8 @@ class Phase0Init:
             print("="*80)
             print("PHASE 0 SUMMARY")
             print("="*80)
-            print(f"[OK] Environment validated")
-            print(f"[OK] 12-agent architecture initialized")
+            print("[OK] Environment validated")
+            print("[OK] 12-agent architecture initialized")
             print(f"[OK] Canonical files checked: {sum(1 for f in results['canonical_files'].values() if f['exists'])}/{len(results['canonical_files'])}")
             change_count = results.get('changes', {}).get('change_count', 0)
             print(f"[OK] Changes detected: {change_count}")
@@ -442,6 +442,6 @@ if __name__ == "__main__":
     success, results = phase0.execute(iteration=1, enable_idempotency=True)
 
     if success:
-        print(f"[OK] Phase 0 completed successfully")
+        print("[OK] Phase 0 completed successfully")
     else:
         print(f"[FAIL] Phase 0 failed: {results.get('error')}")

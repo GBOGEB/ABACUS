@@ -5,10 +5,11 @@ Therefore a timestamp *alone* does not prove a runner started. All metrics
 which govern scale must be from a complete terminal job population with
 run/attempt identity and valid monotonic timestamps.
 """
+
 from __future__ import annotations
 
-from datetime import datetime
 import re
+from datetime import datetime
 from typing import Any
 
 SHA = re.compile(r"^[0-9a-f]{40}$")
@@ -22,7 +23,7 @@ def _seconds(start: Any, stop: Any) -> float | None:
         b = datetime.fromisoformat(stop.replace("Z", "+00:00"))
         if a.tzinfo is None or b.tzinfo is None:
             return None
-        value = (b-a).total_seconds()
+        value = (b - a).total_seconds()
         return value if value >= 0 else None
     except (TypeError, ValueError, OverflowError):
         return None
@@ -36,7 +37,11 @@ def _p95(values: list[float]) -> float | None:
 
 
 def summarize_jobs(
-    jobs: list[dict], *, run_id: int, head_sha: str, attempt: int,
+    jobs: list[dict],
+    *,
+    run_id: int,
+    head_sha: str,
+    attempt: int,
     total_count: int | None,
 ) -> dict:
     """Compute proof-gated queue/exec statistics without authority promotion."""
@@ -66,10 +71,16 @@ def summarize_jobs(
             queue.append(queued)
         if executed is not None:
             execution.append(executed)
-    identity_valid = all(type(x) is int and x > 0 for x in ids) and len(ids) == len(set(ids))
+    identity_valid = all(type(x) is int and x > 0 for x in ids) and len(ids) == len(
+        set(ids)
+    )
     population_complete = (
-        total_count is not None and total_count > 0 and len(jobs) == total_count
-        and identity_valid and len(queue) == total_count and len(execution) == total_count
+        total_count is not None
+        and total_count > 0
+        and len(jobs) == total_count
+        and identity_valid
+        and len(queue) == total_count
+        and len(execution) == total_count
     )
     if population_complete:
         state = "COMPLETE_TERMINAL_JOB_POPULATION"
@@ -81,15 +92,20 @@ def summarize_jobs(
         state = "QUEUED_OR_TIMESTAMP_INCOMPLETE"
     return {
         "schema": "codepurple.native_runner_queue.v1",
-        "run_id": run_id, "source_sha": head_sha, "run_attempt": attempt,
-        "jobs_observed": len(jobs), "jobs_expected": total_count,
+        "run_id": run_id,
+        "source_sha": head_sha,
+        "run_attempt": attempt,
+        "jobs_observed": len(jobs),
+        "jobs_expected": total_count,
         "statuses": dict(sorted(statuses.items())),
         "terminal_queue_samples": len(queue),
         "terminal_execution_samples": len(execution),
         "evidence_state": state,
         "queue_p95_seconds": _p95(queue) if population_complete else None,
         "execution_p95_seconds": _p95(execution) if population_complete else None,
-        "queue_p95_partial_diagnostic_seconds": _p95(queue) if not population_complete else None,
+        "queue_p95_partial_diagnostic_seconds": (
+            _p95(queue) if not population_complete else None
+        ),
         "scale_authority": False,
         "authenticated_crew_launch_ids": None,
         "accepted_root_closures": None,

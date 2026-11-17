@@ -49,14 +49,14 @@ class MCPController:
     def __init__(self):
         self.agents = {}
         self.config = self.load_config()
-    
+
     def load_config(self):
         with open('mcp_config.yaml') as f:
             return yaml.safe_load(f)
-    
+
     def register_agent(self, agent_id, agent):
         self.agents[agent_id] = agent
-    
+
     def execute_command(self, command, params):
         # Route command to appropriate agent
         pass
@@ -146,7 +146,7 @@ numpy>=1.24
 1. **MCP Server Not Starting**
    - **Symptom**: IDE shows "MCP server failed to start"
    - **Cause**: Python not in PATH, missing dependencies
-   - **Solution**: 
+   - **Solution**:
      ```bash
      which python  # Verify Python location
      pip install -r requirements.txt  # Install deps
@@ -160,7 +160,7 @@ numpy>=1.24
      ```bash
      # Check logs
      tail -f DMAIC_V3/output/mcp_server.log
-     
+
      # Restart MCP server
      pkill -f mcp_controller.py
      python mcp_controller.py

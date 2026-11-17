@@ -65,19 +65,19 @@
 ### Conceptual Relationships
 
 ```
-[QSYS Presentations] 
+[QSYS Presentations]
         ↓ (extraction)
-[Structured Slide Data] 
+[Structured Slide Data]
         ↓ (analysis)
-[Analysis Reports] 
+[Analysis Reports]
         ↓ (requirements)
-[Framework Templates] 
+[Framework Templates]
         ↓ (enhancement)
-[DMAIC/KPI Templates] 
+[DMAIC/KPI Templates]
         ↓ (implementation)
-[TypeScript Library] 
+[TypeScript Library]
         ↓ (documentation)
-[Framework Summary] 
+[Framework Summary]
         ↓ (handover)
 [Handover Package]
 ```
@@ -182,7 +182,7 @@
 | qsys_analysis_report.md | MD | 67K | slide_dump.json | Technical analysis |
 | QSYS_Analysis_Executive_Summary.md | MD | 6.2K | analysis_report.md | Executive summary |
 
-**Dependencies**: 
+**Dependencies**:
 - `qsys_slide_dump.json` → Extracted from all 19 .pptx files
 - `qsys_analysis_report.md` → Derived from qsys_slide_dump.json
 - `QSYS_Analysis_Executive_Summary.md` → Summarized from qsys_analysis_report.md

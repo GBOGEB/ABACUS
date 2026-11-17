@@ -24,7 +24,12 @@ def test_duplicate_competing_authority_blocks_release_credit():
         "asset_count": 2,
         "assets": [
             asset("ssot/index.json", "ssot", "active_candidate", "index"),
-            asset("schemas/index_copy.json", "schema_or_config", "active_candidate", "index"),
+            asset(
+                "schemas/index_copy.json",
+                "schema_or_config",
+                "active_candidate",
+                "index",
+            ),
         ],
     }
     report = reverse_pressure(census)
@@ -36,7 +41,13 @@ def test_duplicate_competing_authority_blocks_release_credit():
 def test_stale_version_tree_is_warning_not_active_credit():
     census = {
         "asset_count": 1,
-        "assets": [asset("ABACUS-v031/legacy_manifest.yaml", "schema_or_config", "active_candidate")],
+        "assets": [
+            asset(
+                "ABACUS-v031/legacy_manifest.yaml",
+                "schema_or_config",
+                "active_candidate",
+            )
+        ],
     }
     report = reverse_pressure(census)
     assert report["warning_count"] == 1
@@ -60,12 +71,22 @@ def test_stale_markers_match_path_components_not_substrings():
     census = {
         "asset_count": len(stale_paths) + len(active_paths),
         "assets": [
-            *[asset(path, "schema_or_config", "active_candidate") for path in stale_paths],
-            *[asset(path, "source_or_script", "active_candidate") for path in active_paths],
+            *[
+                asset(path, "schema_or_config", "active_candidate")
+                for path in stale_paths
+            ],
+            *[
+                asset(path, "source_or_script", "active_candidate")
+                for path in active_paths
+            ],
         ],
     }
     report = reverse_pressure(census)
-    stale = next(finding for finding in report["findings"] if finding["type"] == "stale_version_tree_or_legacy_material")
+    stale = next(
+        finding
+        for finding in report["findings"]
+        if finding["type"] == "stale_version_tree_or_legacy_material"
+    )
     assert stale["count"] == len(stale_paths)
     assert set(stale["paths"]) == set(stale_paths)
 
@@ -73,7 +94,9 @@ def test_stale_markers_match_path_components_not_substrings():
 def test_generated_authority_collision_blocks():
     census = {
         "asset_count": 1,
-        "assets": [asset("build/generated/ssot_manifest.json", "schema_or_config", "generated")],
+        "assets": [
+            asset("build/generated/ssot_manifest.json", "schema_or_config", "generated")
+        ],
     }
     report = reverse_pressure(census)
     assert report["status"] == "blocked"

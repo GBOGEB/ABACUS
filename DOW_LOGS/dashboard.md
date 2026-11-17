@@ -12,4 +12,3 @@
 - `dow_knowledge_extractor.py`
 - `dow_metadata_injector.py`
 - `dow_recursive_hooks_injector.py`
-

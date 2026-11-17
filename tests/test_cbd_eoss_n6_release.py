@@ -1,4 +1,5 @@
 """W9: rendered EOSS review suite, manifest parity and custody negative tests."""
+
 from __future__ import annotations
 
 import copy
@@ -10,6 +11,7 @@ import pytest
 
 from scripts import cbd_eoss_n6_release as out
 from scripts import cbd_eoss_trajectory as trajectory
+
 # Pytest importlib collection does not guarantee the tests directory is on sys.path.
 # Load the sibling regression fixture from its checkout-bound path, fail closed.
 import importlib.util
@@ -35,19 +37,33 @@ def test_sibling_snapshot_is_loaded_from_checkout_bound_file():
 
 def input_data():
     ledger = trajectory.run(snapshot())
-    native = {"run_id": 39026629552, "run_attempt": 1, "head_sha": SHA,
-              "clock_basis": "NATIVE_JOB_CREATED_STARTED_COMPLETED",
-              "jobs": [{"job_id": i + 1, "run_attempt": 1,
-                        "name": "job" + str(i + 1),
-                        "conclusion": "skipped" if i == 2 else "success",
-                        "queue_seconds": 5 if i != 2 else 0,
-                        "runtime_seconds": None if i == 2 else i + 1,
-                        "first_red_step": None} for i in range(7)]}
-    plan = {"schema": "code-purple.eoss.n6.plan.v1",
-            "authority": {"merge_admission": "HOLD", "security_waiver": False,
-                          "authority_transfer": False},
-            "waves": [{"wave": f"W{i}", "planned_tests_pass_min": 95}
-                      for i in (7, 8, 9)]}
+    native = {
+        "run_id": 39026629552,
+        "run_attempt": 1,
+        "head_sha": SHA,
+        "clock_basis": "NATIVE_JOB_CREATED_STARTED_COMPLETED",
+        "jobs": [
+            {
+                "job_id": i + 1,
+                "run_attempt": 1,
+                "name": "job" + str(i + 1),
+                "conclusion": "skipped" if i == 2 else "success",
+                "queue_seconds": 5 if i != 2 else 0,
+                "runtime_seconds": None if i == 2 else i + 1,
+                "first_red_step": None,
+            }
+            for i in range(7)
+        ],
+    }
+    plan = {
+        "schema": "code-purple.eoss.n6.plan.v1",
+        "authority": {
+            "merge_admission": "HOLD",
+            "security_waiver": False,
+            "authority_transfer": False,
+        },
+        "waves": [{"wave": f"W{i}", "planned_tests_pass_min": 95} for i in (7, 8, 9)],
+    }
     return ledger, native, plan
 
 
@@ -101,8 +117,17 @@ def test_html_xss_source_is_escaped_from_script_element():
     assert "\\u003c/script\\u003e" in html
 
 
-@pytest.mark.parametrize("which", ["empty", "duplicated", "forged_attempt", "negative_runtime",
-                                   "skipped_has_runtime", "run_identity"])
+@pytest.mark.parametrize(
+    "which",
+    [
+        "empty",
+        "duplicated",
+        "forged_attempt",
+        "negative_runtime",
+        "skipped_has_runtime",
+        "run_identity",
+    ],
+)
 def test_native_readback_defects_fail_closed(which):
     t, n, p = input_data()
     if which == "empty":
@@ -121,8 +146,10 @@ def test_native_readback_defects_fail_closed(which):
         out.release(t, n, p, TEMPLATE.read_text())
 
 
-@pytest.mark.parametrize("which", ["bad_template", "bad_authority", "missing_waves",
-                                   "bad_plan", "wrong_schema"])
+@pytest.mark.parametrize(
+    "which",
+    ["bad_template", "bad_authority", "missing_waves", "bad_plan", "wrong_schema"],
+)
 def test_release_projections_do_not_change_admission(which):
     t, n, p = input_data()
     template = TEMPLATE.read_text()

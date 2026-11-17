@@ -14,7 +14,6 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-
 # Anchor LOG_DIR to repo root for robustness across different CWDs
 LOG_DIR = Path(__file__).parent / "DOW_LOGS"
 
@@ -30,11 +29,15 @@ def generate_dashboard() -> int:
     # Collect basic status information
     repo_root = Path(__file__).parent
     dmaic_tests_dir = repo_root / "DMAIC_V3" / "tests"
-    agents_dir = repo_root / "DMAIC_V3" / "local_mcp" / "agents" if (
+    agents_dir = (
         repo_root / "DMAIC_V3" / "local_mcp" / "agents"
-    ).exists() else repo_root / "local_mcp" / "agents"
+        if (repo_root / "DMAIC_V3" / "local_mcp" / "agents").exists()
+        else repo_root / "local_mcp" / "agents"
+    )
 
-    test_count = len(list(dmaic_tests_dir.glob("test_*.py"))) if dmaic_tests_dir.exists() else 0
+    test_count = (
+        len(list(dmaic_tests_dir.glob("test_*.py"))) if dmaic_tests_dir.exists() else 0
+    )
     dow_agents = list(agents_dir.glob("dow_*.py")) if agents_dir.exists() else []
 
     # Build dashboard data

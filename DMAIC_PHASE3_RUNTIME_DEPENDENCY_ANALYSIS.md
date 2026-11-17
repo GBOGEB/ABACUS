@@ -125,11 +125,11 @@ result = process_data(input)    # ❌ Runtime call not tracked
 # Add to Phase 2B execution wrapper:
 def execute_with_dependency_tracking(file_path):
     """Execute file and capture runtime dependencies"""
-    
+
     # 1. Wrap file I/O operations
     original_open = builtins.open
     file_accesses = []
-    
+
     def tracked_open(path, *args, **kwargs):
         file_accesses.append({
             "type": "file_read" if "r" in args else "file_write",
@@ -137,22 +137,22 @@ def execute_with_dependency_tracking(file_path):
             "timestamp": time.time()
         })
         return original_open(path, *args, **kwargs)
-    
+
     builtins.open = tracked_open
-    
+
     # 2. Track imports
     import_tracker = []
     original_import = __import__
-    
+
     def tracked_import(name, *args, **kwargs):
         import_tracker.append({
             "module": name,
             "timestamp": time.time()
         })
         return original_import(name, *args, **kwargs)
-    
+
     builtins.__import__ = tracked_import
-    
+
     # 3. Execute file
     try:
         exec(open(file_path).read())
@@ -160,7 +160,7 @@ def execute_with_dependency_tracking(file_path):
         # Restore originals
         builtins.open = original_open
         builtins.__import__ = original_import
-    
+
     # 4. Return captured dependencies
     return {
         "file_accesses": file_accesses,

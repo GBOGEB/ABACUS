@@ -4,6 +4,7 @@ Runtime calculations use the repository-pinned CoolProp backend. HEPAK is an
 independent validation oracle, not silently substituted when unavailable.
 Results are engineering candidates and never grant compliance credit.
 """
+
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass

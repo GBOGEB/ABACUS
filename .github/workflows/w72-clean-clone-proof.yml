@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 1
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: Check W72 source-bound producer and negative controls
         run: |
           python -m unittest discover -s tests -p 'test_w72*.py' -v

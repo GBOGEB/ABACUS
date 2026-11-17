@@ -26,19 +26,36 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-
 # ── Constants ──
 BINARY_EXTENSIONS = {
-    ".pptx", ".pdf", ".docx", ".xlsx", ".xls",
-    ".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".bmp", ".tiff",
-    ".mp4", ".mov", ".avi", ".mkv",
-    ".zip", ".tar", ".gz", ".7z",
+    ".pptx",
+    ".pdf",
+    ".docx",
+    ".xlsx",
+    ".xls",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".svg",
+    ".webp",
+    ".bmp",
+    ".tiff",
+    ".mp4",
+    ".mov",
+    ".avi",
+    ".mkv",
+    ".zip",
+    ".tar",
+    ".gz",
+    ".7z",
 }
 
 MANIFEST_VERSION = "1.0.0"
 
 
 # ── Utility Functions ──
+
 
 def sha256_hash(filepath: str, chunk_size: int = 8192) -> str:
     """Compute SHA256 hash of a file."""
@@ -95,7 +112,10 @@ def now_iso() -> str:
 
 # ── Mock Sidecar File ──
 
-def create_mock_sidecar(filepath: str, file_hash: str, file_size: int) -> dict[str, Any]:
+
+def create_mock_sidecar(
+    filepath: str, file_hash: str, file_size: int
+) -> dict[str, Any]:
     """Create a .mock sidecar file for a binary asset."""
     path = Path(filepath)
     mock_path = path.with_suffix(path.suffix + ".mock")
@@ -121,6 +141,7 @@ def create_mock_sidecar(filepath: str, file_hash: str, file_size: int) -> dict[s
 
 
 # ── Lineage Manifest ──
+
 
 def load_manifest(manifest_path: str) -> dict[str, Any]:
     """Load existing manifest or create a new one."""
@@ -172,22 +193,27 @@ def update_manifest(
             return False
 
     # Add new entry
-    assets.append({
-        "filename": mock_data["filename"],
-        "sha256": mock_data["sha256"],
-        "file_size": mock_data["file_size"],
-        "mime_type": mock_data["mime_type"],
-        "ingested_at": mock_data["ingested_at"],
-        "mock_file": mock_data["mock_file"],
-        "processing_status": mock_data["processing_status"],
-    })
+    assets.append(
+        {
+            "filename": mock_data["filename"],
+            "sha256": mock_data["sha256"],
+            "file_size": mock_data["file_size"],
+            "mime_type": mock_data["mime_type"],
+            "ingested_at": mock_data["ingested_at"],
+            "mock_file": mock_data["mock_file"],
+            "processing_status": mock_data["processing_status"],
+        }
+    )
     manifest["assets"] = assets
     return True
 
 
 # ── Processing Logic ──
 
-def process_file(filepath: str, data_dir: str, verbose: bool = True) -> dict[str, Any] | None:
+
+def process_file(
+    filepath: str, data_dir: str, verbose: bool = True
+) -> dict[str, Any] | None:
     """Process a single binary file: hash, create .mock, update manifest."""
     path = Path(filepath)
 
@@ -249,10 +275,9 @@ def process_directory(
     results = []
     files = sorted(root.iterdir())
     binary_files = [
-        f for f in files
-        if f.is_file()
-        and f.suffix.lower() in BINARY_EXTENSIONS
-        and f.suffix != ".mock"
+        f
+        for f in files
+        if f.is_file() and f.suffix.lower() in BINARY_EXTENSIONS and f.suffix != ".mock"
     ]
 
     if not binary_files:
@@ -308,6 +333,7 @@ def verify_single(filepath: str) -> bool:
 
 
 # ── CLI ──
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(
@@ -374,12 +400,23 @@ Examples:
         assets = manifest.get("assets", [])
 
         if args.format == "json":
-            print(json.dumps({
-                "version": manifest.get("version"),
-                "last_updated": manifest.get("last_updated"),
-                "asset_count": len(assets),
-                "assets": [{"filename": a["filename"], "sha256": a["sha256"][:16] + "..."} for a in assets],
-            }, indent=2))
+            print(
+                json.dumps(
+                    {
+                        "version": manifest.get("version"),
+                        "last_updated": manifest.get("last_updated"),
+                        "asset_count": len(assets),
+                        "assets": [
+                            {
+                                "filename": a["filename"],
+                                "sha256": a["sha256"][:16] + "...",
+                            }
+                            for a in assets
+                        ],
+                    },
+                    indent=2,
+                )
+            )
         else:
             print(f"\nGBOGEB/ABACUS Lineage Manifest Status")
             print(f"{'='*50}")

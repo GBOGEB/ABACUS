@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Compare two same-configuration Bandit reports without hiding regressions."""
+
 import argparse
 import json
 from collections import Counter
@@ -65,7 +66,9 @@ def main():
         after_config=args.after_config,
     )
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.out.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 """Five-run source-bound three-pulse burndown validation and negatives."""
+
 import copy
 import json
 from pathlib import Path
@@ -57,11 +58,10 @@ def test_coverage_closure_queue_and_merge_unproven(evidence):
     assert result["independent_causal_root_count"] is None
     assert result["fresh_clone_parity_proven"] is None
     assert result["security_governance_a10_admission"] == "HOLD"
-    assert result["statistical_validity"][
-        "different_heads_not_independent_trials"
-    ] is True
-    assert all(entry["actual_queue_wait_ms"] is None
-               for entry in result["timeline"])
+    assert (
+        result["statistical_validity"]["different_heads_not_independent_trials"] is True
+    )
+    assert all(entry["actual_queue_wait_ms"] is None for entry in result["timeline"])
 
 
 def test_read_only_projection_deterministic(evidence):

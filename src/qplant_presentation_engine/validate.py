@@ -23,7 +23,11 @@ def validate_runtime() -> Dict[str, bool]:
         import_module(package_name)
         status["package_import"] = True
     except Exception:
-        logger.warning("validate_runtime: package_import failed for %r", package_name, exc_info=True)
+        logger.warning(
+            "validate_runtime: package_import failed for %r",
+            package_name,
+            exc_info=True,
+        )
         return status
 
     try:
@@ -38,7 +42,9 @@ def validate_runtime() -> Dict[str, bool]:
         metrics = metrics_module.load_metrics()
         status["metrics_availability"] = isinstance(metrics, dict) and bool(metrics)
     except Exception:
-        logger.warning("validate_runtime: metrics_availability check failed", exc_info=True)
+        logger.warning(
+            "validate_runtime: metrics_availability check failed", exc_info=True
+        )
         status["metrics_availability"] = False
 
     try:
@@ -46,15 +52,21 @@ def validate_runtime() -> Dict[str, bool]:
         rules = getattr(truth_module, "TRUTH_RULES", [])
         status["truth_matrix_availability"] = isinstance(rules, list) and bool(rules)
     except Exception:
-        logger.warning("validate_runtime: truth_matrix_availability check failed", exc_info=True)
+        logger.warning(
+            "validate_runtime: truth_matrix_availability check failed", exc_info=True
+        )
         status["truth_matrix_availability"] = False
 
     try:
         schema_validation_module = import_module(f"{package_name}.schema_validation")
         schema_validation = schema_validation_module.validate_canonical_schema()
-        status["schema_consistency"] = all(bool(value) for value in schema_validation.values())
+        status["schema_consistency"] = all(
+            bool(value) for value in schema_validation.values()
+        )
     except Exception:
-        logger.warning("validate_runtime: schema_consistency check failed", exc_info=True)
+        logger.warning(
+            "validate_runtime: schema_consistency check failed", exc_info=True
+        )
         status["schema_consistency"] = False
 
     return status

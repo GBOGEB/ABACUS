@@ -161,7 +161,7 @@ agents:
 ```yaml
 agents:
   # Existing agents...
-  
+
   dow_metadata_injector:
     file: "DMAIC_V3/local_mcp/agents/dow_metadata_injector.py"
     timeout: 120
@@ -184,7 +184,7 @@ agents:
 
 pipelines:
   # Existing pipelines...
-  
+
   dow_integration:
     - dow_metadata_injector
     - dow_recursive_hooks_injector
@@ -322,7 +322,7 @@ Master_Input/
   "phase": "define",
   "iteration": 1,
   "data": { ... },
-  
+
   "metadata": { ... },
   "recursive_hooks": { ... },
   "convergence_metrics": { ... },

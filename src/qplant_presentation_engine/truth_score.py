@@ -29,7 +29,9 @@ def _evaluate_rule(rule: str, evidence: Mapping[str, bool]) -> Dict[str, Any]:
 def build_truth_matrix_snapshot(evidence: Mapping[str, bool]) -> Dict[str, Any]:
     """Build rule-level and aggregate truth matrix metrics."""
     rows = [_evaluate_rule(rule, evidence) for rule in TRUTH_RULES]
-    truth_score = round(sum(row["score"] for row in rows) / len(rows), 4) if rows else 0.0
+    truth_score = (
+        round(sum(row["score"] for row in rows) / len(rows), 4) if rows else 0.0
+    )
     return {
         "truth_score": truth_score,
         "principles": rows,

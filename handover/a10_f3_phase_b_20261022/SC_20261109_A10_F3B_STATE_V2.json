@@ -1,0 +1,48 @@
+{
+  "schema": "a10-f3b-handover-state/v2",
+  "cut_date": "2026-11-09",
+  "evidence_class": "API_METADATA_AND_STATIC_SOURCE_CHECKS_ONLY",
+  "repository": "GBOGEB/ABACUS",
+  "pull_request": 2666,
+  "branch": "fix/a10-f3-phase-b-20261022",
+  "head_observed_before_this_handover_commit": "7380872c4beb44842241623fa5ca99ac2e544b8c",
+  "main_sha_last_observed": "091e098fe2e5281b47cd29890904a58a459c9a3a",
+  "head_after_this_handover_commit": "REQUERY_LIVE_GITHUB",
+  "status": "OPEN_PR / A10_ADMISSION_HOLD",
+  "historical_v1_json": "NOT_PRESENT; NOT_RECONSTRUCTED",
+  "external_private_source_copy": "CLAIMED_BY_20261022_HANDOVER_NOT_INDEPENDENTLY_VERIFIED_HERE",
+  "source_corrections": {
+    "seed_entry_point": {
+      "status": "COMMITTED_AT_OBSERVED_HEAD; NATIVE_CI_PENDING; REVIEW_OPEN",
+      "path": "qps_slide_reviewer/scripts/seed.ts",
+      "check": "7/7 static invariants; not a runtime or confidentiality claim"
+    },
+    "rfi_index": {
+      "status": "REVIEW_OPEN; MISSING_CANONICAL_SOURCE; NO_UNVERIFIED_REPLACEMENT",
+      "path": "qplant/energy_exergy/rev1_7/SSOT_INDEX.yaml"
+    },
+    "missing_handover_state": {
+      "status": "V1_ABSENT; V2_DISTINCT_SNAPSHOT_ADDED; REVIEW_OPEN",
+      "path": "handover/a10_f3_phase_b_20261022/SC_20261109_A10_F3B_STATE_V2.json"
+    }
+  },
+  "merge_authorization": false,
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "security_waiver": false,
+  "checks_required": [
+    "Verify authorized private-source existence and manifest hashes without reproducing restricted content",
+    "Repair canonical RFI index with explicit owner-authorized controlled reference or deliberate fail-closed unavailability contract",
+    "Run exact-head A10 and workflow governance on native runners",
+    "Resolve all three Codex P2 findings with independently reviewed evidence on final head",
+    "Confirm effective protected-main required checks and eligible review"
+  ],
+  "unknowns": [
+    "final_this_commit_sha",
+    "private_source_copy_verified",
+    "current_head_native_CI",
+    "security_acceptance",
+    "effective_merge_admission"
+  ],
+  "immutability_rule": "This file preserves a timestamped parent-head observation. Later commits require new cuts, never a fabricated self-SHA."
+}

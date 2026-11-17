@@ -3,14 +3,15 @@
 Created-to-latest-attempt-start is NOT runner queue waiting. Native timestamps
 are only joined by exact run ID, native job ID, attempt and source identity.
 """
+
 from __future__ import annotations
 
 import argparse
 import copy
 import json
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
-from collections import Counter
 
 
 def require(value, reason):
@@ -31,20 +32,26 @@ def milliseconds(iso):
 
 def quantile_nearest(values, probability):
     """Nearest-rank quantile with explicit uncensored observation denominator."""
-    require(type(probability) in (float, int) and 0 < probability <= 1,
-            "invalid probability")
+    require(
+        type(probability) in (float, int) and 0 < probability <= 1,
+        "invalid probability",
+    )
     if not values:
         return None
-    require(all(type(v) in (float, int) and v >= 0 for v in values),
-            "invalid measured duration")
+    require(
+        all(type(v) in (float, int) and v >= 0 for v in values),
+        "invalid measured duration",
+    )
     rank = max(0, -(-len(values) * probability // 1) - 1)
     return sorted(values)[int(rank)]
 
 
 def augment(graph, timeline_documents):
     """Enrich exact matching native nodes without mutating source evidence."""
-    require(graph.get("schema") == "cbd.e2e.evidence_multigraph.v1",
-            "unsupported graph schema")
+    require(
+        graph.get("schema") == "cbd.e2e.evidence_multigraph.v1",
+        "unsupported graph schema",
+    )
     require(len(timeline_documents) == 2, "expected two temporal snapshots")
     result = copy.deepcopy(graph)
     # An enriched graph is legitimate input: normalize derived edges before
@@ -56,44 +63,58 @@ def augment(graph, timeline_documents):
     }
     ids = [n["id"] for n in result["nodes"]]
     require(len(ids) == len(set(ids)), "duplicate graph node identity")
-    previous = [e for e in result["edges"]
-                if e["relationship"] in derivations]
+    previous = [e for e in result["edges"] if e["relationship"] in derivations]
     anomaly_nodes = [n for n in result["nodes"] if n["id"] == anomaly_id]
     if previous or anomaly_nodes:
-        require(len(anomaly_nodes) == 1 and bool(previous),
-                "partial temporal enrichment")
-        prior_keys = [(e["source"], e["target"], e["relationship"])
-                      for e in previous]
-        require(len(prior_keys) == len(set(prior_keys)),
-                "duplicated temporal evidence edge")
-        require(all(e.get("causal_confirmed") is False
-                    and e.get("evidence") in
-                    ("OBSERVED", "TEMPORAL_ASSOCIATION")
-                    for e in previous), "forged temporal causality")
-        inverted = [e for e in previous if e["relationship"] ==
-                    "skipped_job_clock_inversion_observed"]
-        require(len(inverted) == anomaly_nodes[0]["attributes"].get(
-            "observed_count"), "temporal anomaly denominator mismatch")
-        require(all(e["target"] == anomaly_id for e in inverted),
-                "temporal anomaly target mismatch")
-        result["nodes"] = [n for n in result["nodes"]
-                           if n["id"] != anomaly_id]
-        result["edges"] = [e for e in result["edges"]
-                           if e["relationship"] not in derivations]
+        require(
+            len(anomaly_nodes) == 1 and bool(previous), "partial temporal enrichment"
+        )
+        prior_keys = [(e["source"], e["target"], e["relationship"]) for e in previous]
+        require(
+            len(prior_keys) == len(set(prior_keys)), "duplicated temporal evidence edge"
+        )
+        require(
+            all(
+                e.get("causal_confirmed") is False
+                and e.get("evidence") in ("OBSERVED", "TEMPORAL_ASSOCIATION")
+                for e in previous
+            ),
+            "forged temporal causality",
+        )
+        inverted = [
+            e
+            for e in previous
+            if e["relationship"] == "skipped_job_clock_inversion_observed"
+        ]
+        require(
+            len(inverted) == anomaly_nodes[0]["attributes"].get("observed_count"),
+            "temporal anomaly denominator mismatch",
+        )
+        require(
+            all(e["target"] == anomaly_id for e in inverted),
+            "temporal anomaly target mismatch",
+        )
+        result["nodes"] = [n for n in result["nodes"] if n["id"] != anomaly_id]
+        result["edges"] = [
+            e for e in result["edges"] if e["relationship"] not in derivations
+        ]
     nodes = {n["id"]: n for n in result["nodes"]}
     run_seen, job_seen, sample = set(), set(), []
     inverted_timestamps = 0
     inverted_job_ids = []
     for document in timeline_documents:
-        require(document.get("schema") == "cbd.e2e.native_temporal_snapshot.v1",
-                "invalid temporal schema")
-        require(document.get("authority", {}).get("merge_admission") == "HOLD"
-                and document["authority"].get("security_waiver") is False,
-                "temporal authority promotion")
+        require(
+            document.get("schema") == "cbd.e2e.native_temporal_snapshot.v1",
+            "invalid temporal schema",
+        )
+        require(
+            document.get("authority", {}).get("merge_admission") == "HOLD"
+            and document["authority"].get("security_waiver") is False,
+            "temporal authority promotion",
+        )
         for run in document.get("runs", []):
             rid = run.get("run_id")
-            require(type(rid) is int and rid not in run_seen,
-                    "duplicate temporal run")
+            require(type(rid) is int and rid not in run_seen, "duplicate temporal run")
             run_seen.add(rid)
             rnode = nodes.get(f"run:{rid}")
             require(rnode is not None, "unattributed temporal run ID")
@@ -104,21 +125,22 @@ def augment(graph, timeline_documents):
             )
             require(run.get("run_head_sha") == sha, "native run head drift")
             attempt = run.get("run_attempt_current")
-            require(type(attempt) is int and attempt > 0,
-                    "missing native run attempt")
+            require(type(attempt) is int and attempt > 0, "missing native run attempt")
             require(
                 run.get("actual_runner_queue_wait_ms") is None,
                 "queue-wait cannot be inferred from run created-at",
             )
             rnode["attributes"]["run_attempt_latest"] = attempt
-            rnode["attributes"]["creation_to_latest_attempt_start_ms"] = (
-                run.get("creation_to_current_attempt_start_ms"))
+            rnode["attributes"]["creation_to_latest_attempt_start_ms"] = run.get(
+                "creation_to_current_attempt_start_ms"
+            )
             rnode["attributes"]["actual_runner_queue_wait_ms"] = None
             group = []
             for job in run.get("jobs", []):
                 jid = job.get("job_id")
-                require(type(jid) is int and jid not in job_seen,
-                        "duplicate temporal job")
+                require(
+                    type(jid) is int and jid not in job_seen, "duplicate temporal job"
+                )
                 job_seen.add(jid)
                 key = f"job:{jid}"
                 need = nodes.get(key)
@@ -135,39 +157,53 @@ def augment(graph, timeline_documents):
                 end = milliseconds(job.get("completed_at"))
                 dur = job.get("runtime_ms")
                 if dur is not None:
-                    require(type(dur) is int and start is not None
-                            and end is not None and end >= start
-                            and dur == end - start,
-                            "invalid executed job duration")
+                    require(
+                        type(dur) is int
+                        and start is not None
+                        and end is not None
+                        and end >= start
+                        and dur == end - start,
+                        "invalid executed job duration",
+                    )
                 else:
-                    require(not (start is not None and end is not None
-                                and end >= start),
-                            "uncensored duration omitted")
+                    require(
+                        not (start is not None and end is not None and end >= start),
+                        "uncensored duration omitted",
+                    )
                     if start is not None and end is not None and end < start:
                         inverted_timestamps += 1
                         inverted_job_ids.append(jid)
                 need["attributes"]["started_at"] = job.get("started_at")
                 need["attributes"]["completed_at"] = job.get("completed_at")
                 need["attributes"]["runtime_ms"] = dur
-                need["attributes"]["start_lag_from_run_start_ms"] = (
-                    job.get("start_lag_from_run_start_ms"))
+                need["attributes"]["start_lag_from_run_start_ms"] = job.get(
+                    "start_lag_from_run_start_ms"
+                )
                 group.append((jid, start, end, job.get("conclusion")))
                 sample.append(job)
             # Two failed jobs running simultaneously only prove concurrency.
-            failures = [(jid, start, end) for jid, start, end, status in group
-                        if status == "failure" and start is not None and end is not None]
+            failures = [
+                (jid, start, end)
+                for jid, start, end, status in group
+                if status == "failure" and start is not None and end is not None
+            ]
             failures.sort()
             for i, (left, a0, a1) in enumerate(failures):
-                for right, b0, b1 in failures[i + 1:]:
+                for right, b0, b1 in failures[i + 1 :]:
                     overlap = max(0, min(a1, b1) - max(a0, b0))
                     if overlap > 0:
-                        result["edges"].append({
-                            "source": f"job:{left}", "target": f"job:{right}",
-                            "relationship": "observed_failed_job_time_overlap",
-                            "evidence": "TEMPORAL_ASSOCIATION",
-                            "support": 1, "overlap_ms": overlap,
-                            "jaccard": None, "causal_confirmed": False,
-                        })
+                        result["edges"].append(
+                            {
+                                "source": f"job:{left}",
+                                "target": f"job:{right}",
+                                "relationship": "observed_failed_job_time_overlap",
+                                "evidence": "TEMPORAL_ASSOCIATION",
+                                "support": 1,
+                                "overlap_ms": overlap,
+                                "jaccard": None,
+                                "causal_confirmed": False,
+                            }
+                        )
     if inverted_job_ids:
         anomaly = {
             "id": "anomaly:skipped-job-inverted-clock",
@@ -185,19 +221,25 @@ def augment(graph, timeline_documents):
         result["nodes"].append(anomaly)
         for jid in sorted(inverted_job_ids):
             require(f"job:{jid}" in nodes, "inverted job is not a graph atom")
-            result["edges"].append({
-                "source": f"job:{jid}",
-                "target": anomaly["id"],
-                "relationship": "skipped_job_clock_inversion_observed",
-                "evidence": "OBSERVED",
-                "support": 1,
-                "jaccard": None,
-                "causal_confirmed": False,
-            })
-    require(len(run_seen) == result["metrics"]["native_run_count"],
-            "temporal run denominator missing")
-    require(len(job_seen) == result["metrics"]["native_job_count"],
-            "temporal job denominator missing")
+            result["edges"].append(
+                {
+                    "source": f"job:{jid}",
+                    "target": anomaly["id"],
+                    "relationship": "skipped_job_clock_inversion_observed",
+                    "evidence": "OBSERVED",
+                    "support": 1,
+                    "jaccard": None,
+                    "causal_confirmed": False,
+                }
+            )
+    require(
+        len(run_seen) == result["metrics"]["native_run_count"],
+        "temporal run denominator missing",
+    )
+    require(
+        len(job_seen) == result["metrics"]["native_job_count"],
+        "temporal job denominator missing",
+    )
     durations = [j["runtime_ms"] for j in sample if j["runtime_ms"] is not None]
     result["metrics"]["temporal"] = {
         "native_jobs_source_matched": len(sample),
@@ -223,8 +265,10 @@ def augment(graph, timeline_documents):
     degree, weighted = Counter(), Counter()
     for e in result["edges"]:
         for endpoint in (e["source"], e["target"]):
-            require(endpoint in {n["id"] for n in result["nodes"]},
-                    "edge refers to missing graph node")
+            require(
+                endpoint in {n["id"] for n in result["nodes"]},
+                "edge refers to missing graph node",
+            )
             degree[endpoint] += 1
             if e["evidence"] in ("OBSERVED", "SOURCE_BOUND"):
                 weighted[endpoint] += e["support"]
@@ -233,13 +277,14 @@ def augment(graph, timeline_documents):
         n["observed_weighted_degree"] = weighted[n["id"]]
     result["metrics"]["node_count"] = len(result["nodes"])
     result["metrics"]["edge_count"] = len(result["edges"])
-    result["metrics"]["node_types"] = dict(sorted(
-        Counter(n["kind"] for n in result["nodes"]).items()))
-    result["metrics"]["edge_evidence_classes"] = dict(sorted(
-        Counter(e["evidence"] for e in result["edges"]).items()))
+    result["metrics"]["node_types"] = dict(
+        sorted(Counter(n["kind"] for n in result["nodes"]).items())
+    )
+    result["metrics"]["edge_evidence_classes"] = dict(
+        sorted(Counter(e["evidence"] for e in result["edges"]).items())
+    )
     result["nodes"].sort(key=lambda n: n["id"])
-    result["edges"].sort(key=lambda e: (
-        e["source"], e["target"], e["relationship"]))
+    result["edges"].sort(key=lambda e: (e["source"], e["target"], e["relationship"]))
     return result
 
 

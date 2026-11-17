@@ -234,7 +234,7 @@ def main():
 
     if args.health_check:
         health = monitor.check_deployment_health(args.health_check)
-        print(f"\n🏥 Health Status:")
+        print("\n🏥 Health Status:")
         print(f"   Healthy: {'✅ Yes' if health['healthy'] else '❌ No'}")
         print(f"   Status: {health['status']}")
         print(f"   Message: {health['message']}")
@@ -244,7 +244,7 @@ def main():
     elif args.report:
         report = monitor.create_deployment_report(args.environment)
 
-        print(f"\n📊 Deployment Report:")
+        print("\n📊 Deployment Report:")
         print(f"   Total Deployments: {report['total_deployments']}")
         print(f"   ✅ Successful: {report['successful']}")
         print(f"   ❌ Failed: {report['failed']}")

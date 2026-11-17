@@ -39,9 +39,10 @@ def test_measured_metrics_match_governed_receipt() -> None:
     receipt = load(RECEIPT)
     for feature, expected in receipt["candidate_metrics"].items():
         observed = result["candidate_metrics"][feature]
-        assert observed["icc_one_way_single_measure"] == expected[
-            "icc_one_way_single_measure"
-        ]
+        assert (
+            observed["icc_one_way_single_measure"]
+            == expected["icc_one_way_single_measure"]
+        )
         assert observed["rank_stability"] == expected["rank_stability"]
 
 

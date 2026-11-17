@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Operational Scenario Modeling — Figure 6 Analysis."""
-import json, os
+import json
+import os
 
 BASELINE = json.load(open(os.path.join(os.path.dirname(__file__), "..", "engineering_baseline.json")))
 scenarios = BASELINE["figure_6_scenarios"]

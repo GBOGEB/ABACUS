@@ -4,19 +4,19 @@
 
 ### Knowledge Package Generation
 ```
-[DMAIC Summary JSON] 
+[DMAIC Summary JSON]
         |
         v
-[Parse Summary Data] 
+[Parse Summary Data]
         |
         v
-[Create Knowledge Package Structure] 
+[Create Knowledge Package Structure]
         |
         v
-[Validate Against Schema] 
+[Validate Against Schema]
         |
         v
-[Write Knowledge Package File] 
+[Write Knowledge Package File]
         |
         v
 [Knowledge Package JSON]
@@ -24,19 +24,19 @@
 
 ### Test Execution Flow
 ```
-[Test Request] 
+[Test Request]
         |
         v
-[Setup Test Environment] 
+[Setup Test Environment]
         |
         v
-[Execute Test Command] 
+[Execute Test Command]
         |
         v
-[Collect Results] 
+[Collect Results]
         |
         v
-[Generate Report] 
+[Generate Report]
         |
         v
 [Test Report]
@@ -44,16 +44,16 @@
 
 ### Documentation Generation Flow
 ```
-[Bridge Components] 
+[Bridge Components]
         |
         v
-[Extract Component Info] 
+[Extract Component Info]
         |
         v
-[Generate ASCII Diagrams] 
+[Generate ASCII Diagrams]
         |
         v
-[Format as Markdown] 
+[Format as Markdown]
         |
         v
 [Documentation Files]

@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-import argparse, hashlib, json, subprocess, sys
+import argparse
+import hashlib
+import json
+import subprocess
+import sys
 from datetime import date
 from pathlib import Path
 

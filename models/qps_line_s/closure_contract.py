@@ -11,42 +11,22 @@ from . import runtime as runtime_model
 
 ROOT = Path(__file__).resolve().parents[2]
 EXTRACTION = (
-    ROOT
-    / "docs"
-    / "qps_line_s_recovery"
-    / "appendix_8_4_mode_valve_extraction.yaml"
+    ROOT / "docs" / "qps_line_s_recovery" / "appendix_8_4_mode_valve_extraction.yaml"
 )
 SOURCE_RECEIPT = (
-    ROOT
-    / "docs"
-    / "qps_line_s_recovery"
-    / "appendix_8_4_source_receipt.json"
+    ROOT / "docs" / "qps_line_s_recovery" / "appendix_8_4_source_receipt.json"
 )
 VISUAL_LEGEND_AUDIT = (
-    ROOT
-    / "docs"
-    / "qps_line_s_recovery"
-    / "appendix_8_4_visual_legend_audit.json"
+    ROOT / "docs" / "qps_line_s_recovery" / "appendix_8_4_visual_legend_audit.json"
 )
-ASSUMPTIONS = (
-    ROOT
-    / "docs"
-    / "qps_line_s_recovery"
-    / "assumptions_register.yaml"
-)
+ASSUMPTIONS = ROOT / "docs" / "qps_line_s_recovery" / "assumptions_register.yaml"
 RUNTIME_STATUS = (
-    ROOT
-    / "docs"
-    / "qps_line_s_recovery"
-    / "generated"
-    / "runtime_status.json"
+    ROOT / "docs" / "qps_line_s_recovery" / "generated" / "runtime_status.json"
 )
 
 SCHEMA = "abacus.qps_line_s.appendix_8_4_mode_valve_extraction.v2"
 RECEIPT_SCHEMA = "abacus.qps_line_s.appendix_8_4_source_receipt.v1"
-VISUAL_LEGEND_AUDIT_SCHEMA = (
-    "abacus.qps_line_s.appendix_8_4_visual_legend_audit.v1"
-)
+VISUAL_LEGEND_AUDIT_SCHEMA = "abacus.qps_line_s.appendix_8_4_visual_legend_audit.v1"
 MDA_GATE_IDS = {
     "ASSUM-VEFF",
     "ASSUM-PLIMIT",
@@ -86,11 +66,7 @@ def _nonempty(value: Any) -> bool:
 
 
 def _is_integer_zero(value: Any) -> bool:
-    return (
-        isinstance(value, int)
-        and not isinstance(value, bool)
-        and value == 0
-    )
+    return isinstance(value, int) and not isinstance(value, bool) and value == 0
 
 
 def _is_sha256(value: Any) -> bool:
@@ -208,8 +184,7 @@ def validate_visual_legend_audit(
         "visual legend audit appendix mismatch",
     )
     require(
-        audit_source.get("figure_count")
-        == coverage.get("mode_inventory_expected"),
+        audit_source.get("figure_count") == coverage.get("mode_inventory_expected"),
         "visual legend audit figure_count mismatch",
     )
 
@@ -341,18 +316,15 @@ def validate_extraction(
         "figure-derived valve-state promotion requires a verified legend",
     )
     require(
-        set(policy.get("allowed_commanded_states") or [])
-        == ALLOWED_COMMANDED_STATES,
+        set(policy.get("allowed_commanded_states") or []) == ALLOWED_COMMANDED_STATES,
         "commanded-state vocabulary mismatch",
     )
     require(
-        set(policy.get("allowed_fail_states") or [])
-        == ALLOWED_FAIL_STATES,
+        set(policy.get("allowed_fail_states") or []) == ALLOWED_FAIL_STATES,
         "fail-state vocabulary mismatch",
     )
     require(
-        set(policy.get("allowed_extraction_states") or [])
-        == ALLOWED_EXTRACTION_STATES,
+        set(policy.get("allowed_extraction_states") or []) == ALLOWED_EXTRACTION_STATES,
         "extraction-state vocabulary mismatch",
     )
 
@@ -438,11 +410,7 @@ def validate_extraction(
         "mode inventory coverage must match the source-bound mode count",
     )
 
-    mode_ids = [
-        mode.get("mode_id")
-        for mode in modes
-        if isinstance(mode, dict)
-    ]
+    mode_ids = [mode.get("mode_id") for mode in modes if isinstance(mode, dict)]
     require(
         len(mode_ids) == len(set(mode_ids)),
         "mode_id values must be unique",
@@ -535,8 +503,7 @@ def validate_extraction(
                     f"{vp}.members must be a non-empty string list",
                 )
             require(
-                valve.get("commanded_state")
-                in ALLOWED_COMMANDED_STATES,
+                valve.get("commanded_state") in ALLOWED_COMMANDED_STATES,
                 f"{vp}.commanded_state is invalid",
             )
             require(
@@ -558,11 +525,8 @@ def validate_extraction(
                 f"{prefix}.STATE_COMPLETE requires resolved recovery_path",
             )
             require(
-                not _is_unknown_placeholder(
-                    mode.get("v_eff_consequence")
-                ),
-                f"{prefix}.STATE_COMPLETE requires resolved "
-                "v_eff_consequence",
+                not _is_unknown_placeholder(mode.get("v_eff_consequence")),
+                f"{prefix}.STATE_COMPLETE requires resolved " "v_eff_consequence",
             )
             for valve_index, valve in enumerate(valves):
                 vp = f"{prefix}.valves[{valve_index}]"
@@ -658,8 +622,7 @@ def validate_source_receipt(extraction: dict, receipt: dict) -> dict:
         "source receipt formal_credit_delta must remain integer zero",
     )
     require(
-        receipt.get("authority_transfer")
-        is extraction.get("authority_transfer"),
+        receipt.get("authority_transfer") is extraction.get("authority_transfer"),
         "source receipt authority_transfer mismatch",
     )
     require(
@@ -667,8 +630,7 @@ def validate_source_receipt(extraction: dict, receipt: dict) -> dict:
         "extraction formal_credit_delta must remain integer zero",
     )
     require(
-        receipt.get("formal_credit_delta")
-        == extraction.get("formal_credit_delta"),
+        receipt.get("formal_credit_delta") == extraction.get("formal_credit_delta"),
         "source receipt formal_credit_delta mismatch",
     )
 
@@ -687,8 +649,7 @@ def validate_source_receipt(extraction: dict, receipt: dict) -> dict:
         "source receipt SHA-256 mismatch",
     )
     require(
-        receipt_source.get("custody")
-        == source.get("source_material_location"),
+        receipt_source.get("custody") == source.get("source_material_location"),
         "source receipt custody mismatch",
     )
     require(
@@ -743,8 +704,7 @@ def validate_source_receipt(extraction: dict, receipt: dict) -> dict:
         )
         image = figure.get("image")
         require(
-            isinstance(image, str)
-            and FIGURE_REF_PATTERN.fullmatch(image) is not None,
+            isinstance(image, str) and FIGURE_REF_PATTERN.fullmatch(image) is not None,
             f"source receipt figure[{index}].image is invalid",
         )
         require(
@@ -793,10 +753,7 @@ def validate_current_contract(root: Path = ROOT) -> dict:
     receipt_path = root / SOURCE_RECEIPT.relative_to(ROOT)
     legend_audit_path = root / VISUAL_LEGEND_AUDIT.relative_to(ROOT)
 
-    assumptions = (
-        yaml.safe_load(assumptions_path.read_text(encoding="utf-8"))
-        or {}
-    )
+    assumptions = yaml.safe_load(assumptions_path.read_text(encoding="utf-8")) or {}
     require(
         isinstance(assumptions, dict),
         "assumptions register must be a mapping",

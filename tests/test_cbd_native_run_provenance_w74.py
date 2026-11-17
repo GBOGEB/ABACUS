@@ -1,4 +1,5 @@
 """W74 adversarial, reverse and positive controls for native run identity."""
+
 from __future__ import annotations
 
 import copy
@@ -45,8 +46,12 @@ class NativeRunProvenanceW74(unittest.TestCase):
         for row in (cbd.produce(source), cbd.produce(other)):
             self.assertIsNone(row["observed"]["confirmed_causal_root_count"])
             self.assertIsNone(row["observed"]["matched_coverage_delta"])
-            self.assertTrue(all(not w["source_mutation_authorized"]
-                                for w in row["candidate_disjoint_waves"]))
+            self.assertTrue(
+                all(
+                    not w["source_mutation_authorized"]
+                    for w in row["candidate_disjoint_waves"]
+                )
+            )
 
     def test_different_workflow_same_run_across_attempt_rejected(self):
         source = self.pair()

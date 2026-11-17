@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: Install governed property backend
         run: pip install CoolProp==7.2.0
       - name: Execute SUPPLIER_A TS residual

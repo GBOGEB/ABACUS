@@ -22,9 +22,7 @@ w77_probe = load_module(
     "w77_instrumented_semantic_census",
     TOOLS / "w77_instrumented_semantic_census.py",
 )
-w77_stability = load_module(
-    "w77_phase_stability", TOOLS / "w77_phase_stability.py"
-)
+w77_stability = load_module("w77_phase_stability", TOOLS / "w77_phase_stability.py")
 
 
 def test_instrumented_census_preserves_w72_semantics() -> None:
@@ -67,9 +65,7 @@ def synthetic_receipts() -> list[dict]:
 
 def test_stable_phase_features_can_only_enable_next_pca_step() -> None:
     result = w77_stability.evaluate(synthetic_receipts())
-    assert set(result["eligible_runtime_features"]) == set(
-        w77_stability.CANDIDATES
-    )
+    assert set(result["eligible_runtime_features"]) == set(w77_stability.CANDIDATES)
     assert result["pca_next_step_permitted"] is True
     assert result["pca_fit_performed"] is False
     assert result["global_allocation_authority"] is False

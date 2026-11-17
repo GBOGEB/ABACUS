@@ -1,4 +1,5 @@
 """Negative controls for 3P stability measurement and non-promotion."""
+
 from __future__ import annotations
 
 import contextlib
@@ -77,7 +78,7 @@ class StabilityEvidenceGuardTests(TestCase):
         self.assertFalse(comparable(base, changed))
 
     def test_incomplete_latest_receipt_does_not_inherit_prior_green(self):
-        earlier = [complete_run(str(i), wall=100-i*5) for i in range(5)]
+        earlier = [complete_run(str(i), wall=100 - i * 5) for i in range(5)]
         invalid_latest = complete_run("last", wall=40)
         invalid_latest["evidence_yield_per_worker_minute"] = None
         with TemporaryDirectory() as folder:
@@ -87,9 +88,20 @@ class StabilityEvidenceGuardTests(TestCase):
                 "".join(json.dumps(x) + "\n" for x in [*earlier, invalid_latest]),
                 encoding="utf-8",
             )
-            with patch.object(sys, "argv", [
-                "w64_3p_stability_rollup.py", "--history", str(source), "--out", str(dest)
-            ]), contextlib.redirect_stdout(io.StringIO()):
+            with (
+                patch.object(
+                    sys,
+                    "argv",
+                    [
+                        "w64_3p_stability_rollup.py",
+                        "--history",
+                        str(source),
+                        "--out",
+                        str(dest),
+                    ],
+                ),
+                contextlib.redirect_stdout(io.StringIO()),
+            ):
                 self.assertEqual(0, main())
             rollup = json.loads(dest.read_text(encoding="utf-8"))
             self.assertEqual("INSUFFICIENT_EVIDENCE", rollup["stability_class"])
@@ -98,11 +110,13 @@ class StabilityEvidenceGuardTests(TestCase):
             self.assertEqual("last", rollup["current_run_id"])
 
     def test_three_comparable_valid_runs_still_produce_measured_direction(self):
-        base = [complete_run(str(i), wall=100 - i*10) for i in range(3)]
+        base = [complete_run(str(i), wall=100 - i * 10) for i in range(3)]
         state, reasons = classify(base, base[-1])
-        self.assertIn(state, {"DIRECTIONAL_IMPROVEMENT", "PROVISIONALLY_STABLE", "NO_STABLE_GAIN_YET"})
+        self.assertIn(
+            state,
+            {"DIRECTIONAL_IMPROVEMENT", "PROVISIONALLY_STABLE", "NO_STABLE_GAIN_YET"},
+        )
         self.assertTrue(reasons)
-
 
     def test_out_of_range_rework_and_negative_gap_rejected(self):
         for field, value in (
@@ -128,25 +142,30 @@ class StabilityEvidenceGuardTests(TestCase):
             source = Path(folder) / "history.jsonl"
             output = Path(folder) / "rollup.json"
             source.write_text("", encoding="utf-8")
-            with patch.object(sys, "argv", [
-                "3p", "--history", str(source), "--out", str(output)
-            ]):
+            with patch.object(
+                sys, "argv", ["3p", "--history", str(source), "--out", str(output)]
+            ):
                 with self.assertRaisesRegex(ValueError, "history contains no runs"):
                     main()
 
     def test_valid_comparable_history_emits_real_speedup(self):
-        runs = [complete_run("r1", wall=100.0),
-                complete_run("r2", wall=90.0),
-                complete_run("r3", wall=80.0)]
+        runs = [
+            complete_run("r1", wall=100.0),
+            complete_run("r2", wall=90.0),
+            complete_run("r3", wall=80.0),
+        ]
         with TemporaryDirectory() as folder:
             source = Path(folder) / "history.jsonl"
             output = Path(folder) / "rollup.json"
             source.write_text(
                 "".join(json.dumps(x) + "\n" for x in runs), encoding="utf-8"
             )
-            with patch.object(sys, "argv", [
-                "3p", "--history", str(source), "--out", str(output)
-            ]), contextlib.redirect_stdout(io.StringIO()):
+            with (
+                patch.object(
+                    sys, "argv", ["3p", "--history", str(source), "--out", str(output)]
+                ),
+                contextlib.redirect_stdout(io.StringIO()),
+            ):
                 self.assertEqual(0, main())
             result = json.loads(output.read_text(encoding="utf-8"))
             self.assertEqual(3, result["comparable_valid_run_count"])
@@ -159,12 +178,13 @@ class StabilityEvidenceGuardTests(TestCase):
         with TemporaryDirectory() as folder:
             source = Path(folder) / "history.jsonl"
             output = Path(folder) / "rollup.json"
-            source.write_text(
-                json.dumps(complete_run("only")) + "\n", encoding="utf-8"
-            )
-            with patch.object(sys, "argv", [
-                "3p", "--history", str(source), "--out", str(output)
-            ]), contextlib.redirect_stdout(io.StringIO()):
+            source.write_text(json.dumps(complete_run("only")) + "\n", encoding="utf-8")
+            with (
+                patch.object(
+                    sys, "argv", ["3p", "--history", str(source), "--out", str(output)]
+                ),
+                contextlib.redirect_stdout(io.StringIO()),
+            ):
                 self.assertEqual(0, main())
             result = json.loads(output.read_text(encoding="utf-8"))
             self.assertEqual("INSUFFICIENT_EVIDENCE", result["stability_class"])

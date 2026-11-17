@@ -9,9 +9,14 @@ def _write_json(path: Path, payload: dict) -> None:
     path.write_text(json.dumps(payload), encoding="utf-8")
 
 
-def test_build_dmaic_snapshot_generates_artifact_with_truth_matrix(tmp_path: Path) -> None:
+def test_build_dmaic_snapshot_generates_artifact_with_truth_matrix(
+    tmp_path: Path,
+) -> None:
     reports = tmp_path / "reports"
-    _write_json(reports / "runtime_status.json", {"runtime_status": "ok", "validation_status": "ready"})
+    _write_json(
+        reports / "runtime_status.json",
+        {"runtime_status": "ok", "validation_status": "ready"},
+    )
     _write_json(
         reports / "runtime_registry_report.json",
         {
@@ -23,13 +28,23 @@ def test_build_dmaic_snapshot_generates_artifact_with_truth_matrix(tmp_path: Pat
     )
     _write_json(
         reports / "dashboard_status.json",
-        {"status": "dashboard_generated", "dashboard_generated": True, "runtime_registry_consumed": True},
+        {
+            "status": "dashboard_generated",
+            "dashboard_generated": True,
+            "runtime_registry_consumed": True,
+        },
     )
     _write_json(
         reports / "truth_matrix_snapshot.json",
-        {"truth_score": 0.97, "principles": ["ci_execution_observed"], "evidence": {"ci_execution_observed": True}},
+        {
+            "truth_score": 0.97,
+            "principles": ["ci_execution_observed"],
+            "evidence": {"ci_execution_observed": True},
+        },
     )
-    _write_json(reports / "pca_snapshot.json", {"forward_pca": 0.94, "backward_pca": 0.93})
+    _write_json(
+        reports / "pca_snapshot.json", {"forward_pca": 0.94, "backward_pca": 0.93}
+    )
     _write_json(reports / "geti_snapshot.json", {"geti": 0.95, "truth_score": 0.97})
 
     snapshot = build_dmaic_snapshot(reports_dir=reports)

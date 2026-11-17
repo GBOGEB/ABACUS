@@ -5,6 +5,7 @@ IDs and age distributions require a complete, exact-SHA observation; any
 incomplete census produces UNKNOWN for those coordinates, never a zero delta.
 The module does not mark checks, cancel jobs, change trigger rules or approve PRs.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -16,9 +17,13 @@ from pathlib import Path
 
 INPUT_SCHEMA = "abacus.feedback.queue-pressure.v1.receipt"
 OUTPUT_SCHEMA = "abacus.feedback.queue-trends.v1"
-SAFE_CONTROLS = {"admission": "HOLD", "authority_transfer": False,
-                 "skip_eligibility": "UNKNOWN_UNTIL_EXACT_OPEN_PR_LINKAGE_PROVEN",
-                 "remote_mutation_authorized": False, "security_waiver": False}
+SAFE_CONTROLS = {
+    "admission": "HOLD",
+    "authority_transfer": False,
+    "skip_eligibility": "UNKNOWN_UNTIL_EXACT_OPEN_PR_LINKAGE_PROVEN",
+    "remote_mutation_authorized": False,
+    "security_waiver": False,
+}
 
 
 def canonical(data):
@@ -44,10 +49,17 @@ def nonneg(value, field):
 def validate(p):
     if not isinstance(p, dict) or p.get("schema") != INPUT_SCHEMA:
         raise ValueError("unrecognized pressure receipt")
-    if not isinstance(p.get("source_repository"), str) or "/" not in p["source_repository"]:
+    if (
+        not isinstance(p.get("source_repository"), str)
+        or "/" not in p["source_repository"]
+    ):
         raise ValueError("missing repository")
     sha = p.get("main_sha")
-    if not isinstance(sha, str) or len(sha) != 40 or any(x not in "0123456789abcdef" for x in sha):
+    if (
+        not isinstance(sha, str)
+        or len(sha) != 40
+        or any(x not in "0123456789abcdef" for x in sha)
+    ):
         raise ValueError("full lowercase 40-character main SHA required")
     timestamp = utc(p.get("observed_at"))
     repo = nonneg(p.get("repo_queued_total"), "repo_queued_total")
@@ -59,7 +71,9 @@ def validate(p):
     sample_size = nonneg(p.get("main_sample_size"), "main_sample_size")
     if sample_size > main or (p["main_sample_complete"] != (sample_size == main)):
         raise ValueError("incorrect completeness/denominator")
-    sample_feedback = nonneg(p.get("main_feedback_workflow_run_sample"), "feedback sample")
+    sample_feedback = nonneg(
+        p.get("main_feedback_workflow_run_sample"), "feedback sample"
+    )
     if sample_feedback > sample_size:
         raise ValueError("feedback sample exceeds sample size")
     actual_feedback = p.get("main_feedback_queued_total")
@@ -79,15 +93,27 @@ def validate(p):
         if type(ident) is not int or ident <= 0 or ident in ids:
             raise ValueError("duplicate or invalid queued run ID")
         ids.add(ident)
-        if (entry.get("head_sha") != sha or entry.get("name") != "PR Feedback Gate Evaluator"
-                or entry.get("event") != "workflow_run"):
+        if (
+            entry.get("head_sha") != sha
+            or entry.get("name") != "PR Feedback Gate Evaluator"
+            or entry.get("event") != "workflow_run"
+        ):
             raise ValueError("unexpected identity / wrong source SHA")
         runs.append((ident, entry.get("created_at")))
-    if p.get("admission") != "HOLD" or p.get("authority_transfer") is not False or p.get("remote_mutation_authorized") is not False:
+    if (
+        p.get("admission") != "HOLD"
+        or p.get("authority_transfer") is not False
+        or p.get("remote_mutation_authorized") is not False
+    ):
         raise ValueError("pressure measurement cannot transfer authority")
-    return {"at": timestamp, "repo": repo, "main": main,
-            "complete": p["main_sample_complete"], "feedback": actual_feedback,
-            "runs": runs}
+    return {
+        "at": timestamp,
+        "repo": repo,
+        "main": main,
+        "complete": p["main_sample_complete"],
+        "feedback": actual_feedback,
+        "runs": runs,
+    }
 
 
 def qnearest(values, numerator, denominator):
@@ -100,22 +126,36 @@ def qnearest(values, numerator, denominator):
 
 def queue_age_seconds(p, at):
     if not p["complete"]:
-        return {"state": "UNKNOWN", "reason": "INCOMPLETE_QUEUE_SAMPLE",
-                "p50_seconds": None, "p95_seconds": None}
+        return {
+            "state": "UNKNOWN",
+            "reason": "INCOMPLETE_QUEUE_SAMPLE",
+            "p50_seconds": None,
+            "p95_seconds": None,
+        }
     ages = []
     for _, when in p["runs"]:
         if when is None:
-            return {"state": "UNKNOWN", "reason": "MISSING_CREATED_AT",
-                    "p50_seconds": None, "p95_seconds": None}
+            return {
+                "state": "UNKNOWN",
+                "reason": "MISSING_CREATED_AT",
+                "p50_seconds": None,
+                "p95_seconds": None,
+            }
         age = (at - utc(when)).total_seconds()
         if age < 0:
-            return {"state": "UNKNOWN", "reason": "FUTURE_CREATED_AT",
-                    "p50_seconds": None, "p95_seconds": None}
+            return {
+                "state": "UNKNOWN",
+                "reason": "FUTURE_CREATED_AT",
+                "p50_seconds": None,
+                "p95_seconds": None,
+            }
         ages.append(age)
     # Zero feedback queue is an observed empty population; quantiles undefined.
-    return {"state": "MEASURED" if ages else "NO_OBSERVATIONS",
-            "p50_seconds": qnearest(ages, 1, 2),
-            "p95_seconds": qnearest(ages, 95, 100)}
+    return {
+        "state": "MEASURED" if ages else "NO_OBSERVATIONS",
+        "p50_seconds": qnearest(ages, 1, 2),
+        "p95_seconds": qnearest(ages, 95, 100),
+    }
 
 
 def compare(previous, current):
@@ -131,11 +171,13 @@ def compare(previous, current):
     exact = a["complete"] and b["complete"]
     old_ids, new_ids = ({v[0] for v in a["runs"]}, {v[0] for v in b["runs"]})
     return {
-        "schema": OUTPUT_SCHEMA, "source_repository": previous["source_repository"],
+        "schema": OUTPUT_SCHEMA,
+        "source_repository": previous["source_repository"],
         "main_sha": previous["main_sha"],
         "pulse_utc": [previous["observed_at"], current["observed_at"]],
         "interval_seconds": seconds,
-        "queue_total_before": a["repo"], "queue_total_after": b["repo"],
+        "queue_total_before": a["repo"],
+        "queue_total_after": b["repo"],
         "queue_net_delta": b["repo"] - a["repo"],
         "queue_net_delta_per_minute": round(60 * (b["repo"] - a["repo"]) / seconds, 3),
         "main_queue_delta": b["main"] - a["main"],
@@ -160,9 +202,12 @@ def emit(previous, current, output):
     output.mkdir(parents=True, exist_ok=True)
     encoded = (canonical(result) + "\n").encode("utf-8")
     (output / "trends.json").write_bytes(encoded)
-    manifest = {"schema": OUTPUT_SCHEMA + ".manifest",
-                "sha256": {"trends.json": hashlib.sha256(encoded).hexdigest()},
-                "source_sha": result["main_sha"], "authority_transfer": False}
+    manifest = {
+        "schema": OUTPUT_SCHEMA + ".manifest",
+        "sha256": {"trends.json": hashlib.sha256(encoded).hexdigest()},
+        "source_sha": result["main_sha"],
+        "authority_transfer": False,
+    }
     (output / "manifest.json").write_text(canonical(manifest) + "\n", encoding="utf-8")
     return result
 
@@ -173,8 +218,15 @@ def main():
     parser.add_argument("--current", required=True, type=Path)
     parser.add_argument("--out", required=True, type=Path)
     args = parser.parse_args()
-    print(canonical(emit(json.loads(args.previous.read_text()),
-                         json.loads(args.current.read_text()), args.out)))
+    print(
+        canonical(
+            emit(
+                json.loads(args.previous.read_text()),
+                json.loads(args.current.read_text()),
+                args.out,
+            )
+        )
+    )
 
 
 if __name__ == "__main__":

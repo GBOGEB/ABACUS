@@ -133,7 +133,7 @@ deepagent_handover_package/
 3. Use the TypeScript library for programmatic access:
    ```typescript
    import { framework, dmaic, kpi } from './implementation/deepagent';
-   
+
    await framework.initialize();
    const project = framework.createProject({...});
    ```

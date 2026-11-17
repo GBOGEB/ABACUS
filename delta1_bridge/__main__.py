@@ -5,6 +5,7 @@ Usage:
     python -m delta1_bridge validate-metrics PATH
     python -m delta1_bridge rank-demo
 """
+
 from __future__ import annotations
 
 import argparse
@@ -12,8 +13,8 @@ import json
 import sys
 
 from .adapter import federation_status
+from .ranking import CANONICAL_BT_AVAILABLE, fit_bradley_terry
 from .schema import load_and_validate_metrics
-from .ranking import fit_bradley_terry, CANONICAL_BT_AVAILABLE
 
 
 def _cmd_status(args) -> int:

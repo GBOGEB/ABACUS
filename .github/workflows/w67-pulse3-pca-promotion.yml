@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: Validate fail-closed promotion contract
         run: |
           grep 'required_comparable_numeric_pulses: 3' architecture/w67/PULSE3_PCA_PROMOTION.yaml

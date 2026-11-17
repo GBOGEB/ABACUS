@@ -214,9 +214,7 @@ def test_notebook_nonmapping_binary_outputs_are_dropped():
     assert result == [{"data": {"text/plain": "ok"}}]
 
 
-def test_notebook_non_object_json_root_is_refused_by_parser_and_cli(
-    tmp_path, capsys
-):
+def test_notebook_non_object_json_root_is_refused_by_parser_and_cli(tmp_path, capsys):
     module = _notebook()
     path = tmp_path / "array.ipynb"
     path.write_text("[]", encoding="utf-8")

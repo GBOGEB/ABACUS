@@ -173,7 +173,9 @@ class ActionTracker:
         return [a for a in self.actions.values() if a.status == ActionStatus(status)]
 
     def get_by_priority(self, priority: ActionPriority) -> list[ActionItem]:
-        return [a for a in self.actions.values() if a.priority == ActionPriority(priority)]
+        return [
+            a for a in self.actions.values() if a.priority == ActionPriority(priority)
+        ]
 
     def get_by_epic(self, epic: str) -> list[ActionItem]:
         return [a for a in self.actions.values() if a.epic == epic]
@@ -205,7 +207,9 @@ class ActionTracker:
     def generate_report(self) -> str:
         lines = ["# Action Tracker Report", ""]
         for action in sorted(self.actions.values(), key=lambda item: item.action_id):
-            lines.append(f"- {action.action_id}: {action.title} [{action.status.value}]")
+            lines.append(
+                f"- {action.action_id}: {action.title} [{action.status.value}]"
+            )
         overdue = self.get_overdue()
         if overdue:
             lines.extend(["", "## Overdue Actions"])
@@ -217,13 +221,17 @@ class ActionTracker:
 
     def save_tracker(self) -> None:
         payload = {
-            "actions": [self._action_to_dict(action) for action in self.actions.values()],
+            "actions": [
+                self._action_to_dict(action) for action in self.actions.values()
+            ],
             "updates": {
                 key: [self._update_to_dict(update) for update in value]
                 for key, value in self.updates.items()
             },
         }
-        self.tracker_path.write_text(yaml.safe_dump(payload, sort_keys=True), encoding="utf-8")
+        self.tracker_path.write_text(
+            yaml.safe_dump(payload, sort_keys=True), encoding="utf-8"
+        )
 
     def _load_tracker(self) -> None:
         if not self.tracker_path.exists():

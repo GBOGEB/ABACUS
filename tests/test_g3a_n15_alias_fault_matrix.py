@@ -1,8 +1,10 @@
 """N15 cross-Python source-identical forward, reverse and negative import cases."""
+
 import ast
 import tempfile
 import unittest
 from pathlib import Path
+
 from DMAIC_V3.phases.phase4_improve import CodeImprover
 
 
@@ -44,11 +46,15 @@ class N15SameSourceAliasControls(unittest.TestCase):
         self.assertEqual(env["value"], 3)
 
     def test_nested_try_import_is_not_removed(self):
-        _, text = self.apply("try:\n    import math\nexcept ImportError:\n    math = None\n")
+        _, text = self.apply(
+            "try:\n    import math\nexcept ImportError:\n    math = None\n"
+        )
         self.assertIn("    import math", text)
 
     def test_multiline_mixed_from_import_is_preserved(self):
-        _, text = self.apply("from math import (\n    sqrt,\n    floor,\n)\nvalue = floor(4.9)\n")
+        _, text = self.apply(
+            "from math import (\n    sqrt,\n    floor,\n)\nvalue = floor(4.9)\n"
+        )
         env = {}
         exec(text, env)
         self.assertEqual(env["value"], 4)

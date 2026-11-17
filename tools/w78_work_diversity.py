@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Deduplicate W78 work states and gate any later multivariate analysis."""
+
 from __future__ import annotations
 
 import argparse
@@ -37,16 +38,13 @@ def validate(rows: list[dict]) -> dict[str, dict]:
             if row.get("semantic_parity_with_w72") is not True:
                 raise ValueError(f"semantic parity failure for {sha}")
         work_hashes = {str(row["work_vector_sha256"]) for row in subset}
-        semantic_hashes = {
-            str(row["semantic_work_vector_sha256"]) for row in subset
-        }
+        semantic_hashes = {str(row["semantic_work_vector_sha256"]) for row in subset}
         feature_hashes = {str(row["feature_row_sha256"]) for row in subset}
         work_vectors = {
             json.dumps(row["work_vector"], sort_keys=True) for row in subset
         }
         semantic_vectors = {
-            json.dumps(row["semantic_work_vector"], sort_keys=True)
-            for row in subset
+            json.dumps(row["semantic_work_vector"], sort_keys=True) for row in subset
         }
         if not (
             len(work_hashes)
@@ -68,31 +66,23 @@ def validate(rows: list[dict]) -> dict[str, dict]:
     return collapsed
 
 
-def centered_scaled_rank(rows: list[dict], features: tuple[str, ...], field: str) -> int:
-    matrix = [
-        [float(row[field][feature]) for feature in features]
-        for row in rows
-    ]
+def centered_scaled_rank(
+    rows: list[dict], features: tuple[str, ...], field: str
+) -> int:
+    matrix = [[float(row[field][feature]) for feature in features] for row in rows]
     if not matrix:
         return 0
     cols = len(features)
     means = [sum(row[col] for row in matrix) / len(matrix) for col in range(cols)]
-    centered = [
-        [row[col] - means[col] for col in range(cols)]
-        for row in matrix
-    ]
-    scales = [
-        max(abs(row[col]) for row in centered) or 1.0
-        for col in range(cols)
-    ]
-    a = [
-        [row[col] / scales[col] for col in range(cols)]
-        for row in centered
-    ]
+    centered = [[row[col] - means[col] for col in range(cols)] for row in matrix]
+    scales = [max(abs(row[col]) for row in centered) or 1.0 for col in range(cols)]
+    a = [[row[col] / scales[col] for col in range(cols)] for row in centered]
     rank = 0
     row_count = len(a)
     for col in range(cols):
-        pivot = max(range(rank, row_count), key=lambda idx: abs(a[idx][col]), default=rank)
+        pivot = max(
+            range(rank, row_count), key=lambda idx: abs(a[idx][col]), default=rank
+        )
         if rank >= row_count or abs(a[pivot][col]) <= 1e-10:
             continue
         a[rank], a[pivot] = a[pivot], a[rank]
@@ -104,10 +94,7 @@ def centered_scaled_rank(rows: list[dict], features: tuple[str, ...], field: str
             factor = a[idx][col]
             if abs(factor) <= 1e-12:
                 continue
-            a[idx] = [
-                a[idx][j] - factor * a[rank][j]
-                for j in range(cols)
-            ]
+            a[idx] = [a[idx][j] - factor * a[rank][j] for j in range(cols)]
         rank += 1
         if rank == row_count:
             break
@@ -190,9 +177,7 @@ def evaluate(receipts: list[dict]) -> dict:
                 "work_vector": row["work_vector"],
                 "work_vector_sha256": row["work_vector_sha256"],
                 "semantic_work_vector": row["semantic_work_vector"],
-                "semantic_work_vector_sha256": row[
-                    "semantic_work_vector_sha256"
-                ],
+                "semantic_work_vector_sha256": row["semantic_work_vector_sha256"],
             }
             for row in collapsed
         ],

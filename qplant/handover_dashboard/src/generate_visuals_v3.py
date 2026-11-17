@@ -9,6 +9,7 @@ Generates:
 - Enhanced docs/index.html visual gallery + interactive calculator
 - Presentation HTML + PDF summary
 """
+
 from __future__ import annotations
 
 import json
@@ -32,6 +33,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from src.calc_leak_rate import leak_rate_to_mass_flow_g_year
+
 DOCS = ROOT / "docs"
 VIZ_DIR = DOCS / "visualizations"
 TABLES_DIR = ROOT / "tables"
@@ -41,7 +43,15 @@ OUTPUTS_V25 = ROOT / "outputs" / "v25"
 
 VIZ_DATA_DIR = VIZ_DIR / "data"
 
-for d in [VIZ_DIR, VIZ_DATA_DIR, TABLES_DIR, DOCS_TABLES, DATA_DIR, OUTPUTS_V25, OUTPUTS_V25 / "chart_data"]:
+for d in [
+    VIZ_DIR,
+    VIZ_DATA_DIR,
+    TABLES_DIR,
+    DOCS_TABLES,
+    DATA_DIR,
+    OUTPUTS_V25,
+    OUTPUTS_V25 / "chart_data",
+]:
     d.mkdir(parents=True, exist_ok=True)
 
 VERSION = "2.5.0"
@@ -125,11 +135,15 @@ OPERATING_CONDITIONS = [
 ]
 
 
-def he_loss_g_year(leak_rate: float, temp_k: float, pressure_bar: float, count: int = 1) -> float:
+def he_loss_g_year(
+    leak_rate: float, temp_k: float, pressure_bar: float, count: int = 1
+) -> float:
     return leak_rate_to_mass_flow_g_year(leak_rate, temp_k, pressure_bar) * count
 
 
-def he_loss_kg_year(leak_rate: float, temp_k: float, pressure_bar: float, count: int = 1) -> float:
+def he_loss_kg_year(
+    leak_rate: float, temp_k: float, pressure_bar: float, count: int = 1
+) -> float:
     return he_loss_g_year(leak_rate, temp_k, pressure_bar, count) / 1000.0
 
 
@@ -137,7 +151,9 @@ def _format_scientific(v: float) -> str:
     return f"{v:.1e}"
 
 
-def _figure_layout(title: str, x_title: str, y_title: str, log_x: bool = False, log_y: bool = False) -> dict[str, Any]:
+def _figure_layout(
+    title: str, x_title: str, y_title: str, log_x: bool = False, log_y: bool = False
+) -> dict[str, Any]:
     return {
         "title": {"text": title},
         "template": "plotly_white",
@@ -149,7 +165,9 @@ def _figure_layout(title: str, x_title: str, y_title: str, log_x: bool = False, 
     }
 
 
-def _save_chart(fig: go.Figure, chart_id: str, title: str, category: str, df_export: pd.DataFrame) -> dict[str, str]:
+def _save_chart(
+    fig: go.Figure, chart_id: str, title: str, category: str, df_export: pd.DataFrame
+) -> dict[str, str]:
     csv_path = OUTPUTS_V25 / "chart_data" / f"{chart_id}.csv"
     csv_docs_path = VIZ_DATA_DIR / f"{chart_id}.csv"
     df_export.to_csv(csv_path, index=False)
@@ -171,7 +189,9 @@ def _save_chart(fig: go.Figure, chart_id: str, title: str, category: str, df_exp
 }})();
 """
     html_path = VIZ_DIR / f"{chart_id}.html"
-    fig.write_html(str(html_path), include_plotlyjs="cdn", full_html=True, post_script=post_script)
+    fig.write_html(
+        str(html_path), include_plotlyjs="cdn", full_html=True, post_script=post_script
+    )
 
     return {
         "id": chart_id,
@@ -199,8 +219,10 @@ def _base_grid() -> pd.DataFrame:
                             "size": size,
                             "size_mm": SIZE_NUMERIC[size],
                             "leak_rate": leak,
-                            "he_loss_g_year": he_loss_g_year(leak, t, p) * SIZE_FACTOR[size],
-                            "he_loss_kg_year": he_loss_kg_year(leak, t, p) * SIZE_FACTOR[size],
+                            "he_loss_g_year": he_loss_g_year(leak, t, p)
+                            * SIZE_FACTOR[size],
+                            "he_loss_kg_year": he_loss_kg_year(leak, t, p)
+                            * SIZE_FACTOR[size],
                             "source_ref": meta["source_ref"],
                         }
                     )
@@ -224,21 +246,76 @@ def build_charts() -> list[dict[str, str]]:
                     y=y,
                     mode="lines",
                     name=f"{supplier} @ {t}K",
-                    hovertemplate="Leak=%{x:.1e} mbar·l/s<br>Loss=%{y:.3g} g/yr<br>Supplier=" + supplier + "<br>Source=" + meta["source_ref"] + "<extra></extra>",
+                    hovertemplate="Leak=%{x:.1e} mbar·l/s<br>Loss=%{y:.3g} g/yr<br>Supplier="
+                    + supplier
+                    + "<br>Source="
+                    + meta["source_ref"]
+                    + "<extra></extra>",
                 )
             )
             for xv, yv in zip(xvals, y):
-                rows.append({"supplier": supplier, "temperature_k": t, "leak_rate": xv, "he_loss_g_year": yv})
-    fig.update_layout(**_figure_layout("Chart 1 — Enhanced Leak Rate vs He Loss (material overlays)", "Leak rate (mbar·l/s)", "He loss (g/year)", True, True))
-    fig.update_layout(updatemenus=[{
-        "buttons": [
-            {"label": "Cryogenic zoom", "method": "relayout", "args": [{"xaxis.range": [math.log10(1e-10), math.log10(1e-7)], "yaxis.range": [math.log10(1e-4), math.log10(10)]}]},
-            {"label": "Warm zoom", "method": "relayout", "args": [{"xaxis.range": [math.log10(1e-9), math.log10(1e-4)], "yaxis.range": [math.log10(1e-3), math.log10(1e3)]}]},
-            {"label": "Reset", "method": "relayout", "args": [{"xaxis.autorange": True, "yaxis.autorange": True}]},
-        ],
-        "direction": "right", "x": 0, "y": 1.15,
-    }])
-    catalog.append(_save_chart(fig, "chart01_leak_vs_loss_material_overlay", "Enhanced Leak Rate vs He Loss", "Leak Rate Fundamentals", pd.DataFrame(rows)))
+                rows.append(
+                    {
+                        "supplier": supplier,
+                        "temperature_k": t,
+                        "leak_rate": xv,
+                        "he_loss_g_year": yv,
+                    }
+                )
+    fig.update_layout(
+        **_figure_layout(
+            "Chart 1 — Enhanced Leak Rate vs He Loss (material overlays)",
+            "Leak rate (mbar·l/s)",
+            "He loss (g/year)",
+            True,
+            True,
+        )
+    )
+    fig.update_layout(
+        updatemenus=[
+            {
+                "buttons": [
+                    {
+                        "label": "Cryogenic zoom",
+                        "method": "relayout",
+                        "args": [
+                            {
+                                "xaxis.range": [math.log10(1e-10), math.log10(1e-7)],
+                                "yaxis.range": [math.log10(1e-4), math.log10(10)],
+                            }
+                        ],
+                    },
+                    {
+                        "label": "Warm zoom",
+                        "method": "relayout",
+                        "args": [
+                            {
+                                "xaxis.range": [math.log10(1e-9), math.log10(1e-4)],
+                                "yaxis.range": [math.log10(1e-3), math.log10(1e3)],
+                            }
+                        ],
+                    },
+                    {
+                        "label": "Reset",
+                        "method": "relayout",
+                        "args": [{"xaxis.autorange": True, "yaxis.autorange": True}],
+                    },
+                ],
+                "direction": "right",
+                "x": 0,
+                "y": 1.15,
+            }
+        ]
+    )
+    catalog.append(
+        _save_chart(
+            fig,
+            "chart01_leak_vs_loss_material_overlay",
+            "Enhanced Leak Rate vs He Loss",
+            "Leak Rate Fundamentals",
+            pd.DataFrame(rows),
+        )
+    )
 
     # 2. Temperature sensitivity with pressure isolines
     rows = []
@@ -246,44 +323,140 @@ def build_charts() -> list[dict[str, str]]:
     temp_axis = np.array([4, 6, 8, 12, 20, 40, 80, 120, 200, 300])
     for supplier, meta in SUPPLIERS.items():
         for p in PRESSURES:
-            y = [he_loss_g_year(meta["ambient_leak_class"], float(t), p) for t in temp_axis]
+            y = [
+                he_loss_g_year(meta["ambient_leak_class"], float(t), p)
+                for t in temp_axis
+            ]
             trace_name = f"{supplier} | {p} bar"
-            fig.add_trace(go.Scatter(x=temp_axis, y=y, mode="lines+markers", name=trace_name,
-                                     hovertemplate="T=%{x}K<br>Loss=%{y:.3g} g/yr<br>Pressure="+str(p)+" bar<extra></extra>"))
+            fig.add_trace(
+                go.Scatter(
+                    x=temp_axis,
+                    y=y,
+                    mode="lines+markers",
+                    name=trace_name,
+                    hovertemplate="T=%{x}K<br>Loss=%{y:.3g} g/yr<br>Pressure="
+                    + str(p)
+                    + " bar<extra></extra>",
+                )
+            )
             for t, yl in zip(temp_axis, y):
-                rows.append({"supplier": supplier, "pressure_bar": p, "temperature_k": t, "he_loss_g_year": yl})
-    fig.update_layout(**_figure_layout("Chart 2 — Leak Rate vs Temperature (Pressure Isolines)", "Temperature (K)", "He loss (g/year)", False, True))
-    catalog.append(_save_chart(fig, "chart02_temperature_sensitivity_pressure_isolines", "Temperature Sensitivity (pressure isolines)", "Leak Rate Fundamentals", pd.DataFrame(rows)))
+                rows.append(
+                    {
+                        "supplier": supplier,
+                        "pressure_bar": p,
+                        "temperature_k": t,
+                        "he_loss_g_year": yl,
+                    }
+                )
+    fig.update_layout(
+        **_figure_layout(
+            "Chart 2 — Leak Rate vs Temperature (Pressure Isolines)",
+            "Temperature (K)",
+            "He loss (g/year)",
+            False,
+            True,
+        )
+    )
+    catalog.append(
+        _save_chart(
+            fig,
+            "chart02_temperature_sensitivity_pressure_isolines",
+            "Temperature Sensitivity (pressure isolines)",
+            "Leak Rate Fundamentals",
+            pd.DataFrame(rows),
+        )
+    )
 
     # 3. Pressure sensitivity with temperature isolines + size markers
     rows = []
     fig = go.Figure()
     p_axis = np.arange(1, 13)
-    marker_map = {"DN06": "circle", "DN12": "square", "DN25": "diamond", "DN50": "triangle-up"}
+    marker_map = {
+        "DN06": "circle",
+        "DN12": "square",
+        "DN25": "diamond",
+        "DN50": "triangle-up",
+    }
     for supplier, meta in SUPPLIERS.items():
         for t in TEMPS:
-            base_y = [he_loss_kg_year(meta["ambient_leak_class"], t, float(p)) for p in p_axis]
+            base_y = [
+                he_loss_kg_year(meta["ambient_leak_class"], t, float(p)) for p in p_axis
+            ]
             for size in VALVE_SIZES:
                 y = [val * SIZE_FACTOR[size] for val in base_y]
-                fig.add_trace(go.Scatter(x=p_axis, y=y, mode="lines+markers", marker_symbol=marker_map[size],
-                                         name=f"{supplier} | {t}K | {size}",
-                                         visible=True if size in ["DN06", "DN50"] else "legendonly",
-                                         hovertemplate="P=%{x} bar<br>Loss=%{y:.4f} kg/yr<br>T="+str(t)+"K<br>Size="+size+"<extra></extra>"))
+                fig.add_trace(
+                    go.Scatter(
+                        x=p_axis,
+                        y=y,
+                        mode="lines+markers",
+                        marker_symbol=marker_map[size],
+                        name=f"{supplier} | {t}K | {size}",
+                        visible=True if size in ["DN06", "DN50"] else "legendonly",
+                        hovertemplate="P=%{x} bar<br>Loss=%{y:.4f} kg/yr<br>T="
+                        + str(t)
+                        + "K<br>Size="
+                        + size
+                        + "<extra></extra>",
+                    )
+                )
                 for p, yl in zip(p_axis, y):
-                    rows.append({"supplier": supplier, "temperature_k": t, "size": size, "pressure_bar": p, "he_loss_kg_year": yl})
-    fig.update_layout(**_figure_layout("Chart 3 — Leak Rate vs Pressure (Temperature Isolines)", "Pressure (bar)", "He loss (kg/year)", False, False))
-    catalog.append(_save_chart(fig, "chart03_pressure_sensitivity_temperature_isolines", "Pressure Sensitivity (temperature isolines)", "Leak Rate Fundamentals", pd.DataFrame(rows)))
+                    rows.append(
+                        {
+                            "supplier": supplier,
+                            "temperature_k": t,
+                            "size": size,
+                            "pressure_bar": p,
+                            "he_loss_kg_year": yl,
+                        }
+                    )
+    fig.update_layout(
+        **_figure_layout(
+            "Chart 3 — Leak Rate vs Pressure (Temperature Isolines)",
+            "Pressure (bar)",
+            "He loss (kg/year)",
+            False,
+            False,
+        )
+    )
+    catalog.append(
+        _save_chart(
+            fig,
+            "chart03_pressure_sensitivity_temperature_isolines",
+            "Pressure Sensitivity (temperature isolines)",
+            "Leak Rate Fundamentals",
+            pd.DataFrame(rows),
+        )
+    )
 
     # 4. Valve size impact
     size_rows = []
     fig = go.Figure()
     for supplier, meta in SUPPLIERS.items():
-        y = [he_loss_g_year(meta["ambient_leak_class"], 300, 5) * SIZE_FACTOR[s] for s in VALVE_SIZES]
+        y = [
+            he_loss_g_year(meta["ambient_leak_class"], 300, 5) * SIZE_FACTOR[s]
+            for s in VALVE_SIZES
+        ]
         fig.add_trace(go.Bar(x=VALVE_SIZES, y=y, name=supplier))
         for s, yl in zip(VALVE_SIZES, y):
             size_rows.append({"supplier": supplier, "size": s, "he_loss_g_year": yl})
-    fig.update_layout(**_figure_layout("Chart 4 — Valve Size Impact (DN06-DN50)", "Valve size", "He loss (g/year)", False, False))
-    catalog.append(_save_chart(fig, "chart04_valve_size_impact", "Valve Size Impact", "Leak Rate Fundamentals", pd.DataFrame(size_rows)))
+    fig.update_layout(
+        **_figure_layout(
+            "Chart 4 — Valve Size Impact (DN06-DN50)",
+            "Valve size",
+            "He loss (g/year)",
+            False,
+            False,
+        )
+    )
+    catalog.append(
+        _save_chart(
+            fig,
+            "chart04_valve_size_impact",
+            "Valve Size Impact",
+            "Leak Rate Fundamentals",
+            pd.DataFrame(size_rows),
+        )
+    )
 
     # 5. Seal material comparison
     seal_rows = []
@@ -293,18 +466,59 @@ def build_charts() -> list[dict[str, str]]:
         fig.add_trace(go.Scatter(x=TEMPS, y=y, mode="lines+markers", name=seal))
         for t, yl in zip(TEMPS, y):
             seal_rows.append({"seal": seal, "temperature_k": t, "he_loss_g_year": yl})
-    fig.update_layout(**_figure_layout("Chart 5 — Seal Material Comparison (HDPE vs UHMWPE)", "Temperature (K)", "He loss (g/year)", False, True))
-    catalog.append(_save_chart(fig, "chart05_seal_material_comparison", "Seal Material Comparison", "Leak Rate Fundamentals", pd.DataFrame(seal_rows)))
+    fig.update_layout(
+        **_figure_layout(
+            "Chart 5 — Seal Material Comparison (HDPE vs UHMWPE)",
+            "Temperature (K)",
+            "He loss (g/year)",
+            False,
+            True,
+        )
+    )
+    catalog.append(
+        _save_chart(
+            fig,
+            "chart05_seal_material_comparison",
+            "Seal Material Comparison",
+            "Leak Rate Fundamentals",
+            pd.DataFrame(seal_rows),
+        )
+    )
 
     # 6. Supplier performance matrix
-    perf = pd.DataFrame([
-        {"supplier": s, "capex_eur": np.mean(list(meta["base_valve_cost"].values())), "ambient_leak": meta["ambient_leak_class"], "radiation_score": 8 if meta["seal"] == "HDPE" else 9}
-        for s, meta in SUPPLIERS.items()
-    ])
-    fig = px.scatter(perf, x="ambient_leak", y="capex_eur", size="radiation_score", color="supplier", log_x=True,
-                     title="Chart 6 — Meca Inox vs Swagelok Performance Matrix",
-                     labels={"ambient_leak": "Ambient leak class (mbar·l/s)", "capex_eur": "Valve CAPEX (€)"})
-    catalog.append(_save_chart(fig, "chart06_supplier_performance_matrix", "Supplier Performance Matrix", "Supplier & Material Analysis", perf))
+    perf = pd.DataFrame(
+        [
+            {
+                "supplier": s,
+                "capex_eur": np.mean(list(meta["base_valve_cost"].values())),
+                "ambient_leak": meta["ambient_leak_class"],
+                "radiation_score": 8 if meta["seal"] == "HDPE" else 9,
+            }
+            for s, meta in SUPPLIERS.items()
+        ]
+    )
+    fig = px.scatter(
+        perf,
+        x="ambient_leak",
+        y="capex_eur",
+        size="radiation_score",
+        color="supplier",
+        log_x=True,
+        title="Chart 6 — Meca Inox vs Swagelok Performance Matrix",
+        labels={
+            "ambient_leak": "Ambient leak class (mbar·l/s)",
+            "capex_eur": "Valve CAPEX (€)",
+        },
+    )
+    catalog.append(
+        _save_chart(
+            fig,
+            "chart06_supplier_performance_matrix",
+            "Supplier Performance Matrix",
+            "Supplier & Material Analysis",
+            perf,
+        )
+    )
 
     # 7. Material cost breakdown secondary axis
     rows = []
@@ -314,28 +528,102 @@ def build_charts() -> list[dict[str, str]]:
         electro = [meta["electropolish_cost"]] * len(VALVE_SIZES)
         seal = [meta["seal_cost"][s] for s in VALVE_SIZES]
         install = [meta["welding_cost"][s] for s in VALVE_SIZES]
-        fig.add_trace(go.Bar(name=f"{supplier} 316 SS base", x=VALVE_SIZES, y=base, legendgroup=supplier), secondary_y=False)
-        fig.add_trace(go.Bar(name=f"{supplier} electropolish", x=VALVE_SIZES, y=electro, legendgroup=supplier), secondary_y=False)
-        fig.add_trace(go.Bar(name=f"{supplier} seal", x=VALVE_SIZES, y=seal, legendgroup=supplier), secondary_y=False)
-        fig.add_trace(go.Scatter(name=f"{supplier} welding/install", x=VALVE_SIZES, y=install, mode="lines+markers", legendgroup=supplier), secondary_y=True)
+        fig.add_trace(
+            go.Bar(
+                name=f"{supplier} 316 SS base",
+                x=VALVE_SIZES,
+                y=base,
+                legendgroup=supplier,
+            ),
+            secondary_y=False,
+        )
+        fig.add_trace(
+            go.Bar(
+                name=f"{supplier} electropolish",
+                x=VALVE_SIZES,
+                y=electro,
+                legendgroup=supplier,
+            ),
+            secondary_y=False,
+        )
+        fig.add_trace(
+            go.Bar(
+                name=f"{supplier} seal", x=VALVE_SIZES, y=seal, legendgroup=supplier
+            ),
+            secondary_y=False,
+        )
+        fig.add_trace(
+            go.Scatter(
+                name=f"{supplier} welding/install",
+                x=VALVE_SIZES,
+                y=install,
+                mode="lines+markers",
+                legendgroup=supplier,
+            ),
+            secondary_y=True,
+        )
         for s, b, e, se, ins in zip(VALVE_SIZES, base, electro, seal, install):
-            rows.append({"supplier": supplier, "size": s, "base_eur": b, "electropolish_eur": e, "seal_eur": se, "welding_install_eur": ins})
-    fig.update_layout(title="Chart 7 — Material Cost Breakdown", barmode="stack", template="plotly_white", height=560)
+            rows.append(
+                {
+                    "supplier": supplier,
+                    "size": s,
+                    "base_eur": b,
+                    "electropolish_eur": e,
+                    "seal_eur": se,
+                    "welding_install_eur": ins,
+                }
+            )
+    fig.update_layout(
+        title="Chart 7 — Material Cost Breakdown",
+        barmode="stack",
+        template="plotly_white",
+        height=560,
+    )
     fig.update_xaxes(title_text="Valve size")
     fig.update_yaxes(title_text="Material cost (€)", secondary_y=False)
     fig.update_yaxes(title_text="Welding/install (€)", secondary_y=True)
-    catalog.append(_save_chart(fig, "chart07_material_cost_breakdown", "Material Cost Breakdown", "Supplier & Material Analysis", pd.DataFrame(rows)))
+    catalog.append(
+        _save_chart(
+            fig,
+            "chart07_material_cost_breakdown",
+            "Material Cost Breakdown",
+            "Supplier & Material Analysis",
+            pd.DataFrame(rows),
+        )
+    )
 
     # 8. Radiation tolerance degradation curves
     dose = np.linspace(0, 100, 80)
     hdpe_perf = np.exp(-dose / 120) * 100
     uhmwpe_perf = np.exp(-dose / 150) * 100
-    rad_df = pd.DataFrame({"dose_kGy": dose, "HDPE_performance_pct": hdpe_perf, "UHMWPE_performance_pct": uhmwpe_perf})
+    rad_df = pd.DataFrame(
+        {
+            "dose_kGy": dose,
+            "HDPE_performance_pct": hdpe_perf,
+            "UHMWPE_performance_pct": uhmwpe_perf,
+        }
+    )
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=dose, y=hdpe_perf, mode="lines", name="HDPE"))
     fig.add_trace(go.Scatter(x=dose, y=uhmwpe_perf, mode="lines", name="UHMWPE"))
-    fig.update_layout(**_figure_layout("Chart 8 — Radiation Tolerance Degradation", "Dose (kGy)", "Relative seal performance (%)", False, False))
-    catalog.append(_save_chart(fig, "chart08_radiation_tolerance_curves", "Radiation Tolerance", "Supplier & Material Analysis", rad_df))
+    fig.update_layout(
+        **_figure_layout(
+            "Chart 8 — Radiation Tolerance Degradation",
+            "Dose (kGy)",
+            "Relative seal performance (%)",
+            False,
+            False,
+        )
+    )
+    catalog.append(
+        _save_chart(
+            fig,
+            "chart08_radiation_tolerance_curves",
+            "Radiation Tolerance",
+            "Supplier & Material Analysis",
+            rad_df,
+        )
+    )
 
     # 9. Welding cost by size
     weld_rows = []
@@ -344,92 +632,275 @@ def build_charts() -> list[dict[str, str]]:
         y = [meta["welding_cost"][s] for s in VALVE_SIZES]
         fig.add_trace(go.Bar(x=VALVE_SIZES, y=y, name=supplier))
         for s, c in zip(VALVE_SIZES, y):
-            weld_rows.append({"supplier": supplier, "size": s, "welding_cost_eur_joint": c})
-    fig.update_layout(**_figure_layout("Chart 9 — Orbital TIG Welding Cost by Size", "Valve size", "Cost (€/joint)", False, False))
-    catalog.append(_save_chart(fig, "chart09_welding_cost_by_size", "Welding Cost by Size", "Supplier & Material Analysis", pd.DataFrame(weld_rows)))
+            weld_rows.append(
+                {"supplier": supplier, "size": s, "welding_cost_eur_joint": c}
+            )
+    fig.update_layout(
+        **_figure_layout(
+            "Chart 9 — Orbital TIG Welding Cost by Size",
+            "Valve size",
+            "Cost (€/joint)",
+            False,
+            False,
+        )
+    )
+    catalog.append(
+        _save_chart(
+            fig,
+            "chart09_welding_cost_by_size",
+            "Welding Cost by Size",
+            "Supplier & Material Analysis",
+            pd.DataFrame(weld_rows),
+        )
+    )
 
     # 10. Warm service analysis
     warm_rows = []
     fig = go.Figure()
     p_axis = np.arange(1, 13)
     for supplier, meta in SUPPLIERS.items():
-        y = [he_loss_kg_year(meta["ambient_leak_class"], 300, float(p), 50) for p in p_axis]
+        y = [
+            he_loss_kg_year(meta["ambient_leak_class"], 300, float(p), 50)
+            for p in p_axis
+        ]
         fig.add_trace(go.Scatter(x=p_axis, y=y, mode="lines+markers", name=supplier))
         for p, yl in zip(p_axis, y):
-            warm_rows.append({"supplier": supplier, "pressure_bar": p, "loss_kg_year_50_valves": yl})
-    fig.update_layout(**_figure_layout("Chart 10 — Warm Service (300K, 1-12 bar)", "Pressure (bar)", "He loss (kg/year) for 50 valves", False, False))
-    catalog.append(_save_chart(fig, "chart10_warm_service_analysis", "Warm Service Analysis", "Operating Conditions", pd.DataFrame(warm_rows)))
+            warm_rows.append(
+                {"supplier": supplier, "pressure_bar": p, "loss_kg_year_50_valves": yl}
+            )
+    fig.update_layout(
+        **_figure_layout(
+            "Chart 10 — Warm Service (300K, 1-12 bar)",
+            "Pressure (bar)",
+            "He loss (kg/year) for 50 valves",
+            False,
+            False,
+        )
+    )
+    catalog.append(
+        _save_chart(
+            fig,
+            "chart10_warm_service_analysis",
+            "Warm Service Analysis",
+            "Operating Conditions",
+            pd.DataFrame(warm_rows),
+        )
+    )
 
     # 11. Cold service analysis
     cold_rows = []
     fig = go.Figure()
     for supplier, meta in SUPPLIERS.items():
-        y = [he_loss_kg_year(meta["ambient_leak_class"], float(t), 5, 50) for t in [4, 10, 20, 40, 80]]
-        fig.add_trace(go.Scatter(x=[4, 10, 20, 40, 80], y=y, mode="lines+markers", name=supplier))
+        y = [
+            he_loss_kg_year(meta["ambient_leak_class"], float(t), 5, 50)
+            for t in [4, 10, 20, 40, 80]
+        ]
+        fig.add_trace(
+            go.Scatter(x=[4, 10, 20, 40, 80], y=y, mode="lines+markers", name=supplier)
+        )
         for t, yl in zip([4, 10, 20, 40, 80], y):
-            cold_rows.append({"supplier": supplier, "temperature_k": t, "loss_kg_year_50_valves": yl})
-    fig.update_layout(**_figure_layout("Chart 11 — Cold Service (4K-80K, 1-12 bar)", "Temperature (K)", "He loss (kg/year) for 50 valves", False, True))
-    catalog.append(_save_chart(fig, "chart11_cold_service_analysis", "Cold Service Analysis", "Operating Conditions", pd.DataFrame(cold_rows)))
+            cold_rows.append(
+                {"supplier": supplier, "temperature_k": t, "loss_kg_year_50_valves": yl}
+            )
+    fig.update_layout(
+        **_figure_layout(
+            "Chart 11 — Cold Service (4K-80K, 1-12 bar)",
+            "Temperature (K)",
+            "He loss (kg/year) for 50 valves",
+            False,
+            True,
+        )
+    )
+    catalog.append(
+        _save_chart(
+            fig,
+            "chart11_cold_service_analysis",
+            "Cold Service Analysis",
+            "Operating Conditions",
+            pd.DataFrame(cold_rows),
+        )
+    )
 
     # 12. Helium guard systems
-    guard_df = pd.DataFrame({
-        "boundary": ["Primary", "Helium Guard", "Secondary Containment"],
-        "acceptable_leak_rate": [1e-8, 1e-5, 1e-4],
-        "recommendation": ["Swagelok", "Meca Inox", "Either"],
-    })
-    fig = px.bar(guard_df, x="boundary", y="acceptable_leak_rate", color="recommendation", log_y=True,
-                 title="Chart 12 — Helium Guard Systems (sub-atmospheric)",
-                 labels={"acceptable_leak_rate": "Acceptable leak class (mbar·l/s)"})
-    catalog.append(_save_chart(fig, "chart12_helium_guard_systems", "Helium Guard Systems", "Operating Conditions", guard_df))
+    guard_df = pd.DataFrame(
+        {
+            "boundary": ["Primary", "Helium Guard", "Secondary Containment"],
+            "acceptable_leak_rate": [1e-8, 1e-5, 1e-4],
+            "recommendation": ["Swagelok", "Meca Inox", "Either"],
+        }
+    )
+    fig = px.bar(
+        guard_df,
+        x="boundary",
+        y="acceptable_leak_rate",
+        color="recommendation",
+        log_y=True,
+        title="Chart 12 — Helium Guard Systems (sub-atmospheric)",
+        labels={"acceptable_leak_rate": "Acceptable leak class (mbar·l/s)"},
+    )
+    catalog.append(
+        _save_chart(
+            fig,
+            "chart12_helium_guard_systems",
+            "Helium Guard Systems",
+            "Operating Conditions",
+            guard_df,
+        )
+    )
 
     # 13. Internal protect systems
-    ip_df = pd.DataFrame({
-        "condition": ["Internal boundary", "Protected manifold", "To vacuum"],
-        "acceptable_rate": [1e-4, 1e-5, 1e-8],
-        "supplier_fit_score_meca": [9, 8, 4],
-        "supplier_fit_score_swag": [8, 8, 10],
-    })
+    ip_df = pd.DataFrame(
+        {
+            "condition": ["Internal boundary", "Protected manifold", "To vacuum"],
+            "acceptable_rate": [1e-4, 1e-5, 1e-8],
+            "supplier_fit_score_meca": [9, 8, 4],
+            "supplier_fit_score_swag": [8, 8, 10],
+        }
+    )
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=ip_df["condition"], y=ip_df["supplier_fit_score_meca"], mode="lines+markers", name="Meca Inox"))
-    fig.add_trace(go.Scatter(x=ip_df["condition"], y=ip_df["supplier_fit_score_swag"], mode="lines+markers", name="Swagelok"))
-    fig.update_layout(**_figure_layout("Chart 13 — Internal Protect Systems Recommendation", "Condition", "Supplier fit score (0-10)", False, False))
-    catalog.append(_save_chart(fig, "chart13_internal_protect_systems", "Internal Protect Systems", "Operating Conditions", ip_df))
+    fig.add_trace(
+        go.Scatter(
+            x=ip_df["condition"],
+            y=ip_df["supplier_fit_score_meca"],
+            mode="lines+markers",
+            name="Meca Inox",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=ip_df["condition"],
+            y=ip_df["supplier_fit_score_swag"],
+            mode="lines+markers",
+            name="Swagelok",
+        )
+    )
+    fig.update_layout(
+        **_figure_layout(
+            "Chart 13 — Internal Protect Systems Recommendation",
+            "Condition",
+            "Supplier fit score (0-10)",
+            False,
+            False,
+        )
+    )
+    catalog.append(
+        _save_chart(
+            fig,
+            "chart13_internal_protect_systems",
+            "Internal Protect Systems",
+            "Operating Conditions",
+            ip_df,
+        )
+    )
 
     # 14. Cost waterfall
     capex = 410 * 900
     install = 410 * 280
-    he_loss_cost = he_loss_kg_year(1e-8, 300, 5, 210) * HE_PRICE_DEFAULT_EUR_KG + he_loss_kg_year(1e-9, 80, 5, 200) * HE_PRICE_DEFAULT_EUR_KG
+    he_loss_cost = (
+        he_loss_kg_year(1e-8, 300, 5, 210) * HE_PRICE_DEFAULT_EUR_KG
+        + he_loss_kg_year(1e-9, 80, 5, 200) * HE_PRICE_DEFAULT_EUR_KG
+    )
     maint = 410 * 75
     total = capex + install + he_loss_cost + maint
-    wf_df = pd.DataFrame({"component": ["Capital", "Install", "He loss", "Maintenance", "Total"], "eur": [capex, install, he_loss_cost, maint, total]})
-    fig = go.Figure(go.Waterfall(
-        x=wf_df["component"],
-        y=wf_df["eur"],
-        measure=["relative", "relative", "relative", "relative", "total"],
-    ))
-    fig.update_layout(**_figure_layout("Chart 14 — Cost Waterfall", "Category", "Cost (€)", False, False))
-    catalog.append(_save_chart(fig, "chart14_cost_waterfall", "Cost Waterfall", "Cost Analysis", wf_df))
+    wf_df = pd.DataFrame(
+        {
+            "component": ["Capital", "Install", "He loss", "Maintenance", "Total"],
+            "eur": [capex, install, he_loss_cost, maint, total],
+        }
+    )
+    fig = go.Figure(
+        go.Waterfall(
+            x=wf_df["component"],
+            y=wf_df["eur"],
+            measure=["relative", "relative", "relative", "relative", "total"],
+        )
+    )
+    fig.update_layout(
+        **_figure_layout(
+            "Chart 14 — Cost Waterfall", "Category", "Cost (€)", False, False
+        )
+    )
+    catalog.append(
+        _save_chart(
+            fig, "chart14_cost_waterfall", "Cost Waterfall", "Cost Analysis", wf_df
+        )
+    )
 
     # 15. Monte Carlo
     rng = np.random.default_rng(42)
     he_price = rng.triangular(117, 180, 300, 8000)
     annual_kg = rng.normal(35, 7, 8000).clip(5, None)
     total_cost = annual_kg * he_price + rng.normal(50_000, 8_000, 8000)
-    mc_df = pd.DataFrame({"he_price": he_price, "annual_loss_kg": annual_kg, "total_cost_eur": total_cost})
-    fig = px.histogram(mc_df, x="total_cost_eur", nbins=60, title="Chart 15 — Monte Carlo Total Cost Distribution")
-    catalog.append(_save_chart(fig, "chart15_monte_carlo_results", "Monte Carlo Results", "Cost Analysis", mc_df))
+    mc_df = pd.DataFrame(
+        {
+            "he_price": he_price,
+            "annual_loss_kg": annual_kg,
+            "total_cost_eur": total_cost,
+        }
+    )
+    fig = px.histogram(
+        mc_df,
+        x="total_cost_eur",
+        nbins=60,
+        title="Chart 15 — Monte Carlo Total Cost Distribution",
+    )
+    catalog.append(
+        _save_chart(
+            fig,
+            "chart15_monte_carlo_results",
+            "Monte Carlo Results",
+            "Cost Analysis",
+            mc_df,
+        )
+    )
 
     # 16. Sensitivity analysis
-    sens_df = pd.DataFrame({
-        "parameter": ["He price", "Welding", "Electropolish", "Leak class choice", "Replacement frequency"],
-        "delta_cost_low": [-22000, -7000, -5000, -18000, -12000],
-        "delta_cost_high": [34000, 10000, 8000, 26000, 18000],
-    })
+    sens_df = pd.DataFrame(
+        {
+            "parameter": [
+                "He price",
+                "Welding",
+                "Electropolish",
+                "Leak class choice",
+                "Replacement frequency",
+            ],
+            "delta_cost_low": [-22000, -7000, -5000, -18000, -12000],
+            "delta_cost_high": [34000, 10000, 8000, 26000, 18000],
+        }
+    )
     fig = go.Figure()
-    fig.add_trace(go.Bar(y=sens_df["parameter"], x=sens_df["delta_cost_low"], orientation="h", name="Low", marker_color="#10b981"))
-    fig.add_trace(go.Bar(y=sens_df["parameter"], x=sens_df["delta_cost_high"], orientation="h", name="High", marker_color="#ef4444"))
-    fig.update_layout(**_figure_layout("Chart 16 — Sensitivity Analysis", "Δ Cost (€)", "Parameter", False, False))
-    catalog.append(_save_chart(fig, "chart16_sensitivity_analysis", "Sensitivity Analysis", "Cost Analysis", sens_df))
+    fig.add_trace(
+        go.Bar(
+            y=sens_df["parameter"],
+            x=sens_df["delta_cost_low"],
+            orientation="h",
+            name="Low",
+            marker_color="#10b981",
+        )
+    )
+    fig.add_trace(
+        go.Bar(
+            y=sens_df["parameter"],
+            x=sens_df["delta_cost_high"],
+            orientation="h",
+            name="High",
+            marker_color="#ef4444",
+        )
+    )
+    fig.update_layout(
+        **_figure_layout(
+            "Chart 16 — Sensitivity Analysis", "Δ Cost (€)", "Parameter", False, False
+        )
+    )
+    catalog.append(
+        _save_chart(
+            fig,
+            "chart16_sensitivity_analysis",
+            "Sensitivity Analysis",
+            "Cost Analysis",
+            sens_df,
+        )
+    )
 
     # 17. Lifecycle TCO with secondary axis replacements
     years = np.arange(0, 41)
@@ -443,29 +914,96 @@ def build_charts() -> list[dict[str, str]]:
         yearly_loss = he_loss_kg_year(leak_class, 300, 5, 100) * HE_PRICE_DEFAULT_EUR_KG
         cumulative = years * yearly_loss + capex * 100
         replacements = np.floor(years / repl_interval)
-        fig.add_trace(go.Scatter(x=years, y=cumulative, mode="lines", name=f"{name} cumulative cost"), secondary_y=False)
-        fig.add_trace(go.Scatter(x=years, y=replacements, mode="lines", name=f"{name} replacements", line=dict(dash="dot")), secondary_y=True)
+        fig.add_trace(
+            go.Scatter(
+                x=years, y=cumulative, mode="lines", name=f"{name} cumulative cost"
+            ),
+            secondary_y=False,
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=years,
+                y=replacements,
+                mode="lines",
+                name=f"{name} replacements",
+                line=dict(dash="dot"),
+            ),
+            secondary_y=True,
+        )
         for yv, cv, rv in zip(years, cumulative, replacements):
-            rows.append({"valve_type": name, "year": int(yv), "cumulative_cost_eur": float(cv), "replacements": int(rv)})
-    fig.update_layout(title="Chart 17 — Valve Lifecycle Cost Analysis (0-40 years)", template="plotly_white", height=560)
+            rows.append(
+                {
+                    "valve_type": name,
+                    "year": int(yv),
+                    "cumulative_cost_eur": float(cv),
+                    "replacements": int(rv),
+                }
+            )
+    fig.update_layout(
+        title="Chart 17 — Valve Lifecycle Cost Analysis (0-40 years)",
+        template="plotly_white",
+        height=560,
+    )
     fig.update_xaxes(title_text="Years of operation")
     fig.update_yaxes(title_text="Cumulative He loss cost (€)", secondary_y=False)
     fig.update_yaxes(title_text="Number of replacements", secondary_y=True)
-    catalog.append(_save_chart(fig, "chart17_lifecycle_tco_secondary_axis", "Lifecycle TCO Comparison", "Cost Analysis", pd.DataFrame(rows)))
+    catalog.append(
+        _save_chart(
+            fig,
+            "chart17_lifecycle_tco_secondary_axis",
+            "Lifecycle TCO Comparison",
+            "Cost Analysis",
+            pd.DataFrame(rows),
+        )
+    )
 
     # 18. Replacement strategy
-    repl_df = pd.DataFrame({
-        "strategy": ["Run-to-failure", "Scheduled 12y", "Scheduled 18y", "Hybrid condition-based"],
-        "lifecycle_cost_eur": [2_200_000, 1_820_000, 1_740_000, 1_690_000],
-        "availability_pct": [96.9, 98.1, 98.4, 99.0],
-    })
+    repl_df = pd.DataFrame(
+        {
+            "strategy": [
+                "Run-to-failure",
+                "Scheduled 12y",
+                "Scheduled 18y",
+                "Hybrid condition-based",
+            ],
+            "lifecycle_cost_eur": [2_200_000, 1_820_000, 1_740_000, 1_690_000],
+            "availability_pct": [96.9, 98.1, 98.4, 99.0],
+        }
+    )
     fig = make_subplots(specs=[[{"secondary_y": True}]])
-    fig.add_trace(go.Bar(x=repl_df["strategy"], y=repl_df["lifecycle_cost_eur"], name="Lifecycle cost (€)"), secondary_y=False)
-    fig.add_trace(go.Scatter(x=repl_df["strategy"], y=repl_df["availability_pct"], mode="lines+markers", name="Availability (%)"), secondary_y=True)
-    fig.update_layout(title="Chart 18 — Valve Replacement Strategy Cost", template="plotly_white", height=520)
+    fig.add_trace(
+        go.Bar(
+            x=repl_df["strategy"],
+            y=repl_df["lifecycle_cost_eur"],
+            name="Lifecycle cost (€)",
+        ),
+        secondary_y=False,
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=repl_df["strategy"],
+            y=repl_df["availability_pct"],
+            mode="lines+markers",
+            name="Availability (%)",
+        ),
+        secondary_y=True,
+    )
+    fig.update_layout(
+        title="Chart 18 — Valve Replacement Strategy Cost",
+        template="plotly_white",
+        height=520,
+    )
     fig.update_yaxes(title_text="Cost (€)", secondary_y=False)
     fig.update_yaxes(title_text="Availability (%)", secondary_y=True)
-    catalog.append(_save_chart(fig, "chart18_valve_replacement_strategy", "Valve Replacement Strategy Cost", "Cost Analysis", repl_df))
+    catalog.append(
+        _save_chart(
+            fig,
+            "chart18_valve_replacement_strategy",
+            "Valve Replacement Strategy Cost",
+            "Cost Analysis",
+            repl_df,
+        )
+    )
 
     return catalog
 
@@ -485,15 +1023,51 @@ def build_tables_and_data() -> None:
                 "Meca Inox (HDPE)": "HDPE",
                 "Swagelok SS-42GSE (UHMWPE)": "UHMWPE",
             },
-            {"Parameter": "Base material", "Meca Inox (HDPE)": "316 SS", "Swagelok SS-42GSE (UHMWPE)": "316 SS"},
-            {"Parameter": "Electropolish", "Meca Inox (HDPE)": "Yes (Ra <0.4 μm)", "Swagelok SS-42GSE (UHMWPE)": "Yes (Ra <0.4 μm)"},
-            {"Parameter": "Leak rate (ambient)", "Meca Inox (HDPE)": ">1×10⁻⁹ (derogation)", "Swagelok SS-42GSE (UHMWPE)": "≤1×10⁻⁹ (compliant)"},
-            {"Parameter": "Leak rate (restriction)", "Meca Inox (HDPE)": "1×10⁻⁴", "Swagelok SS-42GSE (UHMWPE)": "1×10⁻⁴"},
-            {"Parameter": "Size range", "Meca Inox (HDPE)": "DN12-DN50", "Swagelok SS-42GSE (UHMWPE)": "DN06-DN25"},
-            {"Parameter": "Actuation", "Meca Inox (HDPE)": "Pneumatic (W1d) / Manual", "Swagelok SS-42GSE (UHMWPE)": "Manual + limit switch"},
-            {"Parameter": "Radiation hardness", "Meca Inox (HDPE)": "Required", "Swagelok SS-42GSE (UHMWPE)": "Required"},
-            {"Parameter": "Typical application", "Meca Inox (HDPE)": "Warm On/Off (W1d)", "Swagelok SS-42GSE (UHMWPE)": "Instrumentation, precise control"},
-            {"Parameter": "Compliance status", "Meca Inox (HDPE)": "Economic derogation", "Swagelok SS-42GSE (UHMWPE)": "Industry standard"},
+            {
+                "Parameter": "Base material",
+                "Meca Inox (HDPE)": "316 SS",
+                "Swagelok SS-42GSE (UHMWPE)": "316 SS",
+            },
+            {
+                "Parameter": "Electropolish",
+                "Meca Inox (HDPE)": "Yes (Ra <0.4 μm)",
+                "Swagelok SS-42GSE (UHMWPE)": "Yes (Ra <0.4 μm)",
+            },
+            {
+                "Parameter": "Leak rate (ambient)",
+                "Meca Inox (HDPE)": ">1×10⁻⁹ (derogation)",
+                "Swagelok SS-42GSE (UHMWPE)": "≤1×10⁻⁹ (compliant)",
+            },
+            {
+                "Parameter": "Leak rate (restriction)",
+                "Meca Inox (HDPE)": "1×10⁻⁴",
+                "Swagelok SS-42GSE (UHMWPE)": "1×10⁻⁴",
+            },
+            {
+                "Parameter": "Size range",
+                "Meca Inox (HDPE)": "DN12-DN50",
+                "Swagelok SS-42GSE (UHMWPE)": "DN06-DN25",
+            },
+            {
+                "Parameter": "Actuation",
+                "Meca Inox (HDPE)": "Pneumatic (W1d) / Manual",
+                "Swagelok SS-42GSE (UHMWPE)": "Manual + limit switch",
+            },
+            {
+                "Parameter": "Radiation hardness",
+                "Meca Inox (HDPE)": "Required",
+                "Swagelok SS-42GSE (UHMWPE)": "Required",
+            },
+            {
+                "Parameter": "Typical application",
+                "Meca Inox (HDPE)": "Warm On/Off (W1d)",
+                "Swagelok SS-42GSE (UHMWPE)": "Instrumentation, precise control",
+            },
+            {
+                "Parameter": "Compliance status",
+                "Meca Inox (HDPE)": "Economic derogation",
+                "Swagelok SS-42GSE (UHMWPE)": "Industry standard",
+            },
         ]
     )
     _write_table(t1, "supplier_comparison")
@@ -508,73 +1082,182 @@ def build_tables_and_data() -> None:
     ]
     for count, leak, service, temp, pressure in test_cases:
         g = he_loss_g_year(leak, temp, pressure, count)
-        rows.append({
-            "Valve Count": count,
-            "Leak Rate (mbar·l/s)": _format_scientific(leak),
-            "Service": service,
-            "Temp": f"{temp}K",
-            "Pressure": f"{pressure} bar",
-            "Loss (g/year)": round(g, 4),
-            "Loss (kg/year)": round(g / 1000, 6),
-        })
+        rows.append(
+            {
+                "Valve Count": count,
+                "Leak Rate (mbar·l/s)": _format_scientific(leak),
+                "Service": service,
+                "Temp": f"{temp}K",
+                "Pressure": f"{pressure} bar",
+                "Loss (g/year)": round(g, 4),
+                "Loss (kg/year)": round(g / 1000, 6),
+            }
+        )
 
-    g_mix_210 = 0.5 * he_loss_g_year(1e-9, 80, 5, 210) + 0.5 * he_loss_g_year(1e-8, 80, 5, 210)
-    rows.append({
-        "Valve Count": 210,
-        "Leak Rate (mbar·l/s)": "1×10⁻⁹ (50%) + 1×10⁻⁸ (50%)",
-        "Service": "Mixed",
-        "Temp": "80K",
-        "Pressure": "5 bar",
-        "Loss (g/year)": round(g_mix_210, 4),
-        "Loss (kg/year)": round(g_mix_210 / 1000, 6),
-    })
+    g_mix_210 = 0.5 * he_loss_g_year(1e-9, 80, 5, 210) + 0.5 * he_loss_g_year(
+        1e-8, 80, 5, 210
+    )
+    rows.append(
+        {
+            "Valve Count": 210,
+            "Leak Rate (mbar·l/s)": "1×10⁻⁹ (50%) + 1×10⁻⁸ (50%)",
+            "Service": "Mixed",
+            "Temp": "80K",
+            "Pressure": "5 bar",
+            "Loss (g/year)": round(g_mix_210, 4),
+            "Loss (kg/year)": round(g_mix_210 / 1000, 6),
+        }
+    )
 
     g_410 = (
         he_loss_g_year(1e-8, 300, 5, 200)
         + he_loss_g_year(1e-9, 80, 5, 130)
         + he_loss_g_year(1e-5, 4, 12, 80)
     )
-    rows.append({
-        "Valve Count": 410,
-        "Leak Rate (mbar·l/s)": "Mixed fleet",
-        "Service": "Mixed",
-        "Temp": "Mixed",
-        "Pressure": "Mixed",
-        "Loss (g/year)": round(g_410, 4),
-        "Loss (kg/year)": round(g_410 / 1000, 6),
-    })
+    rows.append(
+        {
+            "Valve Count": 410,
+            "Leak Rate (mbar·l/s)": "Mixed fleet",
+            "Service": "Mixed",
+            "Temp": "Mixed",
+            "Pressure": "Mixed",
+            "Loss (g/year)": round(g_410, 4),
+            "Loss (kg/year)": round(g_410 / 1000, 6),
+        }
+    )
     t2 = pd.DataFrame(rows)
     _write_table(t2, "helium_loss_by_valve_count")
 
     # Table 3 material costs
-    t3 = pd.DataFrame([
-        {"Cost Category": "Valve hardware", "Unit": "€/valve", "Meca Inox": "€500-1000", "Swagelok": "€800-1500", "Notes": "Size-dependent"},
-        {"Cost Category": "HDPE seal", "Unit": "€/seal", "Meca Inox": "€50-100", "Swagelok": "N/A", "Notes": "Radiation-hardened"},
-        {"Cost Category": "UHMWPE seal", "Unit": "€/seal", "Meca Inox": "N/A", "Swagelok": "€80-150", "Notes": "Higher performance"},
-        {"Cost Category": "316 SS base", "Unit": "€/kg", "Meca Inox": "€15-25", "Swagelok": "€15-25", "Notes": "Same material"},
-        {"Cost Category": "Electropolish", "Unit": "€/valve", "Meca Inox": "€150-300", "Swagelok": "€150-300", "Notes": "Ra <0.4 μm"},
-        {"Cost Category": "Orbital welding", "Unit": "€/joint", "Meca Inox": "€200-400", "Swagelok": "€200-400", "Notes": "DN-dependent"},
-        {"Cost Category": "Solenoid valve", "Unit": "€/valve", "Meca Inox": "€300-500", "Swagelok": "N/A", "Notes": "For W1d only"},
-        {"Cost Category": "Position sensor", "Unit": "€/valve", "Meca Inox": "€200-400", "Swagelok": "Optional", "Notes": "For W1d"},
-        {"Cost Category": "Mechanical limit switch", "Unit": "€/valve", "Meca Inox": "€100-200", "Swagelok": "€100-200", "Notes": "Optional"},
-    ])
+    t3 = pd.DataFrame(
+        [
+            {
+                "Cost Category": "Valve hardware",
+                "Unit": "€/valve",
+                "Meca Inox": "€500-1000",
+                "Swagelok": "€800-1500",
+                "Notes": "Size-dependent",
+            },
+            {
+                "Cost Category": "HDPE seal",
+                "Unit": "€/seal",
+                "Meca Inox": "€50-100",
+                "Swagelok": "N/A",
+                "Notes": "Radiation-hardened",
+            },
+            {
+                "Cost Category": "UHMWPE seal",
+                "Unit": "€/seal",
+                "Meca Inox": "N/A",
+                "Swagelok": "€80-150",
+                "Notes": "Higher performance",
+            },
+            {
+                "Cost Category": "316 SS base",
+                "Unit": "€/kg",
+                "Meca Inox": "€15-25",
+                "Swagelok": "€15-25",
+                "Notes": "Same material",
+            },
+            {
+                "Cost Category": "Electropolish",
+                "Unit": "€/valve",
+                "Meca Inox": "€150-300",
+                "Swagelok": "€150-300",
+                "Notes": "Ra <0.4 μm",
+            },
+            {
+                "Cost Category": "Orbital welding",
+                "Unit": "€/joint",
+                "Meca Inox": "€200-400",
+                "Swagelok": "€200-400",
+                "Notes": "DN-dependent",
+            },
+            {
+                "Cost Category": "Solenoid valve",
+                "Unit": "€/valve",
+                "Meca Inox": "€300-500",
+                "Swagelok": "N/A",
+                "Notes": "For W1d only",
+            },
+            {
+                "Cost Category": "Position sensor",
+                "Unit": "€/valve",
+                "Meca Inox": "€200-400",
+                "Swagelok": "Optional",
+                "Notes": "For W1d",
+            },
+            {
+                "Cost Category": "Mechanical limit switch",
+                "Unit": "€/valve",
+                "Meca Inox": "€100-200",
+                "Swagelok": "€100-200",
+                "Notes": "Optional",
+            },
+        ]
+    )
     _write_table(t3, "material_costs")
 
     # Table 4 operating conditions
-    t4 = pd.DataFrame([
-        {"Service Type": "Warm service", "Temp": "300K", "Pressure": "1-12 bar", "Leak Rate Requirement": "1×10⁻⁸ acceptable", "Acceptable Valve": "Meca Inox HDPE", "Rationale": "Economic, less critical"},
-        {"Service Type": "Cold service", "Temp": "4K-80K", "Pressure": "1-12 bar", "Leak Rate Requirement": "1×10⁻⁹ required", "Acceptable Valve": "Swagelok UHMWPE", "Rationale": "Critical, tight spec"},
-        {"Service Type": "Helium guard", "Temp": "300K", "Pressure": "Sub-atm", "Leak Rate Requirement": "1×10⁻⁵ acceptable", "Acceptable Valve": "Meca Inox HDPE", "Rationale": "Protected system"},
-        {"Service Type": "Internal protect", "Temp": "Variable", "Pressure": "Variable", "Leak Rate Requirement": "1×10⁻⁴ acceptable (seat)", "Acceptable Valve": "Either", "Rationale": "Internal boundaries"},
-        {"Service Type": "To vacuum", "Temp": "Any", "Pressure": "Any", "Leak Rate Requirement": "1×10⁻⁸ required", "Acceptable Valve": "Swagelok UHMWPE", "Rationale": "Critical containment"},
-    ])
+    t4 = pd.DataFrame(
+        [
+            {
+                "Service Type": "Warm service",
+                "Temp": "300K",
+                "Pressure": "1-12 bar",
+                "Leak Rate Requirement": "1×10⁻⁸ acceptable",
+                "Acceptable Valve": "Meca Inox HDPE",
+                "Rationale": "Economic, less critical",
+            },
+            {
+                "Service Type": "Cold service",
+                "Temp": "4K-80K",
+                "Pressure": "1-12 bar",
+                "Leak Rate Requirement": "1×10⁻⁹ required",
+                "Acceptable Valve": "Swagelok UHMWPE",
+                "Rationale": "Critical, tight spec",
+            },
+            {
+                "Service Type": "Helium guard",
+                "Temp": "300K",
+                "Pressure": "Sub-atm",
+                "Leak Rate Requirement": "1×10⁻⁵ acceptable",
+                "Acceptable Valve": "Meca Inox HDPE",
+                "Rationale": "Protected system",
+            },
+            {
+                "Service Type": "Internal protect",
+                "Temp": "Variable",
+                "Pressure": "Variable",
+                "Leak Rate Requirement": "1×10⁻⁴ acceptable (seat)",
+                "Acceptable Valve": "Either",
+                "Rationale": "Internal boundaries",
+            },
+            {
+                "Service Type": "To vacuum",
+                "Temp": "Any",
+                "Pressure": "Any",
+                "Leak Rate Requirement": "1×10⁻⁸ required",
+                "Acceptable Valve": "Swagelok UHMWPE",
+                "Rationale": "Critical containment",
+            },
+        ]
+    )
     _write_table(t4, "operating_conditions")
 
     # Data repos
-    (DATA_DIR / "meca_inox_specs.json").write_text(json.dumps(SUPPLIERS["Meca Inox (HDPE)"], indent=2))
-    (DATA_DIR / "swagelok_specs.json").write_text(json.dumps(SUPPLIERS["Swagelok SS-42GSE (UHMWPE)"], indent=2))
-    (DATA_DIR / "material_costs.json").write_text(json.dumps(t3.to_dict(orient="records"), indent=2))
-    (DATA_DIR / "operating_conditions.json").write_text(json.dumps(OPERATING_CONDITIONS, indent=2))
+    (DATA_DIR / "meca_inox_specs.json").write_text(
+        json.dumps(SUPPLIERS["Meca Inox (HDPE)"], indent=2)
+    )
+    (DATA_DIR / "swagelok_specs.json").write_text(
+        json.dumps(SUPPLIERS["Swagelok SS-42GSE (UHMWPE)"], indent=2)
+    )
+    (DATA_DIR / "material_costs.json").write_text(
+        json.dumps(t3.to_dict(orient="records"), indent=2)
+    )
+    (DATA_DIR / "operating_conditions.json").write_text(
+        json.dumps(OPERATING_CONDITIONS, indent=2)
+    )
 
 
 def build_visual_catalog_md() -> None:
@@ -619,8 +1302,7 @@ def build_index_html(catalog: list[dict[str, str]]) -> None:
     cats = sorted(set(c["category"] for c in catalog))
     cards = []
     for item in catalog:
-        cards.append(
-            f"""
+        cards.append(f"""
             <div class='card' data-category='{item['category']}'>
               <h4>{item['id']}: {item['title']}</h4>
               <p><b>Category:</b> {item['category']}</p>
@@ -630,8 +1312,7 @@ def build_index_html(catalog: list[dict[str, str]]) -> None:
                 <a href='../{item['python']}' target='_blank'>Python regen</a>
               </div>
             </div>
-            """
-        )
+            """)
 
     cat_options = "".join([f"<option value='{c}'>{c}</option>" for c in cats])
     html = f"""<!DOCTYPE html>
@@ -778,7 +1459,9 @@ h1,h2{color:#1e3a8a}.k{background:#eef2ff;padding:10px;border-radius:8px;margin:
     presentation_html = DOCS / "presentation.html"
     presentation_html.write_text(html_content)
     if HTML is not None:
-        HTML(string=html_content, base_url=str(ROOT)).write_pdf(str(DOCS / "presentation.pdf"))
+        HTML(string=html_content, base_url=str(ROOT)).write_pdf(
+            str(DOCS / "presentation.pdf")
+        )
 
 
 def main() -> None:

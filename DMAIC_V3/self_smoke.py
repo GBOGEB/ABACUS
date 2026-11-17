@@ -2,15 +2,16 @@
 
 from __future__ import annotations
 
-from contextlib import redirect_stdout
-from io import StringIO
 import hashlib
 import json
-from pathlib import Path
 import subprocess
+from contextlib import redirect_stdout
+from io import StringIO
+from pathlib import Path
 from typing import Any, Callable
 
-from .config import DMAICConfig, VERSION as ENGINE_VERSION
+from .config import VERSION as ENGINE_VERSION
+from .config import DMAICConfig
 from .product_version import ABACUS_VERSION
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -42,7 +43,10 @@ def _probe_ssot() -> dict[str, Any]:
     if not path.is_file():
         raise FileNotFoundError(path)
     text = path.read_text(encoding="utf-8")
-    required = ("one_logical_fact_one_authority: true", "reverse_mutation_from_binary_to_authority: false")
+    required = (
+        "one_logical_fact_one_authority: true",
+        "reverse_mutation_from_binary_to_authority: false",
+    )
     missing = [token for token in required if token not in text]
     if missing:
         raise RuntimeError(f"SSOT authority invariants missing: {missing}")
@@ -62,16 +66,19 @@ def _probe_contract() -> dict[str, Any]:
 
 def _probe_orchestrator() -> dict[str, Any]:
     from .core.twelve_cluster_orchestrator import TwelveClusterOrchestrator
+
     return {"class": TwelveClusterOrchestrator.__name__}
 
 
 def _probe_agent_manager() -> dict[str, Any]:
     from .core.agent_manager import AgentManager
+
     return {"class": AgentManager.__name__}
 
 
 def _probe_handover() -> dict[str, Any]:
     from .core import handover_bridge
+
     return {"module": handover_bridge.__name__}
 
 
@@ -92,8 +99,14 @@ def run_self_smoke() -> dict[str, Any]:
             with redirect_stdout(captured):
                 detail = probe()
             stage: dict[str, Any] = {"name": name, "status": "PASS", "detail": detail}
-        except Exception as exc:  # smoke receipt must capture rather than hide the failing stage
-            stage = {"name": name, "status": "FAIL", "error": f"{type(exc).__name__}: {exc}"}
+        except (
+            Exception
+        ) as exc:  # smoke receipt must capture rather than hide the failing stage
+            stage = {
+                "name": name,
+                "status": "FAIL",
+                "error": f"{type(exc).__name__}: {exc}",
+            }
         noise = captured.getvalue().strip()
         if noise:
             stage["captured_stdout"] = noise
@@ -108,7 +121,9 @@ def run_self_smoke() -> dict[str, Any]:
         "tree_sha": tree_sha,
         "stages": stages,
     }
-    digest = hashlib.sha256(json.dumps(deterministic, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    digest = hashlib.sha256(
+        json.dumps(deterministic, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
     passed = sum(stage["status"] == "PASS" for stage in stages)
     return {
         **deterministic,

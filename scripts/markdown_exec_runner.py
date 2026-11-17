@@ -19,6 +19,7 @@ OUT_ROOT = ROOT / "DMAIC_V3_OUTPUT" / "md_exec"
 
 FENCE_RE = re.compile(r"```([^\n`]+)\n(.*?)```", re.DOTALL)
 
+
 def run_block(lang: str, code: str) -> subprocess.CompletedProcess:
     if lang in ("bash", "sh"):
         return subprocess.run(["bash", "-lc", code], capture_output=True, text=True)
@@ -27,7 +28,10 @@ def run_block(lang: str, code: str) -> subprocess.CompletedProcess:
             tf.write(code)
             tf.flush()
             return subprocess.run([sys.executable, tf.name], capture_output=True, text=True)
-    return subprocess.CompletedProcess(args=[], returncode=0, stdout="", stderr=f"Unsupported lang: {lang}")
+    return subprocess.CompletedProcess(
+        args=[], returncode=0, stdout="", stderr=f"Unsupported lang: {lang}"
+    )
+
 
 def main():
     if len(sys.argv) < 2:
@@ -70,17 +74,24 @@ def main():
             "returncode": res.returncode,
         }
 
-        (out_dir / f"block_{idx:03d}.{lang}.out").write_text(res.stdout or "", encoding="utf-8")
-        (out_dir / f"block_{idx:03d}.{lang}.err").write_text(res.stderr or "", encoding="utf-8")
+        (out_dir / f"block_{idx:03d}.{lang}.out").write_text(
+            res.stdout or "", encoding="utf-8"
+        )
+        (out_dir / f"block_{idx:03d}.{lang}.err").write_text(
+            res.stderr or "", encoding="utf-8"
+        )
         summary["blocks"].append(bsum)
 
         if assert_mode and res.returncode != 0:
             summary["passed"] = False
             break
 
-    (out_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    (out_dir / "summary.json").write_text(
+        json.dumps(summary, indent=2), encoding="utf-8"
+    )
     print(f"Executed {idx} exec blocks; passed={summary['passed']}. Outputs: {out_dir}")
     return 0 if summary["passed"] else 1
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

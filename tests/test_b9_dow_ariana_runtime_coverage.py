@@ -16,9 +16,7 @@ class _Bridge:
     def run_tests_parallel(self, tests, max_workers=2):
         self.calls.append((tests, max_workers))
         return {
-            test["name"]: SimpleNamespace(
-                success=self.success, duration_seconds=0.01
-            )
+            test["name"]: SimpleNamespace(success=self.success, duration_seconds=0.01)
             for test in tests
         }
 
@@ -27,9 +25,7 @@ class _Bridge:
 def integration(tmp_path):
     config = SimpleNamespace(
         version="test-version",
-        paths=SimpleNamespace(
-            workspace_root=tmp_path, output_root=tmp_path / "output"
-        ),
+        paths=SimpleNamespace(workspace_root=tmp_path, output_root=tmp_path / "output"),
     )
     state = SimpleNamespace(state_dir=tmp_path / "state")
     bridge = _Bridge()
@@ -152,9 +148,7 @@ def test_registry_output_fallback_list_and_transition_metadata(integration):
         "ready", "smoke_test", "phase0", {"source": "test"}
     )
     assert event["metadata"]["source"] == "test"
-    transition = integration.track_phase_transition(
-        "phase0", "phase1", ["smoke_test"]
-    )
+    transition = integration.track_phase_transition("phase0", "phase1", ["smoke_test"])
     assert transition["agents_involved"] == ["smoke_test"]
     assert transition["metadata"] == {}
     assert len(integration.metrics.phase_transitions) == 1

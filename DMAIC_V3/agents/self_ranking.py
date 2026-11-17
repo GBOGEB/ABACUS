@@ -20,21 +20,17 @@ class SelfRankingAgent:
         """Rank artifacts by importance"""
         for artifact in artifacts:
             score = 0
-            if artifact.get('type') == 'code':
+            if artifact.get("type") == "code":
                 score += 10
-            if artifact.get('complexity', 0) > 100:
+            if artifact.get("complexity", 0) > 100:
                 score += 5
-            if artifact.get('has_tests'):
+            if artifact.get("has_tests"):
                 score += 3
 
-            artifact['rank_score'] = score
+            artifact["rank_score"] = score
 
-        return sorted(artifacts, key=lambda x: x.get('rank_score', 0), reverse=True)
+        return sorted(artifacts, key=lambda x: x.get("rank_score", 0), reverse=True)
 
     def get_info(self) -> Dict[str, str]:
         """Get agent info"""
-        return {
-            'name': 'self_ranking',
-            'version': self.version,
-            'status': 'active'
-        }
+        return {"name": "self_ranking", "version": self.version, "status": "active"}

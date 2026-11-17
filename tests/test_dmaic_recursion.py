@@ -83,17 +83,14 @@ def test_analyze_convergence_short_histories(history, expected):
     ],
 )
 def test_analyze_convergence_score_trends(scores, trend):
-    result = recursion.analyze_convergence(
-        [{"score": score} for score in scores]
-    )
+    result = recursion.analyze_convergence([{"score": score} for score in scores])
 
     assert result["trend"] == trend
     assert result["iterations"] == 3
     assert result["final_score"] == scores[-1]
     assert result["score_range"] == pytest.approx(max(scores) - min(scores))
     assert result["converged"] is (
-        max(scores) - min(scores)
-        < recursion.DEFAULT_CONVERGENCE_THRESHOLD
+        max(scores) - min(scores) < recursion.DEFAULT_CONVERGENCE_THRESHOLD
     )
 
 
@@ -104,9 +101,7 @@ def test_analyze_convergence_detects_tight_range_and_missing_scores():
     assert converged["converged"] is True
     assert converged["trend"] == "improving"
 
-    missing = recursion.analyze_convergence(
-        [{"score": 1.0}, {"other": 2.0}]
-    )
+    missing = recursion.analyze_convergence([{"score": 1.0}, {"other": 2.0}])
     assert missing == {
         "converged": False,
         "iterations": 2,

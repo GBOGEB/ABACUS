@@ -97,7 +97,6 @@ def list_open_issues(token):
     raise ValueError("issue census truncated: 20 pages exceeded")
 
 
-
 def latest_dashboard_bot_comment(number, token):
     """Read the newest count-bearing Actions comment; never trust user comments."""
     path = f"/repos/{REPO}/issues/{number}/comments?per_page=100"
@@ -200,9 +199,7 @@ def classify(issues, head):
         latest = item.get("latest_dashboard_comment")
         source = "ISSUE_BODY"
         if category == "INCIDENT_DASHBOARD" and latest is not None:
-            if not isinstance(latest, dict) or not isinstance(
-                latest.get("body"), str
-            ):
+            if not isinstance(latest, dict) or not isinstance(latest.get("body"), str):
                 raise ValueError("invalid dashboard comment observation")
             body = latest["body"]
             source = "DASHBOARD_BOT_COMMENT"

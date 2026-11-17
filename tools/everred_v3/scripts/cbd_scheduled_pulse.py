@@ -4,6 +4,7 @@ The existing EVERRED and BD-LDAB producers remain authoritative. A schedule
 may plan work, but source writers, failed-job reruns and main merges require
 separate authenticated owner permission and independently admissible evidence.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -66,10 +67,12 @@ def plan(observation, mode="auto", day="2026-10-17", event="schedule", full_ack=
     require(observation.get("repository") == "GBOGEB/ABACUS", "repository mismatch")
     head = observation.get("source_sha")
     require(isinstance(head, str) and SHA.fullmatch(head), "invalid source SHA")
-    require(observation.get("authority_transfer") is False and
-            observation.get("security_waiver") is False and
-            observation.get("merge_admission") == "HOLD",
-            "forged admission or waiver")
+    require(
+        observation.get("authority_transfer") is False
+        and observation.get("security_waiver") is False
+        and observation.get("merge_admission") == "HOLD",
+        "forged admission or waiver",
+    )
     require(mode in MODES, "unsupported method")
     require(event in ("schedule", "workflow_dispatch"), "unsupported event")
     require(type(full_ack) is bool, "full_ack must be boolean")
@@ -78,8 +81,10 @@ def plan(observation, mode="auto", day="2026-10-17", event="schedule", full_ack=
     require(isinstance(capacity, dict), "missing capacity")
     q, active = capacity.get("queued"), capacity.get("in_progress")
     require(q is None or type(q) is int and q >= 0, "invalid queued count")
-    require(active is None or type(active) is int and active >= 0,
-            "invalid in-progress count")
+    require(
+        active is None or type(active) is int and active >= 0,
+        "invalid in-progress count",
+    )
     if q is None or active is None:
         state = "CAPACITY_UNKNOWN"
     elif q > MAX_QUEUE or active > MAX_RUNNING:
@@ -95,19 +100,30 @@ def plan(observation, mode="auto", day="2026-10-17", event="schedule", full_ack=
         requested = phase in selected
         # Reviewing an admission does not itself approve a merge.
         state_for_phase = (
-            "NOT_REQUESTED" if not requested else
-            "READ_ONLY_ELIGIBLE" if allowed and phase in ("N0", "N1", "N2", "N3") else
-            "REVIEW_ONLY_HOLD" if allowed else
-            "DEFERRED_" + state
+            "NOT_REQUESTED"
+            if not requested
+            else (
+                "READ_ONLY_ELIGIBLE"
+                if allowed and phase in ("N0", "N1", "N2", "N3")
+                else "REVIEW_ONLY_HOLD" if allowed else "DEFERRED_" + state
+            )
         )
-        phase_records.append({
-            "atom": phase, "title": title, "requires": list(deps),
-            "selected": requested, "state": state_for_phase,
-            "accepted_root_closures": None, "human_approval": None,
-        })
+        phase_records.append(
+            {
+                "atom": phase,
+                "title": title,
+                "requires": list(deps),
+                "selected": requested,
+                "state": state_for_phase,
+                "accepted_root_closures": None,
+                "human_approval": None,
+            }
+        )
     observed = {
-        "queued": q, "in_progress": active,
-        "queue_threshold": MAX_QUEUE, "running_threshold": MAX_RUNNING,
+        "queued": q,
+        "in_progress": active,
+        "queue_threshold": MAX_QUEUE,
+        "running_threshold": MAX_RUNNING,
         "capacity_is_atomic": False,
     }
     graph = {
@@ -117,17 +133,20 @@ def plan(observation, mode="auto", day="2026-10-17", event="schedule", full_ack=
         ],
         "edges": [
             {"source": dep, "target": stage, "kind": "REQUIRES"}
-            for stage, _title, deps in STAGES for dep in deps
+            for stage, _title, deps in STAGES
+            for dep in deps
         ],
     }
     return {
         "schema": "abacus.cbd.scheduled_pulse.v1",
         "source_repository": observation["repository"],
-        "source_sha": head, "utc_day": day, "event": event,
-        "requested_method": mode, "selected_method": effective,
-        "gate": state, "dispatch_scope": (
-            "READ_ONLY_TESTFLIGHT" if allowed else "COLD_PLAN_ONLY"
-        ),
+        "source_sha": head,
+        "utc_day": day,
+        "event": event,
+        "requested_method": mode,
+        "selected_method": effective,
+        "gate": state,
+        "dispatch_scope": ("READ_ONLY_TESTFLIGHT" if allowed else "COLD_PLAN_ONLY"),
         "execute_mode": effective if allowed else "none",
         "source_observation_sha256": sha256(observation),
         "metrics": {
@@ -136,8 +155,10 @@ def plan(observation, mode="auto", day="2026-10-17", event="schedule", full_ack=
             "source_writers_without_lease": OWNER_WRITERS_BEFORE_LEASE,
             "confirmed_causal_roots_open": None,
             "confirmed_causal_roots_closed": None,
-            "main_coverage": None, "diff_coverage": None,
-            "crew_launch_proven": None, "correct_merges": None,
+            "main_coverage": None,
+            "diff_coverage": None,
+            "crew_launch_proven": None,
+            "correct_merges": None,
         },
         "dag": graph,
         "stages": phase_records,
@@ -149,9 +170,12 @@ def plan(observation, mode="auto", day="2026-10-17", event="schedule", full_ack=
             "customer": "BD-LDAB #1929, DOW, gg_MATH, Mission Control, P0 #1860",
         },
         "controls": {
-            "merge_admission": "HOLD", "security_waiver": False,
-            "authority_transfer": False, "rerun_requested": False,
-            "source_mutated": False, "worker_launch_claimed": False,
+            "merge_admission": "HOLD",
+            "security_waiver": False,
+            "authority_transfer": False,
+            "rerun_requested": False,
+            "source_mutated": False,
+            "worker_launch_claimed": False,
             "full_requires_manual_ack": True,
             "schedule_activates_only_on_admitted_default_branch": True,
         },
@@ -162,17 +186,27 @@ def render_html(result):
     esc = lambda v: html.escape(str(v), quote=True)
     m = result["metrics"]
     cards = "".join(
-        "<div class='kpi'><span>" + esc(label) + "</span><b>"
-        + esc(m.get(key)) + "</b></div>"
+        "<div class='kpi'><span>"
+        + esc(label)
+        + "</span><b>"
+        + esc(m.get(key))
+        + "</b></div>"
         for key, label in (
-            ("queued", "Observed queued"), ("in_progress", "Observed running"),
+            ("queued", "Observed queued"),
+            ("in_progress", "Observed running"),
             ("read_only_scout_cap", "Read-only scouts"),
         )
     )
     rows = "".join(
-        "<tr><td>" + esc(p["atom"]) + "</td><td>" + esc(p["title"]) +
-        "</td><td>" + esc(",".join(p["requires"]) or "none") +
-        "</td><td>" + esc(p["state"]) + "</td></tr>"
+        "<tr><td>"
+        + esc(p["atom"])
+        + "</td><td>"
+        + esc(p["title"])
+        + "</td><td>"
+        + esc(",".join(p["requires"]) or "none")
+        + "</td><td>"
+        + esc(p["state"])
+        + "</td></tr>"
         for p in result["stages"]
     )
     return (
@@ -191,13 +225,18 @@ def render_html(result):
         "a{color:#9ed0fa}small{color:#ffd69e}.scroll{overflow-x:auto}"
         "</style></head><body><main><header><small>CODE PURPLE / EVERRED / "
         "GoGREEN - NON-ADMITTING</small><h1>Scheduled DAG review</h1>"
-        "<p>Method " + esc(result["selected_method"]) + " / gate "
-        + esc(result["gate"]) + " / head <code>" +
-        esc(result["source_sha"]) + "</code></p></header>"
+        "<p>Method "
+        + esc(result["selected_method"])
+        + " / gate "
+        + esc(result["gate"])
+        + " / head <code>"
+        + esc(result["source_sha"])
+        + "</code></p></header>"
         "<section class='grid'>" + cards + "</section><div class='scroll'>"
         "<table><thead><tr><th>Atom</th><th>Engineering stage</th>"
         "<th>Depends on</th><th>Disposition</th></tr></thead><tbody>"
-        + rows + "</tbody></table></div>"
+        + rows
+        + "</tbody></table></div>"
         "<p>All stages preserve independent Safety, A10 and governance gates. "
         "Observed signatures are not confirmed causes. Review is not merge "
         "approval. Missing metrics remain UNKNOWN, never zero.</p>"
@@ -215,8 +254,10 @@ def write(result, output_dir):
         "source_observation_sha256": result["source_observation_sha256"],
         "method": result["selected_method"],
         "gate": result["gate"],
-        "root_closure_credit": 0, "merge_admission": "HOLD",
-        "authority_transfer": False, "security_waiver": False,
+        "root_closure_credit": 0,
+        "merge_admission": "HOLD",
+        "authority_transfer": False,
+        "security_waiver": False,
     }
     output = {
         "pulse-plan.json": canonical(result) + "\n",
@@ -228,8 +269,13 @@ def write(result, output_dir):
     for filename, value in output.items():
         (output_dir / filename).write_text(value, encoding="utf-8")
     (output_dir / "sha256.json").write_text(
-        canonical({k: hashlib.sha256(v.encode("utf-8")).hexdigest()
-                   for k, v in sorted(output.items())}) + "\n",
+        canonical(
+            {
+                k: hashlib.sha256(v.encode("utf-8")).hexdigest()
+                for k, v in sorted(output.items())
+            }
+        )
+        + "\n",
         encoding="utf-8",
     )
 
@@ -245,17 +291,22 @@ def main(argv=None):
     parser.add_argument("--github-output", type=Path)
     args = parser.parse_args(argv)
     observation = json.loads(args.observation.read_text(encoding="utf-8"))
-    result = plan(observation, args.method, args.utc_day, args.event,
-                  args.full_ack)
+    result = plan(observation, args.method, args.utc_day, args.event, args.full_ack)
     write(result, args.output_dir)
     if args.github_output:
         with args.github_output.open("a", encoding="utf-8") as stream:
             stream.write("execute_mode=" + result["execute_mode"] + "\n")
             stream.write("gate=" + result["gate"] + "\n")
-    print(canonical({
-        "method": result["selected_method"], "gate": result["gate"],
-        "head": result["source_sha"], "admission": "HOLD",
-    }))
+    print(
+        canonical(
+            {
+                "method": result["selected_method"],
+                "gate": result["gate"],
+                "head": result["source_sha"],
+                "admission": "HOLD",
+            }
+        )
+    )
 
 
 if __name__ == "__main__":

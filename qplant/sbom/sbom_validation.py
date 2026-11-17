@@ -15,10 +15,21 @@ from typing import Any, Dict, List
 # Known copyleft licenses that require review
 COPYLEFT_LICENSES = {"GPL-2.0", "GPL-3.0", "LGPL-2.1", "LGPL-3.0", "AGPL-3.0"}
 APPROVED_LICENSES = {
-    "MIT", "MIT License", "Apache-2.0", "Apache Software License",
-    "BSD", "BSD-2-Clause", "BSD-3-Clause", "BSD License",
-    "ISC", "PSF", "Python Software Foundation License", "Unlicense",
-    "MPL-2.0", "WTFPL", "Public Domain",
+    "MIT",
+    "MIT License",
+    "Apache-2.0",
+    "Apache Software License",
+    "BSD",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "BSD License",
+    "ISC",
+    "PSF",
+    "Python Software Foundation License",
+    "Unlicense",
+    "MPL-2.0",
+    "WTFPL",
+    "Public Domain",
 }
 
 

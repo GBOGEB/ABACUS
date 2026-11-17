@@ -78,14 +78,18 @@ class HistoryTests(unittest.TestCase):
             "files": {
                 "tools/mip2/mip_wave_history.py": {
                     "summary": {
-                        "covered_lines": 111, "num_statements": 111,
-                        "covered_branches": 18, "num_branches": 18,
+                        "covered_lines": 111,
+                        "num_statements": 111,
+                        "covered_branches": 18,
+                        "num_branches": 18,
                     },
                 },
             },
             "totals": {
-                "covered_lines": 111, "num_statements": 111,
-                "covered_branches": 18, "num_branches": 18,
+                "covered_lines": 111,
+                "num_statements": 111,
+                "covered_branches": 18,
+                "num_branches": 18,
             },
         }
         summary = MODULE.validate_native_module_coverage(
@@ -99,14 +103,18 @@ class HistoryTests(unittest.TestCase):
             "files": {
                 "tools/mip2/mip_wave_history.py": {
                     "summary": {
-                        "covered_lines": 111, "num_statements": 111,
-                        "covered_branches": 18, "num_branches": 18,
+                        "covered_lines": 111,
+                        "num_statements": 111,
+                        "covered_branches": 18,
+                        "num_branches": 18,
                     },
                 },
             },
             "totals": {
-                "covered_lines": 111, "num_statements": 19666,
-                "covered_branches": 18, "num_branches": 4534,
+                "covered_lines": 111,
+                "num_statements": 19666,
+                "covered_branches": 18,
+                "num_branches": 4534,
             },
         }
         with self.assertRaisesRegex(ValueError, "scope/denominator"):
@@ -216,7 +224,9 @@ class HistoryTests(unittest.TestCase):
         self.rewrite_receipt()
         result = self.run_history()
         self.assertEqual(result["pulses"][0]["coverage_delta_pp"], 1.25)
-        self.assertEqual(result["pulses"][0]["provenance_status"], "HASH_MATCH_LOCAL_ONLY")
+        self.assertEqual(
+            result["pulses"][0]["provenance_status"], "HASH_MATCH_LOCAL_ONLY"
+        )
         self.assertEqual(result["measured_main_gain_pp"], "UNKNOWN")
 
     def test_unverified_operational_not_trusted_by_name(self):
@@ -237,9 +247,12 @@ class HistoryTests(unittest.TestCase):
         manifest_file.write_text(json.dumps(self.manifest), encoding="utf-8")
         argv = [
             "pulse-history",
-            "--manifest", str(manifest_file),
-            "--artifact-root", str(self.root),
-            "--output-dir", str(out),
+            "--manifest",
+            str(manifest_file),
+            "--artifact-root",
+            str(self.root),
+            "--output-dir",
+            str(out),
         ]
         with mock.patch.object(sys, "argv", argv):
             MODULE.main()
@@ -255,9 +268,12 @@ class HistoryTests(unittest.TestCase):
         manifest_file.write_text(json.dumps({"schema": "bad"}), encoding="utf-8")
         argv = [
             "pulse-history",
-            "--manifest", str(manifest_file),
-            "--artifact-root", str(self.root),
-            "--output-dir", str(out),
+            "--manifest",
+            str(manifest_file),
+            "--artifact-root",
+            str(self.root),
+            "--output-dir",
+            str(out),
         ]
         with mock.patch.object(sys, "argv", argv):
             with self.assertRaisesRegex(ValueError, "invalid history schema"):

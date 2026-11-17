@@ -2,7 +2,6 @@ from pathlib import Path
 
 import yaml
 
-
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = ROOT / "cryo_dashboard_v0_3_0" / "keb_bridge_contract.yaml"
 
@@ -19,7 +18,10 @@ def test_consumer_is_codex_keb_router():
 
 def test_heii_request_fails_closed_without_valid_provider():
     data = load_contract()
-    assert "HeII_request_without_valid_low_temperature_provider" in data["request_contract"]["fail_closed_on"]
+    assert (
+        "HeII_request_without_valid_low_temperature_provider"
+        in data["request_contract"]["fail_closed_on"]
+    )
 
 
 def test_hepak_is_not_claimed_active():

@@ -4,6 +4,7 @@ This contract is intentionally independent of versioned legacy MCP filenames. MC
 workers may return analytical findings but cannot establish or mutate engineering
 truth.
 """
+
 from __future__ import annotations
 
 import copy
@@ -40,11 +41,15 @@ class MCPReceipt:
         return asdict(self)
 
 
-def _run_worker(worker: Callable[[dict[str, Any]], Any], payload: dict[str, Any]) -> Any:
+def _run_worker(
+    worker: Callable[[dict[str, Any]], Any], payload: dict[str, Any]
+) -> Any:
     return worker(payload)
 
 
-def execute_mcp(request: MCPRequest, worker: Callable[[dict[str, Any]], Any]) -> tuple[Any, MCPReceipt]:
+def execute_mcp(
+    request: MCPRequest, worker: Callable[[dict[str, Any]], Any]
+) -> tuple[Any, MCPReceipt]:
     actual_parent = sha256_json(request.payload)
     if actual_parent != request.parent_sha256:
         raise ValueError("MCP parent payload SHA256 mismatch")

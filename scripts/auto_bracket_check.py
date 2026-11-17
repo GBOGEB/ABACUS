@@ -4,13 +4,14 @@
 # Description: Auto-generated version header
 """
 
+
 def check_brackets(expression):
     """
     Function to check if all brackets in the given expression are balanced.
     Supports (), {}, and [].
     """
     stack = []
-    bracket_map = {')': '(', '}': '{', ']': '['}
+    bracket_map = {")": "(", "}": "{", "]": "["}
 
     for char in expression:
         if char in bracket_map.values():

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { assessBtAdmission } from '../lib/bt_admission';
+import { assessBtAdmission } from '../lib/bt_admission.ts';
 const edge = (winner: number, loser: number) => ({
   slideAId: winner, slideBId: loser, winnerId: winner, isTie: false
 });

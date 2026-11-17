@@ -253,7 +253,7 @@ def remove_duplicates_batched(self, batch_size=1000):
             primary = files[0]
             duplicates = files[1:]
             duplicate_files.extend(duplicates)
-    
+
     # Process in batches
     for i in range(0, len(duplicate_files), batch_size):
         batch = duplicate_files[i:i+batch_size]

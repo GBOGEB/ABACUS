@@ -7,18 +7,19 @@ not a document editor, authority transfer, or security approval.
 
 No third-party dependencies. Compatible with Python 3.9+.
 """
+
 from __future__ import annotations
 
 import argparse
-from collections import Counter
 import hashlib
 import json
 import posixpath
-from pathlib import Path
 import re
 import stat
 import xml.etree.ElementTree as ET
 import zipfile
+from collections import Counter
+from pathlib import Path
 
 SCHEMA = "abacus.office-style-evidence.v1"
 MAX_MEMBERS = 2048
@@ -42,8 +43,13 @@ ALLOWED = {
     ".pptx": ("pptx", "ppt/presentation.xml"),
 }
 FORBIDDEN = (
-    "vbaproject", "/activex/", "/embeddings/", "/externallinks/",
-    "oleobject", "customui/", "/macros/",
+    "vbaproject",
+    "/activex/",
+    "/embeddings/",
+    "/externallinks/",
+    "oleobject",
+    "customui/",
+    "/macros/",
 )
 
 
@@ -56,8 +62,11 @@ def _attr(el, prefix, name, default=None):
 
 
 def _json_hash(payload):
-    return hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False,
-                                     separators=(",", ":")).encode("utf-8")).hexdigest()
+    return hashlib.sha256(
+        json.dumps(
+            payload, sort_keys=True, ensure_ascii=False, separators=(",", ":")
+        ).encode("utf-8")
+    ).hexdigest()
 
 
 def _is_true(value):
@@ -105,6 +114,7 @@ def _theme(package, member):
 
 class OfficePackage:
     """Open an Office archive without extracting anything, rejecting risky inputs."""
+
     def __init__(self, file_path, extension):
         self.path = Path(file_path)
         if extension not in ALLOWED or self.path.suffix.lower() != extension:
@@ -157,7 +167,10 @@ class OfficePackage:
                 raise ValueError("encrypted Office document unsupported")
             if info.file_size > MAX_MEMBER_BYTES:
                 raise ValueError("oversized Office member")
-            if info.file_size > 100000 and info.file_size / max(1, info.compress_size) > MAX_COMPRESSION_RATIO:
+            if (
+                info.file_size > 100000
+                and info.file_size / max(1, info.compress_size) > MAX_COMPRESSION_RATIO
+            ):
                 raise ValueError("suspicious compression ratio")
             total += info.file_size
             if total > MAX_TOTAL_BYTES:
@@ -223,15 +236,24 @@ def _docx(pkg):
             font = props.find("./w:rFonts", Q) if props is not None else None
             size = props.find("./w:sz", Q) if props is not None else None
             color = props.find("./w:color", Q) if props is not None else None
-            named.append({
-                "id": sid, "kind": _attr(item, "w", "type"),
-                "label": _attr(name, "w", "val"),
-                "based_on": _attr(base, "w", "val"),
-                "font": _attr(font, "w", "ascii"),
-                "pt": (int(_attr(size, "w", "val")) / 2 if _attr(size, "w", "val") else None),
-                "color": _attr(color, "w", "val"),
-                "bold": bool(props is not None and props.find("./w:b", Q) is not None),
-            })
+            named.append(
+                {
+                    "id": sid,
+                    "kind": _attr(item, "w", "type"),
+                    "label": _attr(name, "w", "val"),
+                    "based_on": _attr(base, "w", "val"),
+                    "font": _attr(font, "w", "ascii"),
+                    "pt": (
+                        int(_attr(size, "w", "val")) / 2
+                        if _attr(size, "w", "val")
+                        else None
+                    ),
+                    "color": _attr(color, "w", "val"),
+                    "bold": bool(
+                        props is not None and props.find("./w:b", Q) is not None
+                    ),
+                }
+            )
     body = doc.find("./w:body", Q)
     if body is None:
         raise ValueError("missing DOCX body")
@@ -266,9 +288,11 @@ def _docx(pkg):
     sect = doc.find(".//w:sectPr", Q)
     pg = sect.find("./w:pgSz", Q) if sect is not None else None
     margin = sect.find("./w:pgMar", Q) if sect is not None else None
+
     def number(el, name):
         v = _attr(el, "w", name)
         return int(v) if v and re.fullmatch(r"\d+", v) else None
+
     return {
         "paragraph_styles": _bounded_counter(counts),
         "headings": _bounded_counter(heading_counts),
@@ -279,8 +303,12 @@ def _docx(pkg):
         "explicit_run_fonts": _bounded_counter(run_fonts),
         "explicit_run_sizes_pt": _bounded_counter(run_sizes),
         "explicit_run_colors": _bounded_counter(run_colors),
-        "page_twips": {"width": number(pg, "w"), "height": number(pg, "h"),
-                       "left_margin": number(margin, "left"), "right_margin": number(margin, "right")},
+        "page_twips": {
+            "width": number(pg, "w"),
+            "height": number(pg, "h"),
+            "left_margin": number(margin, "left"),
+            "right_margin": number(margin, "right"),
+        },
         "theme": _theme(pkg, "word/theme/theme1.xml"),
     }
 
@@ -288,42 +316,86 @@ def _docx(pkg):
 def _xlsx(pkg):
     book = pkg.xml("xl/workbook.xml")
     root = pkg.xml("xl/styles.xml") if "xl/styles.xml" in pkg else None
-    rels = pkg.xml("xl/_rels/workbook.xml.rels") if "xl/_rels/workbook.xml.rels" in pkg else None
+    rels = (
+        pkg.xml("xl/_rels/workbook.xml.rels")
+        if "xl/_rels/workbook.xml.rels" in pkg
+        else None
+    )
     relationships = {}
     if rels is not None:
         for rel in rels.findall("./rel:Relationship", Q):
             ident, target = rel.get("Id"), rel.get("Target")
             if not ident or not target:
                 raise ValueError("invalid workbook relationship")
-            path = (posixpath.normpath(target.lstrip("/")) if target.startswith("/")
-                    else posixpath.normpath("xl/" + target))
+            path = (
+                posixpath.normpath(target.lstrip("/"))
+                if target.startswith("/")
+                else posixpath.normpath("xl/" + target)
+            )
             if path.startswith("../") or path not in pkg:
                 raise ValueError("unresolved workbook sheet relationship")
             relationships[ident] = path
     fonts, fills, formats, cells = [], [], [], []
     if root is not None:
         for font in root.findall("./s:fonts/s:font", Q):
-            name, sz, color = font.find("./s:name", Q), font.find("./s:sz", Q), font.find("./s:color", Q)
-            fonts.append({"name": name.get("val") if name is not None else None,
-                          "pt": float(sz.get("val")) if sz is not None and sz.get("val") else None,
-                          "bold": font.find("./s:b", Q) is not None,
-                          "italic": font.find("./s:i", Q) is not None,
-                          "color": (color.get("rgb") or ("theme:" + color.get("theme") if color.get("theme") else None))
-                          if color is not None else None})
+            name, sz, color = (
+                font.find("./s:name", Q),
+                font.find("./s:sz", Q),
+                font.find("./s:color", Q),
+            )
+            fonts.append(
+                {
+                    "name": name.get("val") if name is not None else None,
+                    "pt": (
+                        float(sz.get("val"))
+                        if sz is not None and sz.get("val")
+                        else None
+                    ),
+                    "bold": font.find("./s:b", Q) is not None,
+                    "italic": font.find("./s:i", Q) is not None,
+                    "color": (
+                        (
+                            color.get("rgb")
+                            or (
+                                "theme:" + color.get("theme")
+                                if color.get("theme")
+                                else None
+                            )
+                        )
+                        if color is not None
+                        else None
+                    ),
+                }
+            )
         for fill in root.findall("./s:fills/s:fill", Q):
             pattern = fill.find("./s:patternFill", Q)
             color = pattern.find("./s:fgColor", Q) if pattern is not None else None
-            fills.append({"pattern": pattern.get("patternType") if pattern is not None else None,
-                          "rgb": color.get("rgb") if color is not None else None})
+            fills.append(
+                {
+                    "pattern": (
+                        pattern.get("patternType") if pattern is not None else None
+                    ),
+                    "rgb": color.get("rgb") if color is not None else None,
+                }
+            )
         for fmt in root.findall("./s:numFmts/s:numFmt", Q):
             formats.append({"id": fmt.get("numFmtId"), "code": fmt.get("formatCode")})
         for fmt in root.findall("./s:cellXfs/s:xf", Q):
             alignment = fmt.find("./s:alignment", Q)
-            cells.append({"font_id": int(fmt.get("fontId", "0")), "fill_id": int(fmt.get("fillId", "0")),
-                          "num_fmt_id": int(fmt.get("numFmtId", "0")),
-                          "border_id": int(fmt.get("borderId", "0")),
-                          "horizontal": alignment.get("horizontal") if alignment is not None else None,
-                          "wrap": alignment.get("wrapText") if alignment is not None else None})
+            cells.append(
+                {
+                    "font_id": int(fmt.get("fontId", "0")),
+                    "fill_id": int(fmt.get("fillId", "0")),
+                    "num_fmt_id": int(fmt.get("numFmtId", "0")),
+                    "border_id": int(fmt.get("borderId", "0")),
+                    "horizontal": (
+                        alignment.get("horizontal") if alignment is not None else None
+                    ),
+                    "wrap": (
+                        alignment.get("wrapText") if alignment is not None else None
+                    ),
+                }
+            )
     used = Counter()
     sheets = []
     for ordinal, sheet in enumerate(book.findall("./s:sheets/s:sheet", Q), start=1):
@@ -340,17 +412,35 @@ def _xlsx(pkg):
             used[sid] += 1
             if cell.find("./s:f", Q) is not None:
                 formula_count += 1
-        sheets.append({"index": ordinal, "cell_count": count, "formula_count": formula_count,
-                       "merged_range_count": len(ws.findall(".//s:mergeCell", Q)),
-                       "conditional_format_count": len(ws.findall(".//s:conditionalFormatting", Q)),
-                       "data_validation_count": len(ws.findall(".//s:dataValidation", Q)),
-                       "has_freeze_panes": ws.find(".//s:sheetViews/s:sheetView/s:pane", Q) is not None})
-    return {"sheet_summaries": sheets, "fonts": fonts, "fills": fills,
-            "cell_formats": cells, "custom_number_formats": formats,
-            "used_cell_style_ids": _bounded_counter(used),
-            "table_count": len([x for x in pkg.names if re.fullmatch(r"xl/tables/table\d+\.xml", x)]),
-            "chart_count": len([x for x in pkg.names if re.fullmatch(r"xl/charts/chart\d+\.xml", x)]),
-            "theme": _theme(pkg, "xl/theme/theme1.xml")}
+        sheets.append(
+            {
+                "index": ordinal,
+                "cell_count": count,
+                "formula_count": formula_count,
+                "merged_range_count": len(ws.findall(".//s:mergeCell", Q)),
+                "conditional_format_count": len(
+                    ws.findall(".//s:conditionalFormatting", Q)
+                ),
+                "data_validation_count": len(ws.findall(".//s:dataValidation", Q)),
+                "has_freeze_panes": ws.find(".//s:sheetViews/s:sheetView/s:pane", Q)
+                is not None,
+            }
+        )
+    return {
+        "sheet_summaries": sheets,
+        "fonts": fonts,
+        "fills": fills,
+        "cell_formats": cells,
+        "custom_number_formats": formats,
+        "used_cell_style_ids": _bounded_counter(used),
+        "table_count": len(
+            [x for x in pkg.names if re.fullmatch(r"xl/tables/table\d+\.xml", x)]
+        ),
+        "chart_count": len(
+            [x for x in pkg.names if re.fullmatch(r"xl/charts/chart\d+\.xml", x)]
+        ),
+        "theme": _theme(pkg, "xl/theme/theme1.xml"),
+    }
 
 
 def _pptx(pkg):
@@ -361,8 +451,10 @@ def _pptx(pkg):
     width, height = int(sz.get("cx")), int(sz.get("cy"))
     if min(width, height) <= 0:
         raise ValueError("invalid PPTX slide size")
-    slide_members = sorted(((int(SLIDE_RE.match(n).group(1)), n) for n in pkg.names
-                            if SLIDE_RE.match(n)), key=lambda x: x[0])
+    slide_members = sorted(
+        ((int(SLIDE_RE.match(n).group(1)), n) for n in pkg.names if SLIDE_RE.match(n)),
+        key=lambda x: x[0],
+    )
     if not slide_members:
         raise ValueError("presentation contains no slides")
     sizes, fonts, colors = Counter(), Counter(), Counter()
@@ -388,15 +480,33 @@ def _pptx(pkg):
             if token:
                 colors[token] += 1
     return {
-        "slide_count": len(slide_members), "slide_indices": [n for n, _ in slide_members],
+        "slide_count": len(slide_members),
+        "slide_indices": [n for n, _ in slide_members],
         "slide_size_emu": {"width": width, "height": height},
         "aspect_ratio": round(width / height, 6),
-        "shape_count": shape_count, "text_box_count": text_boxes,
+        "shape_count": shape_count,
+        "text_box_count": text_boxes,
         "table_count": table_count,
-        "chart_count": len([n for n in pkg.names if re.fullmatch(r"ppt/charts/chart\d+\.xml", n)]),
-        "image_count": len([n for n in pkg.names if n.startswith("ppt/media/") and not n.endswith("/")]),
-        "notes_slide_count": len([n for n in pkg.names if re.fullmatch(r"ppt/notesSlides/notesSlide\d+\.xml", n)]),
-        "slide_master_count": len([n for n in pkg.names if re.fullmatch(r"ppt/slideMasters/slideMaster\d+\.xml", n)]),
+        "chart_count": len(
+            [n for n in pkg.names if re.fullmatch(r"ppt/charts/chart\d+\.xml", n)]
+        ),
+        "image_count": len(
+            [n for n in pkg.names if n.startswith("ppt/media/") and not n.endswith("/")]
+        ),
+        "notes_slide_count": len(
+            [
+                n
+                for n in pkg.names
+                if re.fullmatch(r"ppt/notesSlides/notesSlide\d+\.xml", n)
+            ]
+        ),
+        "slide_master_count": len(
+            [
+                n
+                for n in pkg.names
+                if re.fullmatch(r"ppt/slideMasters/slideMaster\d+\.xml", n)
+            ]
+        ),
         "explicit_font_sizes_pt": _bounded_counter(sizes),
         "explicit_fonts": _bounded_counter(fonts),
         "explicit_colors": _bounded_counter(colors),
@@ -416,11 +526,19 @@ def analyze(file_path, source_id):
     with OfficePackage(path, suffix) as pkg:
         profile = {"docx": _docx, "xlsx": _xlsx, "pptx": _pptx}[family](pkg)
     return {
-        "schema": SCHEMA, "source_id": source_id, "source_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-        "family": family, "source_type": "actual_office_package", "style_profile": profile,
-        "style_fingerprint": _json_hash(profile), "extraction_quality": "STRUCTURED",
-        "body_text_exported": False, "source_authority_transferred": False,
-        "merge_authorized": False, "security_waiver": False, "rex_accepted": None,
+        "schema": SCHEMA,
+        "source_id": source_id,
+        "source_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        "family": family,
+        "source_type": "actual_office_package",
+        "style_profile": profile,
+        "style_fingerprint": _json_hash(profile),
+        "extraction_quality": "STRUCTURED",
+        "body_text_exported": False,
+        "source_authority_transferred": False,
+        "merge_authorized": False,
+        "security_waiver": False,
+        "rex_accepted": None,
         "binary_committed_to_public_repo": False,
     }
 
@@ -433,7 +551,9 @@ def main():
     args = parser.parse_args()
     receipt = analyze(args.input, args.source_id)
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.out.write_text(
+        json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print("STYLE_PROBE_PASS", receipt["family"], receipt["style_fingerprint"])
 
 

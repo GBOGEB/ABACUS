@@ -10,7 +10,9 @@ def test_stability_monitor_tracks_changes_regressions_metrics_and_report(tmp_pat
     monitor = StabilityMonitor(tmp_path, window_size=5)
     change_events = []
     alert_events = []
-    monitor.register_change_hook(lambda kind, payload: change_events.append((kind, payload)))
+    monitor.register_change_hook(
+        lambda kind, payload: change_events.append((kind, payload))
+    )
     monitor.register_alert_hook(alert_events.append)
 
     target = tmp_path / "module.py"
@@ -56,14 +58,18 @@ def test_stability_monitor_tracks_changes_regressions_metrics_and_report(tmp_pat
 
 
 @pytest.mark.unit
-def test_stability_monitor_defaults_are_stable_and_missing_hash_is_empty(tmp_path, capsys):
+def test_stability_monitor_defaults_are_stable_and_missing_hash_is_empty(
+    tmp_path, capsys
+):
     monitor = StabilityMonitor(tmp_path)
 
     assert monitor._calculate_file_hash(tmp_path / "missing.py") == ""
     assert monitor.calculate_file_stability() == 100.0
     assert monitor.calculate_test_stability() == 100.0
     assert monitor.calculate_metric_stability() == 100.0
-    assert monitor.generate_recommendations() == ["System stable - continue current practices"]
+    assert monitor.generate_recommendations() == [
+        "System stable - continue current practices"
+    ]
 
     monitor.print_summary()
     output = capsys.readouterr().out

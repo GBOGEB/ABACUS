@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Independent DOW recomputation of QPS W285 federation depth."""
 from __future__ import annotations
-import hashlib, json, math
+import hashlib
+import json
+import math
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -62,6 +64,7 @@ def recompute():
     assert math.isclose(pooled, 9/16, abs_tol=1e-12)
     assert math.isclose(PEN, 0.2, abs_tol=1e-12)
     return {"status": "PASS_INDEPENDENT_RECOMPUTE", "B": B, "D_equal_function": D, "pooled_atom_ratio": pooled, "PEN": PEN, "credited_atoms": cred, "atom_denominator": den}
+
 
 if __name__ == "__main__":
     print(json.dumps(recompute(), sort_keys=True))

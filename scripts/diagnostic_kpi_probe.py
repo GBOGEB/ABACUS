@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """Low-impact local diagnostic probe. Does not dispatch Actions work."""
-import json, os, shlex, subprocess, time, urllib.request
+import json
+import os
+import shlex
+import subprocess
+import time
+import urllib.request
 
 
 def timed(name, fn):

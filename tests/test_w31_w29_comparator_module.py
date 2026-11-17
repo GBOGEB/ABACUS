@@ -1,6 +1,7 @@
 """W31 W29 comparator CLI must run under the source-root module namespace."""
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 import unittest
@@ -8,6 +9,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github/workflows/w29-cbd-temporal-matched-coverage.yml"
+# numpy==1.26.4 is pinned in the workflow, so ssot/python_versions.yaml caps it
+# to the numpy-1x-pin lane (3.11-3.12); the former 3.10 cell was EOL and removed.
+LANE = json.loads(
+    (ROOT / "ssot/python_versions.lanes.json").read_text(encoding="utf-8")
+)["lanes"]["numpy-1x-pin"]
 
 
 class NativeW29EntrypointTests(unittest.TestCase):
@@ -34,12 +40,13 @@ class NativeW29EntrypointTests(unittest.TestCase):
             with self.subTest(required=required):
                 self.assertIn(required, text)
 
-    def test_four_interpreter_and_os_cells_retained(self):
+    def test_lane_interpreter_and_os_cells_retained(self):
         text = WORKFLOW.read_text(encoding="utf-8")
-        self.assertEqual(text.count("os: ubuntu-latest"), 3)
+        self.assertEqual(text.count("os: ubuntu-latest"), len(LANE["versions"]))
         self.assertEqual(text.count("os: windows-latest"), 1)
-        for v in ("python: '3.10'", "python: '3.11'", "python: '3.12'"):
-            self.assertIn(v, text)
+        for v in LANE["versions"]:
+            self.assertIn(f"python: '{v}'", text)
+        self.assertNotIn("python: '3.10'", text)
 
     def test_strict_comparator_does_not_skip_manifest_on_failure(self):
         text = WORKFLOW.read_text(encoding="utf-8")

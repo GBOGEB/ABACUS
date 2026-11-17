@@ -1,4 +1,5 @@
 """Adversarial non-causal provider handoff tests; do not invoke gg_MATH."""
+
 import copy
 import hashlib
 import importlib.util
@@ -22,12 +23,17 @@ def fixture():
         "main_sha_at_observation": "2" * 40,
         "safety": {"merge_admission": "HOLD", "security_waiver": False},
         "families": [
-            {"workflow": "CI", "causal_root_id": None,
-             "affected_prs": [2005, 2010, 2006]},
-            {"workflow": "Governance", "causal_root_id": None,
-             "affected_prs": [2006, 2007]},
-            {"workflow": "A10", "causal_root_id": None,
-             "affected_prs": [2007, 2008]},
+            {
+                "workflow": "CI",
+                "causal_root_id": None,
+                "affected_prs": [2005, 2010, 2006],
+            },
+            {
+                "workflow": "Governance",
+                "causal_root_id": None,
+                "affected_prs": [2006, 2007],
+            },
+            {"workflow": "A10", "causal_root_id": None, "affected_prs": [2007, 2008]},
         ],
     }
 
@@ -38,15 +44,13 @@ class GgMathBridgeTests(unittest.TestCase):
         self.assertEqual(4, source["n_source_head_proxy_groups"])
         self.assertEqual(3, source["p_workflow_features"])
         self.assertEqual([[2005, 2010]], source["known_aliases_collapsed"])
-        self.assertEqual("GBOGEB/gg_MATH",
-                         task["inputs"]["canonical_provider"])
+        self.assertEqual("GBOGEB/gg_MATH", task["inputs"]["canonical_provider"])
         self.assertFalse(task["inputs"]["providers_invoked"])
         self.assertFalse(task["authority_transfer"])
 
     def test_non_atomic_absences_not_true_negatives(self):
         source, _ = bridge.build(fixture(), "3" * 40)
-        self.assertEqual("NOT_IN_FIRST_PAGE_FAILURE_SAMPLE",
-                         source["absence_means"])
+        self.assertEqual("NOT_IN_FIRST_PAGE_FAILURE_SAMPLE", source["absence_means"])
         self.assertFalse(source["sampling_complete"])
         self.assertIsNone(source["causal_root_labels"])
 
@@ -96,7 +100,6 @@ class GgMathBridgeTests(unittest.TestCase):
             self.assertIsNone(status["pca_new_result"])
             self.assertEqual("HOLD", status["merge_admission"])
 
-
     def test_no_alias_branch_keeps_independent_head_proxy_rows(self):
         source_data = fixture()
         source_data["families"][0]["affected_prs"] = [2005, 2006]
@@ -119,9 +122,12 @@ class GgMathBridgeTests(unittest.TestCase):
             destination = base / "request"
             argv = [
                 str(ROOT / "scripts" / "cbd_ggmath_bridge.py"),
-                "--summary", str(summary),
-                "--source-sha", "3" * 40,
-                "--output-dir", str(destination),
+                "--summary",
+                str(summary),
+                "--source-sha",
+                "3" * 40,
+                "--output-dir",
+                str(destination),
             ]
             with mock.patch.object(sys, "argv", argv):
                 with contextlib.redirect_stdout(io.StringIO()) as stream:
@@ -133,7 +139,6 @@ class GgMathBridgeTests(unittest.TestCase):
             self.assertFalse(outcome["invoked"])
             self.assertEqual("HOLD", outcome["admission"])
             self.assertTrue((destination / "ggmath-request.json").exists())
-
 
 
 if __name__ == "__main__":

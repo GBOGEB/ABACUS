@@ -1,9 +1,15 @@
 import importlib.util
 from pathlib import Path
 
-
-MODULE_PATH = Path(__file__).resolve().parents[2] / "DMAIC_V3" / "agents" / "self_improvement_agent.py"
-SPEC = importlib.util.spec_from_file_location("wave6_self_improvement_agent", MODULE_PATH)
+MODULE_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "DMAIC_V3"
+    / "agents"
+    / "self_improvement_agent.py"
+)
+SPEC = importlib.util.spec_from_file_location(
+    "wave6_self_improvement_agent", MODULE_PATH
+)
 assert SPEC is not None and SPEC.loader is not None
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)

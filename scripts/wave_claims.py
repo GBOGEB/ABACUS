@@ -1,0 +1,971 @@
+#!/usr/bin/env python3
+"""Wave claims: per-repo validation, federation roll-up and de-duplication.
+
+Each member repo owns its wave declarations in .waves/WAVE_CLAIMS.yaml (its
+prerogative). This module checks one claims file against
+federation/waves/WAVE_NAMING_RULES.yaml, and rolls every repo's claims up into
+one census in which a key has one owner and one name, names and aliases are
+unique federation-wide, slugs only carry forward along lineage, and path
+boundaries inside a repo do not overlap.
+
+CLI (stdlib + PyYAML, ASCII output):
+  python scripts/wave_claims.py validate [.waves/WAVE_CLAIMS.yaml] --expected-repo OWNER/NAME
+      Validate a repo's own claims file (run in the member repo; exit 1 on errors).
+  python scripts/wave_claims.py validate-global [federation/waves/GLOBAL_WAVES.yaml]
+      Validate the federation's elevated waves (CODEX steward file).
+  python scripts/wave_claims.py propose --repo GBOGEB/NAME [--register PATH]
+      Draft a claims file from the observed census for the owner to review.
+"""
+
+from __future__ import annotations
+
+import argparse
+import collections
+import hashlib
+import posixpath
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+import yaml
+
+ROOT = Path(__file__).resolve().parents[1]
+RULES_FILE = ROOT / "federation" / "waves" / "WAVE_NAMING_RULES.yaml"
+REGISTER_FILE = ROOT / "federation" / "waves" / "WAVE_REGISTER.yaml"
+GLOBAL_FILE = ROOT / "federation" / "waves" / "GLOBAL_WAVES.yaml"
+GLOBAL_PATH = "federation/waves/GLOBAL_WAVES.yaml"
+CLAIMS_PATH = ".waves/WAVE_CLAIMS.yaml"
+KEY_RE = re.compile(r"^(?P<ns>[A-Z]+):(?P<id>\S+)$")
+NUM_IN_TEXT = re.compile(r"(?<![0-9])[Ww]?(\d{3})(?![0-9])")
+
+
+def load_naming_rules(path: Path = RULES_FILE) -> dict:
+    rules = yaml.safe_load(path.read_text(encoding="utf-8"))
+    rules["_name_re"] = re.compile(rules["canonical_name"]["pattern"])
+    rules["_alias_re"] = re.compile(rules["alias"]["pattern"])
+    return rules
+
+
+def tag(text: str) -> str:
+    """Normalized comparison form shared by names and aliases (W364_ICD == w364-icd)."""
+    return text.strip().lower().replace("_", "-")
+
+
+def digest(text: str) -> str:
+    return hashlib.sha256(tag(text).encode("ascii", "replace")).hexdigest()
+
+
+def as_list(v) -> list:
+    if v is None:
+        return []
+    return list(v) if isinstance(v, (list, tuple, set, frozenset)) else [v]
+
+
+def key_number(key: str) -> int | None:
+    m = KEY_RE.match(key or "")
+    if not m or m.group("ns") != "QPS":
+        return None
+    n = re.fullmatch(r"W(\d{3})", m.group("id"))
+    return int(n.group(1)) if n else None
+
+
+def violation(code: str, key: str, repos, detail: str, severity: str = "error") -> dict:
+    return {
+        "code": code,
+        "severity": severity,
+        "key": key,
+        "repos": sorted(set(as_list(repos))),
+        "detail": detail,
+    }
+
+
+def slug_of(name: str, rules: dict) -> str | None:
+    m = rules["_name_re"].match(name or "")
+    return m.group("slug") if m else None
+
+
+def _overlaps(a: str, b: str) -> bool:
+    a, b = a.rstrip("/") + "/", b.rstrip("/") + "/"
+    return a.startswith(b) or b.startswith(a)
+
+
+def _checked_paths(c: dict, key: str, repo: str, out: list) -> list[str]:
+    """Normalized path boundaries of one claim; C9_PATH for unsafe ones."""
+    paths = []
+    for raw in as_list(c.get("paths")):
+        norm = normalize_path(raw)
+        if norm is None:
+            out.append(
+                violation(
+                    "C9_PATH",
+                    key,
+                    repo,
+                    "path must be repo-relative, without '..', '\\' or a leading '/'",
+                )
+            )
+        else:
+            paths.append(norm)
+    return paths
+
+
+def normalize_path(path: str) -> str | None:
+    """Repo-relative POSIX prefix, or None when it could escape or alias the repo."""
+    raw = str(path).strip()
+    if (
+        not raw
+        or "\\" in raw
+        or raw.startswith("/")
+        or re.match(r"^[A-Za-z]:", raw)
+        or ".." in raw.split("/")
+    ):
+        return None
+    norm = posixpath.normpath(raw)
+    if norm in (".", ""):
+        return None
+    return norm + "/" if raw.endswith("/") else norm
+
+
+def validate_claims(
+    doc: dict,
+    rules: dict,
+    repo: str | None = None,
+    private: bool = False,
+    lineage_parents: dict[str, set[str]] | None = None,
+) -> list[dict]:
+    """Rule checks that a single repo can run on its own claims file."""
+    out: list[dict] = []
+    repo = repo or (doc or {}).get("repo") or "?"
+    if not isinstance(doc, dict) or doc.get("schema") != rules["claims_schema"]:
+        return [
+            violation(
+                "C0_SCHEMA", "-", repo, f"schema must be {rules['claims_schema']}"
+            )
+        ]
+    if repo != "?" and doc.get("repo") not in (None, repo):
+        out.append(
+            violation(
+                "C0_REPO",
+                "-",
+                repo,
+                "claims file 'repo' does not match the repository it lives in",
+            )
+        )
+    cn, al = rules["canonical_name"], rules["alias"]
+    statuses = set(rules["status_enum"])
+    seen_keys: collections.Counter = collections.Counter()
+    owned = []
+    for c in as_list(doc.get("owns")):
+        if not isinstance(c, dict):
+            out.append(
+                violation("C0_ENTRY", "-", repo, "each owns entry must be a mapping")
+            )
+            continue
+        key = str(c.get("key", ""))
+        seen_keys[key] += 1
+        km = KEY_RE.match(key)
+        if not km:
+            out.append(
+                violation(
+                    "C1_KEY", key or "-", repo, "key must be <NS>:<id>, e.g. QPS:W364"
+                )
+            )
+            continue
+        name = str(c.get("name", ""))
+        shown = "<private>" if private else name
+        if km.group("ns") in cn["namespaces"]:
+            m = rules["_name_re"].match(name)
+            if not m or len(name) > cn["max_length"]:
+                out.append(
+                    violation(
+                        "C2_NAME",
+                        key,
+                        repo,
+                        f"name {shown!s} must match {cn['pattern']} and be <= {cn['max_length']} chars",
+                    )
+                )
+            else:
+                if cn.get("number_must_match_key") and int(
+                    m.group("num")
+                ) != key_number(key):
+                    out.append(
+                        violation(
+                            "C3_NAME_NUMBER",
+                            key,
+                            repo,
+                            "the number in the name must equal the key number",
+                        )
+                    )
+                bad = set(m.group("slug").split("_")) & set(cn["reserved_slug_tokens"])
+                if bad:
+                    out.append(
+                        violation(
+                            "C4_RESERVED",
+                            key,
+                            repo,
+                            f"slug uses reserved tokens {sorted(bad)}",
+                        )
+                    )
+        elif name != km.group("id"):
+            out.append(
+                violation(
+                    "C2_NAME",
+                    key,
+                    repo,
+                    f"namespace {km.group('ns')} keeps its native id as name",
+                )
+            )
+        if c.get("status") not in statuses:
+            out.append(
+                violation(
+                    "C5_STATUS", key, repo, f"status must be one of {sorted(statuses)}"
+                )
+            )
+        aliases = [str(a) for a in as_list(c.get("aliases"))]
+        if len(aliases) > al["max_per_wave"]:
+            out.append(
+                violation(
+                    "C6_ALIAS", key, repo, f"at most {al['max_per_wave']} aliases"
+                )
+            )
+        own_num = key_number(key)
+        for a in aliases:
+            shown_a = "<private>" if private else a
+            if not rules["_alias_re"].match(a) or len(a) > al["max_length"]:
+                out.append(
+                    violation(
+                        "C6_ALIAS",
+                        key,
+                        repo,
+                        f"alias {shown_a} must match {al['pattern']} and be <= {al['max_length']} chars",
+                    )
+                )
+            foreign = {int(n) for n in NUM_IN_TEXT.findall(a)} - (
+                {own_num} if own_num is not None else set()
+            )
+            if foreign and al["foreign_wave_numbers"] == "forbidden":
+                out.append(
+                    violation(
+                        "C7_ALIAS_NUMBER",
+                        key,
+                        repo,
+                        f"alias {shown_a} names another wave number",
+                    )
+                )
+        for p in as_list(c.get("parent")):
+            if not KEY_RE.match(str(p)):
+                out.append(
+                    violation("C1_KEY", key, repo, "parent must be a canonical key")
+                )
+        owned.append(
+            {
+                "key": key,
+                "name": name,
+                "aliases": aliases,
+                "parents": [str(p) for p in as_list(c.get("parent"))],
+                "paths": _checked_paths(c, key, repo, out),
+            }
+        )
+    for key, n in seen_keys.items():
+        if n > 1:
+            out.append(
+                violation(
+                    "D1_DUP_OWNER",
+                    key,
+                    repo,
+                    "key claimed more than once in the same file",
+                )
+            )
+    # Fail closed for collisions within this member's own file. The federation
+    # roll-up also checks across repositories, but cannot be the only gate.
+    canonical_by_tag = collections.defaultdict(set)
+    aliases_by_tag = collections.defaultdict(list)
+    for row in owned:
+        canonical_by_tag[tag(row["name"])].add(row["key"])
+        for alias in row["aliases"]:
+            aliases_by_tag[tag(alias)].append(row["key"])
+    for alias_tag, keys in aliases_by_tag.items():
+        if len(keys) > 1 or canonical_by_tag.get(alias_tag):
+            for key in sorted(set(keys)):
+                out.append(
+                    violation(
+                        "D3_ALIAS_CLASH",
+                        key,
+                        repo,
+                        "alias duplicates another alias or a canonical name in this claims file",
+                    )
+                )
+
+    roles = set(rules["participant_roles"])
+    for p in as_list(doc.get("participates")):
+        if not isinstance(p, dict):
+            out.append(
+                violation(
+                    "C0_ENTRY", "-", repo, "each participates entry must be a mapping"
+                )
+            )
+            continue
+        key = str(p.get("key", ""))
+        if not KEY_RE.match(key):
+            out.append(
+                violation(
+                    "C1_KEY", key or "-", repo, "participates key must be <NS>:<id>"
+                )
+            )
+        if p.get("role") not in roles:
+            out.append(
+                violation(
+                    "C8_ROLE", key or "-", repo, f"role must be one of {sorted(roles)}"
+                )
+            )
+        if key in seen_keys:
+            out.append(
+                violation(
+                    "C8_ROLE",
+                    key,
+                    repo,
+                    "a repo cannot own and participate in the same key",
+                )
+            )
+    # D4: inside this file a slug carries forward only to a later number that
+    # declares an earlier holder of the slug as parent.
+    by_slug = collections.defaultdict(list)
+    for row in owned:
+        s = slug_of(row["name"], rules)
+        if s and key_number(row["key"]) is not None:
+            by_slug[s].append(row)
+    for rows in by_slug.values():
+        chain = sorted(rows, key=lambda r: (key_number(r["key"]), r["key"]))
+        for position, later in enumerate(chain[1:], start=1):
+            earlier = {r["key"] for r in chain[:position]}
+            known = set(later["parents"]) | (lineage_parents or {}).get(
+                later["key"], set()
+            )
+            if not earlier & known:
+                out.append(
+                    violation(
+                        "D4_SLUG_NO_LINEAGE",
+                        later["key"],
+                        repo,
+                        "slug carried forward without declaring an earlier holder as parent",
+                    )
+                )
+
+    # D5: path boundaries inside one repo
+    for i, a in enumerate(owned):
+        for b in owned[i + 1 :]:
+            for pa in a["paths"]:
+                for pb in b["paths"]:
+                    if _overlaps(pa, pb):
+                        inner, outer = (a, b) if len(pa) >= len(pb) else (b, a)
+                        if outer["key"] not in inner["parents"]:
+                            out.append(
+                                violation(
+                                    "D5_PATH_OVERLAP",
+                                    inner["key"],
+                                    repo,
+                                    f"path boundary overlaps {outer['key']} without declaring it as parent",
+                                )
+                            )
+    return out
+
+
+REPO_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
+
+
+def validate_global(doc: dict, rules: dict) -> list[dict]:
+    """Rule checks for the federation's elevated waves (GLOBAL_WAVES.yaml).
+
+    An elevated wave obeys every canonical-name and alias rule of an owned
+    wave, and additionally records its origin repo and naming maturity. It
+    has no path boundaries: paths belong to the repos that do the work.
+    """
+    el = rules["elevation"]
+    owner = el["owner"]
+    if not isinstance(doc, dict) or doc.get("schema") != el["schema"]:
+        return [violation("G0_SCHEMA", "-", owner, f"schema must be {el['schema']}")]
+    out: list[dict] = []
+    if doc.get("steward") != el["steward"]:
+        out.append(
+            violation("G0_STEWARD", "-", owner, f"steward must be {el['steward']}")
+        )
+    waves = as_list(doc.get("waves"))
+    as_claims = {
+        "schema": rules["claims_schema"],
+        "repo": owner,
+        "owns": [
+            {k: v for k, v in w.items() if k not in ("origin", "maturity")}
+            for w in waves
+            if isinstance(w, dict)
+        ],
+    }
+    out += validate_claims(as_claims, rules, owner)
+    maturities = set(el["maturity_enum"])
+    for w in waves:
+        if not isinstance(w, dict):
+            out.append(
+                violation("G0_SCHEMA", "-", owner, "each wave must be a mapping")
+            )
+            continue
+        key = str(w.get("key", "-"))
+        if w.get("maturity") not in maturities:
+            out.append(
+                violation(
+                    "G1_MATURITY",
+                    key,
+                    owner,
+                    f"maturity must be one of {sorted(maturities)}",
+                )
+            )
+        if not REPO_RE.match(str(w.get("origin", ""))):
+            out.append(
+                violation(
+                    "G2_ORIGIN",
+                    key,
+                    owner,
+                    "origin must be the OWNER/NAME repo that committed the id first",
+                )
+            )
+        if as_list(w.get("paths")):
+            out.append(
+                violation(
+                    "G3_GLOBAL_PATHS",
+                    key,
+                    owner,
+                    "an elevated wave has no path boundaries; each repo keeps its own",
+                )
+            )
+    return out
+
+
+def rollup(
+    claim_sets: dict[str, tuple[dict, bool]],
+    observed: dict[str, set[str]],
+    lineage: set[tuple[str, str]],
+    rules: dict,
+    reserved: list[dict] | None = None,
+    global_doc: dict | None = None,
+) -> tuple[dict, list[dict], dict]:
+    """Merge every repo's claims; return (per-key claims, violations, census).
+
+    reserved: the cumulative index of every name and alias ever claimed
+    ({"sha256", "key", "kind"}), normally the previous register's
+    dedup.reserved. Retired names and aliases stay bound to their key forever;
+    census["reserved"] returns the updated index.
+
+    global_doc: the federation's elevated waves (GLOBAL_WAVES.yaml). Each one
+    is owned by the FEDERATION; a member repo that also owns it is D1.
+    """
+    violations: list[dict] = []
+    owners: dict[str, list[tuple[str, dict, bool]]] = collections.defaultdict(list)
+    participants: dict[str, dict[str, str]] = collections.defaultdict(dict)
+    lineage_parents: dict[str, set[str]] = collections.defaultdict(set)
+    elevated: dict[str, dict] = {}
+    for child, parent in lineage:
+        lineage_parents[child].add(parent)
+    if global_doc is not None:
+        fed = rules["elevation"]["owner"]
+        violations += validate_global(global_doc, rules)
+        # A malformed steward file (scalar or sequence) is already G0_SCHEMA;
+        # never call .get on it.
+        gwaves = global_doc.get("waves") if isinstance(global_doc, dict) else None
+        for w in as_list(gwaves):
+            if isinstance(w, dict) and w.get("key"):
+                owners[str(w["key"])].append((fed, w, False))
+                elevated[str(w["key"])] = w
+    for repo, (doc, private) in sorted(claim_sets.items()):
+        violations += validate_claims(
+            doc, rules, repo, private, lineage_parents=lineage_parents
+        )
+        if not isinstance(doc, dict):
+            continue
+        # non-mapping entries were reported as C0_ENTRY by validate_claims
+        for c in as_list(doc.get("owns")):
+            if isinstance(c, dict):
+                owners[str(c.get("key"))].append((repo, c, private))
+        for p in as_list(doc.get("participates")):
+            if not isinstance(p, dict):
+                continue
+            participants[str(p.get("key"))][repo] = str(p.get("role"))
+    parents = collections.defaultdict(set)
+    for child, parent in lineage:
+        parents[child].add(parent)
+    for key, lst in owners.items():
+        for _, c, _ in lst:
+            parents[key].update(str(p) for p in as_list(c.get("parent")))
+
+    claims: dict[str, dict] = {}
+    claimants: dict[str, set[str]] = {}
+    name_index: dict[str, set[str]] = collections.defaultdict(set)
+    alias_index: dict[str, set[str]] = collections.defaultdict(set)
+    slug_index: dict[str, set[str]] = collections.defaultdict(set)
+    for key, lst in sorted(owners.items()):
+        claimants[key] = {r for r, _, _ in lst}
+        # Every claimant is indexed, so a contested key cannot hide its names or aliases.
+        for repo, c, private in lst:
+            name_index[digest(str(c.get("name", "")))].add(key)
+            for a in as_list(c.get("aliases")):
+                alias_index[digest(str(a))].add(key)
+            s = slug_of(str(c.get("name", "")), rules)
+            if s:
+                slug_index[digest(s)].add(key)
+        if len(lst) > 1:
+            violations.append(
+                violation(
+                    "D1_DUP_OWNER",
+                    key,
+                    claimants[key],
+                    (
+                        "elevated to the federation; member repos participate, never own"
+                        if key in elevated
+                        else "more than one repo owns this key"
+                    ),
+                )
+            )
+            claims[key] = {
+                "owner": "CONTESTED",
+                "claimants": sorted(claimants[key]),
+                "status": None,
+            }
+            if participants.get(key):
+                claims[key]["participants"] = dict(sorted(participants[key].items()))
+            continue
+        repo, c, private = lst[0]
+        name = str(c.get("name", ""))
+        aliases = [str(a) for a in as_list(c.get("aliases"))]
+        rec = {"owner": repo, "status": c.get("status")}
+        if private:
+            rec["name_sha256"] = digest(name)
+            if aliases:
+                rec["alias_sha256"] = sorted(digest(a) for a in aliases)
+            rec["path_count"] = len(as_list(c.get("paths")))
+        else:
+            rec["name"] = name
+            if aliases:
+                rec["aliases"] = aliases
+            norm = [normalize_path(p) for p in as_list(c.get("paths"))]
+            if any(norm):
+                rec["paths"] = [n for n in norm if n]
+        if key in elevated:
+            rec["scope"] = "global"
+            rec["maturity"] = c.get("maturity")
+            rec["origin"] = c.get("origin")
+        if as_list(c.get("parent")):
+            if private:  # a private owner's declared lineage stays a count
+                rec["parent_count"] = len(as_list(c.get("parent")))
+            else:
+                rec["parent"] = [str(p) for p in as_list(c.get("parent"))]
+        if participants.get(key):
+            rec["participants"] = dict(sorted(participants[key].items()))
+        claims[key] = rec
+
+    for d, keys in name_index.items():
+        if len(keys) > 1:
+            for k in sorted(keys):
+                violations.append(
+                    violation(
+                        "D2_NAME_REUSE",
+                        k,
+                        claimants[k],
+                        "canonical name also used by " + ", ".join(sorted(keys - {k})),
+                    )
+                )
+    for d, keys in alias_index.items():
+        clash = keys | name_index.get(d, set())
+        if len(clash) > 1:
+            for k in sorted(keys):
+                violations.append(
+                    violation(
+                        "D3_ALIAS_CLASH",
+                        k,
+                        claimants[k],
+                        "alias also resolves to " + ", ".join(sorted(clash - {k})),
+                    )
+                )
+    # Retired names and aliases stay reserved to the key that first held them.
+    held = {}
+    for entry in reserved or []:
+        held.setdefault((entry["sha256"], entry["kind"]), entry["key"])
+    for kind, index, code in (
+        ("name", name_index, "D2_NAME_REUSE"),
+        ("alias", alias_index, "D3_ALIAS_CLASH"),
+    ):
+        for d, keys in index.items():
+            for other_kind in ("name", "alias"):
+                owner = held.get((d, other_kind))
+                if owner is None:
+                    continue
+                for k in sorted(keys - {owner}):
+                    violations.append(
+                        violation(
+                            code,
+                            k,
+                            claimants[k],
+                            f"{kind} is reserved by {owner} ({other_kind}, retired names never return)",
+                        )
+                    )
+    for d, keys in name_index.items():
+        for k in keys:
+            held.setdefault((d, "name"), k)
+    for d, keys in alias_index.items():
+        for k in keys:
+            held.setdefault((d, "alias"), k)
+
+    flagged_d4 = {v["key"] for v in violations if v["code"] == "D4_SLUG_NO_LINEAGE"}
+    for d, keys in slug_index.items():
+        if len(keys) < 2:
+            continue
+        chain = sorted(keys, key=lambda k: (key_number(k) or 0, k))
+        for position, later in enumerate(chain[1:], start=1):
+            if later in flagged_d4:
+                continue
+            if not (parents[later] & set(chain[:position])):
+                violations.append(
+                    violation(
+                        "D4_SLUG_NO_LINEAGE",
+                        later,
+                        claimants[later],
+                        "slug carried forward without declaring an earlier holder as parent",
+                    )
+                )
+
+    # Numbering: no backfilling unobserved holes.
+    observed_nums = [key_number(k) for k in observed if key_number(k) is not None]
+    top = max(observed_nums, default=0)
+    for key, rec in claims.items():
+        n = key_number(key)
+        if n is not None and key not in observed and n < top:
+            violations.append(
+                violation(
+                    "N1_BACKFILL",
+                    key,
+                    claimants[key],
+                    f"unobserved number below the observed maximum W{top:03d}",
+                )
+            )
+
+    # Numbering: new numbers above the observed maximum are allocated next_free,
+    # contiguously (W382, W383, ...); skipping ahead is not allowed.
+    fresh = sorted(
+        (key_number(k), k)
+        for k in claims
+        if key_number(k) is not None and k not in observed and key_number(k) > top
+    )
+    expected = top + 1
+    for n, key in fresh:
+        if n != expected:
+            violations.append(
+                violation(
+                    "N2_SKIP",
+                    key,
+                    claimants[key],
+                    f"allocation skips the next free number W{expected:03d}",
+                )
+            )
+        expected = max(expected, n) + 1
+
+    # Overlap census: repos that touch an owned key without declaring a role.
+    undeclared = 0
+    for key, rec in claims.items():
+        for r in sorted(
+            observed.get(key, set()) - claimants[key] - set(rec.get("participants", {}))
+        ):
+            undeclared += 1
+            violations.append(
+                violation(
+                    "O1_UNDECLARED_PARTICIPANT",
+                    key,
+                    r,
+                    f"observed in {r} but {r} declares no role",
+                    "warning",
+                )
+            )
+    for key, parts in participants.items():
+        if key not in claims:
+            violations.append(
+                violation(
+                    "O2_ORPHAN_PARTICIPATION",
+                    key,
+                    list(parts),
+                    "participation in a key nobody owns",
+                    "warning",
+                )
+            )
+
+    # Elevated waves: the origin repo stays on record and declares the origin role.
+    origin_role = (rules.get("elevation") or {}).get("origin_role", "producer")
+    for key, w in sorted(elevated.items()):
+        origin = str(w.get("origin", ""))
+        role = participants.get(key, {}).get(origin)
+        # An origin that omits the wave from `participates` is flagged too:
+        # silence is not the origin role. "Included in the roll-up" means
+        # scanned: a claims file, or observed using the key without one.
+        in_rollup = origin in claim_sets or origin in observed.get(key, ())
+        if in_rollup and role != origin_role:
+            violations.append(
+                violation(
+                    "G4_ORIGIN_ROLE",
+                    key,
+                    origin,
+                    (
+                        f"the origin repo declares role {origin_role}, not {role}"
+                        if role is not None
+                        else f"the origin repo does not declare role {origin_role}"
+                    ),
+                    "warning",
+                )
+            )
+    # Elevation queue: ids the wider federation already recognises.
+    min_reach = int((rules.get("elevation") or {}).get("candidate_min_reach", 3))
+    candidates = {
+        "min_reach": min_reach,
+        "unowned": sorted(
+            k
+            for k, repos in observed.items()
+            if k not in claims and len(repos) >= min_reach
+        ),
+        "locally_owned": sorted(
+            k
+            for k, rec in claims.items()
+            if k not in elevated
+            and rec["owner"] != "CONTESTED"
+            and len(observed.get(k, ())) >= min_reach
+        ),
+    }
+
+    claimed_nums = [key_number(k) for k in claims if key_number(k) is not None]
+    sev = collections.Counter(v["severity"] for v in violations)
+    census = {
+        "claims_files": len(claim_sets),
+        "claimed_keys": len(claims),
+        "observed_keys": len(observed),
+        "unclaimed_observed": len(set(observed) - set(claims)),
+        "claimed_unobserved": len(set(claims) - set(observed)),
+        "multi_repo_observed": sum(1 for v in observed.values() if len(v) > 1),
+        "undeclared_participants": undeclared,
+        "owners": dict(
+            sorted(collections.Counter(r["owner"] for r in claims.values()).items())
+        ),
+        "contested_keys": sum(1 for r in claims.values() if r["owner"] == "CONTESTED"),
+        "elevated_keys": {
+            "total": len(elevated),
+            "by_maturity": dict(
+                sorted(
+                    collections.Counter(
+                        str(w.get("maturity")) for w in elevated.values()
+                    ).items()
+                )
+            ),
+        },
+        "elevation_candidates": candidates,
+        "next_free": {
+            "QPS": f"W{max(claimed_nums + observed_nums, default=9) + 1:03d}"
+        },
+        "reserved": [
+            {"sha256": d, "kind": kind, "key": k}
+            for (d, kind), k in sorted(
+                held.items(), key=lambda kv: (kv[1], kv[0][1], kv[0][0])
+            )
+        ],
+        "violations": {
+            "error": sev.get("error", 0),
+            "warning": sev.get("warning", 0),
+            "by_code": dict(
+                sorted(collections.Counter(v["code"] for v in violations).items())
+            ),
+        },
+    }
+    violations.sort(
+        key=lambda v: (v["severity"] != "error", v["code"], v["key"], v["repos"])
+    )
+    return claims, violations, census
+
+
+def _wave_segment(anchor: str, number: int) -> tuple[str, str] | None:
+    """(path prefix up to the wave-specific segment, that segment) or None if the anchor is shared."""
+    seg = anchor.rstrip("/").split("/")
+    for i, s in enumerate(seg):
+        if any(
+            int(n) == number
+            for n in re.findall(r"(?<![0-9])[Ww]?0*(\d{1,3})(?![0-9])", s)
+        ):
+            return "/".join(seg[: i + 1]) + "/", s
+    return None
+
+
+VERSION_TOKEN = re.compile(r"^(V\d+|\d+)$")
+
+
+def _slug_from_text(text: str, number: int, rules: dict) -> str | None:
+    s = re.sub(r"[^A-Za-z0-9]+", "_", text).upper()
+    words = [w for w in s.split("_") if w]
+    keep = [
+        w
+        for w in words
+        if w not in {"QPS", f"W{number}", f"W{number:03d}", f"W0{number}"}
+        and not VERSION_TOKEN.match(w)
+        and w not in rules["canonical_name"]["reserved_slug_tokens"]
+        and not re.fullmatch(r"W\d{1,3}[A-Z]?", w)
+    ]
+    slug = "_".join(keep[:6])[:36].strip("_")
+    return slug or None
+
+
+def _slug_from_tree(
+    files: list[str], prefix: str, number: int, rules: dict
+) -> str | None:
+    """Most frequent descriptive stem among the wave's own records under its boundary."""
+    own = re.compile(r"(?<![0-9A-Za-z])W0*" + str(number) + r"(?![0-9])", re.IGNORECASE)
+    stems: collections.Counter = collections.Counter()
+    for f in files:
+        if not f.startswith(prefix):
+            continue
+        rest = f[len(prefix) :].split("/")
+        name = rest[-1].rsplit(".", 1)[0]
+        if own.search(name):
+            s = _slug_from_text(name, number, rules)
+            if s:
+                stems[s] += 3  # a record named after the wave is the strongest signal
+        if len(rest) > 1:
+            s = _slug_from_text(rest[0], number, rules)
+            if s:
+                stems[s] += 1
+    return stems.most_common(1)[0][0] if stems else None
+
+
+def propose(
+    register: dict, repo: str, rules: dict | None = None, repo_path: Path | None = None
+) -> dict:
+    """Draft claims for keys where this repo holds the most observed paths.
+
+    Only rule-conforming claims are proposed: a path boundary is proposed only when
+    the anchor segment carries the wave's own number, and a name only when a slug can
+    be read from that segment and is unique in the draft. Everything else is listed
+    under needs_name / contested_ties for the owner. Proposals never set lineage.
+    """
+    rules = rules or load_naming_rules()
+    owns, contested, needs_name = [], [], []
+    slugs: collections.Counter = collections.Counter()
+    drafts = []
+    files = None
+    if repo_path is not None:
+        out = subprocess.run(
+            ["git", "-C", str(repo_path), "ls-tree", "-r", "--name-only", "-z", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+        files = [f for f in out.split("\0") if f]
+    for e in register.get("waves", []):
+        repos = e.get("repos", {})
+        if (
+            repo not in repos
+            or e["namespace"] != "QPS"
+            or e.get("confidence") != "exact"
+        ):
+            continue
+        mine, best = repos[repo]["paths"], max(v["paths"] for v in repos.values())
+        if mine < best:
+            continue
+        if sum(1 for v in repos.values() if v["paths"] == best) > 1:
+            contested.append(e["key"])
+            continue
+        num = key_number(e["key"])
+        ws = _wave_segment(repos[repo].get("anchor", ""), num)
+        slug = None
+        if ws:
+            slug = _slug_from_text(ws[1], num, rules)
+        if not slug and ws and files is not None:
+            slug = _slug_from_tree(files, ws[0], num, rules)
+        drafts.append((e, num, ws, slug))
+        if slug:
+            slugs[slug] += 1
+    for e, num, ws, slug in drafts:
+        if not slug or slugs[slug] > 1:
+            needs_name.append(e["key"])
+            continue
+        claim = {"key": e["key"], "name": f"W{num:03d}_{slug}", "status": "ACTIVE"}
+        if ws:
+            claim["paths"] = [ws[0]]
+        owns.append(claim)
+    # D5: proposals never set lineage, so a boundary nested inside another proposed
+    # boundary is deferred to the owner instead of drafted as an overlap.
+    conflicts = set()
+    for i, a in enumerate(owns):
+        for b in owns[i + 1 :]:
+            for pa in a.get("paths", []):
+                for pb in b.get("paths", []):
+                    if _overlaps(normalize_path(pa) or pa, normalize_path(pb) or pb):
+                        conflicts.add(b["key"] if len(pb) >= len(pa) else a["key"])
+    owns = [c for c in owns if c["key"] not in conflicts]
+    return {
+        "schema": rules["claims_schema"],
+        "repo": repo,
+        "owns": owns,
+        "participates": [],
+        "_proposal": {
+            "contested_ties": contested,
+            "needs_name": needs_name,
+            "boundary_conflicts": sorted(
+                conflicts, key=lambda k: (key_number(k) or 0, k)
+            ),
+            "note": "Draft from the observed census. The owner confirms names, status, paths, parents.",
+        },
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    v = sub.add_parser("validate")
+    v.add_argument("path", nargs="?", default=CLAIMS_PATH)
+    v.add_argument("--rules", default=str(RULES_FILE))
+    v.add_argument(
+        "--expected-repo",
+        required=True,
+        help="independently supplied owner/name, never read from the claims file",
+    )
+    v.add_argument("--private", action="store_true", help="redact names in messages")
+    g = sub.add_parser("validate-global")
+    g.add_argument("path", nargs="?", default=str(GLOBAL_FILE))
+    g.add_argument("--rules", default=str(RULES_FILE))
+    p = sub.add_parser("propose")
+    p.add_argument("--repo", required=True)
+    p.add_argument("--register", default=str(REGISTER_FILE))
+    p.add_argument(
+        "--repo-path",
+        help="checkout of the owning repo (names are read from its own records)",
+    )
+    a = ap.parse_args(argv)
+    if a.cmd == "validate":
+        rules = load_naming_rules(Path(a.rules))
+        doc = yaml.safe_load(Path(a.path).read_text(encoding="utf-8"))
+        found = validate_claims(doc, rules, a.expected_repo, a.private)
+        for f in found:
+            print(f"{f['severity'].upper()} {f['code']} {f['key']}: {f['detail']}")
+        errors = sum(1 for f in found if f["severity"] == "error")
+        print(
+            f"wave claims: {len((doc or {}).get('owns') or [])} owned, {errors} errors"
+        )
+        return 1 if errors else 0
+    if a.cmd == "validate-global":
+        rules = load_naming_rules(Path(a.rules))
+        doc = yaml.safe_load(Path(a.path).read_text(encoding="utf-8"))
+        found = validate_global(doc, rules)
+        for f in found:
+            print(f"{f['severity'].upper()} {f['code']} {f['key']}: {f['detail']}")
+        errors = sum(1 for f in found if f["severity"] == "error")
+        print(
+            f"global waves: {len((doc or {}).get('waves') or [])} elevated, {errors} errors"
+        )
+        return 1 if errors else 0
+    register = yaml.safe_load(Path(a.register).read_text(encoding="utf-8"))
+    draft = propose(
+        register, a.repo, repo_path=Path(a.repo_path) if a.repo_path else None
+    )
+    sys.stdout.write(yaml.safe_dump(draft, sort_keys=False, width=120))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

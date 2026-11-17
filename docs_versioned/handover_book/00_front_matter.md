@@ -9,7 +9,7 @@
 ---
 
 ### About This Book
-This handover book provides a complete technical reference for the ABACUS system — a recursive, 
+This handover book provides a complete technical reference for the ABACUS system — a recursive,
 self-improving multi-agent system applying DMAIC methodology to cryogenic engineering (QPLANT) analysis.
 
 ### How to Read This Book

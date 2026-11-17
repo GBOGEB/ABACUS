@@ -8,11 +8,12 @@ Tests for historical session validation including session tuples,
 historical data integrity, canonical hooks, and handover templates.
 """
 
-import pytest
-from pathlib import Path
-import yaml
 import json
+from pathlib import Path
 from typing import Dict, List
+
+import pytest
+import yaml
 
 
 @pytest.fixture
@@ -38,12 +39,16 @@ class TestHistoricalSessionStructure:
 
     def test_session_authority_directory_exists(self, session_authority_path):
         """Test that the governed MC2 handover directory exists."""
-        assert session_authority_path.is_dir(), f"Session authority directory not found: {session_authority_path}"
+        assert (
+            session_authority_path.is_dir()
+        ), f"Session authority directory not found: {session_authority_path}"
 
     def test_session_close_current_exists(self, session_authority_path):
         """Test that the current session-close authority pointer exists."""
         session_close = session_authority_path / "SESSION_CLOSE_CURRENT.json"
-        assert session_close.is_file(), f"Current session-close authority not found: {session_close}"
+        assert (
+            session_close.is_file()
+        ), f"Current session-close authority not found: {session_close}"
 
     def test_restart_material_exists(self, session_authority_path):
         """Test that current state pointers and restart/drop-in material exist."""
@@ -65,10 +70,7 @@ class TestSessionTupleValidation:
 
     def test_session_analysis_documents(self, workspace_root):
         """Test that session analysis documents exist"""
-        analysis_patterns = [
-            "*SESSION*ANALYSIS*.md",
-            "*SESSION*SUMMARY*.md"
-        ]
+        analysis_patterns = ["*SESSION*ANALYSIS*.md", "*SESSION*SUMMARY*.md"]
 
         analysis_docs = []
         for pattern in analysis_patterns:
@@ -102,5 +104,5 @@ class TestHandoverDocumentation:
         assert handover_docs, "No repository-authoritative handover documentation found"
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

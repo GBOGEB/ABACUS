@@ -291,7 +291,7 @@ def main():
     if args.all:
         result = runner.run_all_phases(iteration=args.iteration)
         print(f"\n{'='*80}")
-        print(f"ALL PHASES COMPLETED")
+        print("ALL PHASES COMPLETED")
         print(f"{'='*80}")
         print(f"Total Phases: {result['total_phases']}")
         print(f"Successful: {result['successful_phases']}")

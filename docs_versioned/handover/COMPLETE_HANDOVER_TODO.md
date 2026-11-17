@@ -156,7 +156,7 @@ from pathlib import Path
 
 agents = [
     "cryo_optimizer",
-    "document_consumer", 
+    "document_consumer",
     "smoke_tester",
     "artifact_analyzer"
 ]
@@ -168,7 +168,7 @@ for agent in agents:
         "--agent", agent,
         "--iterations", "5"
     ])
-    
+
     if result.returncode != 0:
         print(f"XX Agent {agent} failed")
     else:
@@ -195,26 +195,26 @@ from datetime import datetime
 
 def monitor_iterations(results_dir="results"):
     """Monitor iteration results and detect issues"""
-    
+
     results_path = Path(results_dir)
     last_check = time.time()
-    
+
     while True:
         # Check for new results
         result_files = sorted(results_path.glob("iteration_*.json"))
-        
+
         for result_file in result_files:
             if result_file.stat().st_mtime > last_check:
                 with open(result_file) as f:
                     result = json.load(f)
-                
+
                 # Check for issues
                 if not result.get('success', False):
                     print(f"ALERT: Iteration {result['iteration']} failed!")
-                
+
                 if result.get('execution_time', 0) > 300:
                     print(f"WARNING: Iteration {result['iteration']} took {result['execution_time']:.1f}s")
-        
+
         last_check = time.time()
         time.sleep(60)  # Check every minute
 
@@ -242,42 +242,42 @@ from datetime import datetime
 
 def generate_dashboard(results_dir="results"):
     """Generate performance dashboard"""
-    
+
     results_path = Path(results_dir)
-    
+
     # Load all iteration results
     iterations = []
     for result_file in sorted(results_path.glob("iteration_*.json")):
         with open(result_file) as f:
             iterations.append(json.load(f))
-    
+
     if not iterations:
         print("No results found")
         return
-    
+
     # Extract metrics
     iteration_nums = [i['iteration'] for i in iterations]
     execution_times = [i.get('execution_time', 0) for i in iterations]
     success_rates = [1 if i.get('success', False) else 0 for i in iterations]
-    
+
     # Create dashboard
     fig, axes = plt.subplots(2, 2, figsize=(12, 8))
     fig.suptitle('MCP Optimization Dashboard', fontsize=16)
-    
+
     # Execution time trend
     axes[0, 0].plot(iteration_nums, execution_times, marker='o')
     axes[0, 0].set_title('Execution Time per Iteration')
     axes[0, 0].set_xlabel('Iteration')
     axes[0, 0].set_ylabel('Time (seconds)')
     axes[0, 0].grid(True)
-    
+
     # Success rate
     axes[0, 1].bar(iteration_nums, success_rates, color='green', alpha=0.7)
     axes[0, 1].set_title('Success Rate per Iteration')
     axes[0, 1].set_xlabel('Iteration')
     axes[0, 1].set_ylabel('Success (1=Yes, 0=No)')
     axes[0, 1].set_ylim([0, 1.2])
-    
+
     # Cumulative metrics
     cumulative_time = [sum(execution_times[:i+1]) for i in range(len(execution_times))]
     axes[1, 0].plot(iteration_nums, cumulative_time, marker='s', color='orange')
@@ -285,12 +285,12 @@ def generate_dashboard(results_dir="results"):
     axes[1, 0].set_xlabel('Iteration')
     axes[1, 0].set_ylabel('Total Time (seconds)')
     axes[1, 0].grid(True)
-    
+
     # Summary statistics
     total_iterations = len(iterations)
     successful = sum(success_rates)
     avg_time = sum(execution_times) / len(execution_times)
-    
+
     summary_text = f"""
     Total Iterations: {total_iterations}
     Successful: {successful}
@@ -298,17 +298,17 @@ def generate_dashboard(results_dir="results"):
     Avg Time: {avg_time:.2f}s
     Total Time: {sum(execution_times):.2f}s
     """
-    
+
     axes[1, 1].text(0.1, 0.5, summary_text, fontsize=12, verticalalignment='center')
     axes[1, 1].axis('off')
-    
+
     plt.tight_layout()
-    
+
     # Save dashboard
     dashboard_file = f"dashboard_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
     plt.savefig(dashboard_file, dpi=150)
     print(f"Dashboard saved: {dashboard_file}")
-    
+
     plt.show()
 
 if __name__ == "__main__":
@@ -336,13 +336,13 @@ workflows:
       - document_consumer
     iterations: 10
     notification: email
-  
+
   weekly_comprehensive:
     schedule: "0 0 * * 0"  # Sunday midnight
     agents: all
     iterations: 20
     generate_report: true
-    
+
   on_demand:
     trigger: manual
     agents: custom
@@ -368,24 +368,24 @@ from pathlib import Path
 
 def rollback_to_checkpoint(checkpoint_num: int):
     """Rollback to specific checkpoint"""
-    
+
     checkpoint_file = Path(f"checkpoints/checkpoint_{checkpoint_num}.json")
-    
+
     if not checkpoint_file.exists():
         print(f"Checkpoint {checkpoint_num} not found")
         return False
-    
+
     # Load checkpoint
     with open(checkpoint_file) as f:
         checkpoint = json.load(f)
-    
+
     print(f"Rolling back to checkpoint {checkpoint_num}")
     print(f"Timestamp: {checkpoint['timestamp']}")
-    
+
     # Restore configuration
     with open("mcp_config.yaml", 'w') as f:
         yaml.dump(checkpoint['config'], f)
-    
+
     print("Rollback complete")
     return True
 
@@ -394,7 +394,7 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python rollback.py <checkpoint_number>")
         sys.exit(1)
-    
+
     checkpoint_num = int(sys.argv[1])
     rollback_to_checkpoint(checkpoint_num)
 ```

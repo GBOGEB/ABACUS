@@ -132,11 +132,11 @@ RTM Schema Fields:
    def calculate_self_rank(files_in_group):
        """Rank files within their own group"""
        pass
-   
+
    def calculate_group_rank(groups):
        """Rank groups relative to each other"""
        pass
-   
+
    def calculate_global_rank(all_files):
        """Global rank across all files"""
        pass

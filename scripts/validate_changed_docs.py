@@ -16,7 +16,6 @@ from typing import Dict, Iterable, List, Sequence, Set, Tuple
 
 import yaml
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 TEXT_SUFFIXES = {
     ".md": "markdown",
@@ -32,7 +31,9 @@ YAMLLINT_CONFIG = (
 )
 
 
-def _run(args: Sequence[str], *, check: bool = True) -> subprocess.CompletedProcess[str]:
+def _run(
+    args: Sequence[str], *, check: bool = True
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         args,
         cwd=REPO_ROOT,
@@ -179,7 +180,9 @@ def markdown_rule_counts(output: str) -> Dict[str, Counter]:
     for line in output.splitlines():
         match = LINT_LINE.match(line)
         if match:
-            counts.setdefault(match.group(1).replace("\\", "/"), Counter())[match.group(2)] += 1
+            counts.setdefault(match.group(1).replace("\\", "/"), Counter())[
+                match.group(2)
+            ] += 1
     return counts
 
 
@@ -193,7 +196,9 @@ def ratchet_markdown(paths: List[str], origins: Dict[str, Tuple[str, str]]) -> i
     if not paths:
         print("No edited pre-existing Markdown files.")
         return 0
-    print(f"Ratcheting {len(paths)} edited pre-existing Markdown file(s) against their base.")
+    print(
+        f"Ratcheting {len(paths)} edited pre-existing Markdown file(s) against their base."
+    )
     # Base copies live in a scratch folder under the repository root and are linted
     # by relative path, exactly like the head files: markdownlint-cli2 globs
     # absolute Windows paths to nothing, and tempfile's owner-only ACL (Python
@@ -212,21 +217,31 @@ def ratchet_markdown(paths: List[str], origins: Dict[str, Tuple[str, str]]) -> i
             target = tmp / path
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(content)
-        failures = run_optional("Markdown (base unreadable)", ["markdownlint-cli2"], strict)
+        failures = run_optional(
+            "Markdown (base unreadable)", ["markdownlint-cli2"], strict
+        )
         compared = [p for p in paths if p not in strict]
         if not compared:
             return failures
-        head = markdown_rule_counts(_run(["markdownlint-cli2", *compared], check=False).stdout)
-        base_out = _run(["markdownlint-cli2", *[f"{scratch}/{p}" for p in compared]], check=False).stdout
+        head = markdown_rule_counts(
+            _run(["markdownlint-cli2", *compared], check=False).stdout
+        )
+        base_out = _run(
+            ["markdownlint-cli2", *[f"{scratch}/{p}" for p in compared]], check=False
+        ).stdout
         prefix = f"{scratch}/"
-        base = {k[len(prefix):] if k.startswith(prefix) else k: v
-                for k, v in markdown_rule_counts(base_out).items()}
+        base = {
+            k[len(prefix) :] if k.startswith(prefix) else k: v
+            for k, v in markdown_rule_counts(base_out).items()
+        }
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     for path in compared:
-        grown = {rule: (base.get(path, Counter())[rule], n)
-                 for rule, n in head.get(path, Counter()).items()
-                 if n > base.get(path, Counter())[rule]}
+        grown = {
+            rule: (base.get(path, Counter())[rule], n)
+            for rule, n in head.get(path, Counter()).items()
+            if n > base.get(path, Counter())[rule]
+        }
         for rule, (was, now) in sorted(grown.items()):
             print(f"New Markdown lint findings: {path}: {rule} {was} -> {now}")
             failures += 1
@@ -239,7 +254,6 @@ def _by_kind(paths: Iterable[Path], kind: str) -> List[str]:
         for path in paths
         if TEXT_SUFFIXES.get(path.suffix.lower()) == kind
     ]
-
 
 
 def validate_yaml_structure(paths: Iterable[str]) -> int:
@@ -324,9 +338,13 @@ def main() -> int:
     json_paths = _by_kind(paths, "json")
 
     failures = 0
-    failures += run_optional("Markdown", ["markdownlint-cli2"], [m for m in markdown if m not in origins])
+    failures += run_optional(
+        "Markdown", ["markdownlint-cli2"], [m for m in markdown if m not in origins]
+    )
     failures += ratchet_markdown([m for m in markdown if m in origins], origins)
-    failures += run_optional("YAML", ["yamllint", "-s", "-d", YAMLLINT_CONFIG], yaml_paths)
+    failures += run_optional(
+        "YAML", ["yamllint", "-s", "-d", YAMLLINT_CONFIG], yaml_paths
+    )
     failures += validate_yaml_structure(yaml_paths)
     failures += validate_json(json_paths)
     if not json_paths:

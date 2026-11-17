@@ -9,6 +9,7 @@ Source semantics:
 The exact current-offer pressure/temperature state supersedes the older HP-window-only guard for this scenario.
 Runtime property success remains separate from independent HEPAK/reference validation.
 """
+
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
@@ -41,7 +42,9 @@ class ReceiptPoint:
     within_engineering_tolerance_vs_supplier_b: bool
 
 
-def evaluate_state(T_D_K: float, P_D_bara: float, T_E_K: float, P_E_bara: float, basis: str) -> ReceiptPoint:
+def evaluate_state(
+    T_D_K: float, P_D_bara: float, T_E_K: float, P_E_bara: float, basis: str
+) -> ReceiptPoint:
     d = state_tp(T_D_K, P_D_bara * BAR)
     e = state_tp(T_E_K, P_E_bara * BAR)
     q_calc = MDOT_KG_S * (e.enthalpy_J_kg - d.enthalpy_J_kg)
@@ -64,19 +67,26 @@ def evaluate_state(T_D_K: float, P_D_bara: float, T_E_K: float, P_E_bara: float,
         residual_vs_supplier_b_design_percent=rp_supplier_b,
         runtime_validation_D=d.validation,
         runtime_validation_E=e.validation,
-        within_engineering_tolerance_vs_supplier_b=abs(rp_supplier_b) <= ENERGY_TOLERANCE_PERCENT,
+        within_engineering_tolerance_vs_supplier_b=abs(rp_supplier_b)
+        <= ENERGY_TOLERANCE_PERCENT,
     )
 
 
 def evaluate(hp_bara: float, basis: str) -> ReceiptPoint:
     if not 9.0 <= hp_bara <= 14.0:
-        raise ValueError("HP must remain inside source-bound SUPPLIER_B 9..14 bara control window")
+        raise ValueError(
+            "HP must remain inside source-bound SUPPLIER_B 9..14 bara control window"
+        )
     return evaluate_state(40.0, hp_bara, 60.0, hp_bara - 1.0, basis)
 
 
 def report() -> dict:
-    exact = evaluate_state(40.24, 12.6, 60.41, 11.6, "CURRENT_SUPPLIER_B_OFFER_07_2KOP_EXACT")
-    window = [evaluate(p, "SUPPLIER_B_HP_WINDOW_SENSITIVITY") for p in (9, 10, 11, 12, 13, 14)]
+    exact = evaluate_state(
+        40.24, 12.6, 60.41, 11.6, "CURRENT_SUPPLIER_B_OFFER_07_2KOP_EXACT"
+    )
+    window = [
+        evaluate(p, "SUPPLIER_B_HP_WINDOW_SENSITIVITY") for p in (9, 10, 11, 12, 13, 14)
+    ]
     projection = evaluate(14.0, "CONTRACT_PROJECTION_APPROXIMATE_14_13_BARA")
     return {
         "schema": "qps-w53-p05k-ts-enthalpy-receipt/v1",

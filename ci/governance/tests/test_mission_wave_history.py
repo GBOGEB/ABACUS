@@ -1,4 +1,5 @@
 """Deterministic wave-history tests and negative cohort controls."""
+
 import importlib.util
 import pathlib
 import unittest
@@ -17,9 +18,15 @@ def snap(sha=SHA1, ok=1, bad=0, active=0):
     for i in range(ok + bad + active):
         st = "completed" if i < ok + bad else "queued"
         conclusion = "success" if i < ok else "failure" if st == "completed" else None
-        manifest.append({"run_id": i + 1, "workflow_id": i + 500,
-                         "name": "Test " + str(i), "status": st,
-                         "conclusion": conclusion})
+        manifest.append(
+            {
+                "run_id": i + 1,
+                "workflow_id": i + 500,
+                "name": "Test " + str(i),
+                "status": st,
+                "conclusion": conclusion,
+            }
+        )
     return {
         "schema": "mission.control.ci-telemetry.v1",
         "repo": "GBOGEB/ABACUS",
@@ -28,21 +35,35 @@ def snap(sha=SHA1, ok=1, bad=0, active=0):
         "run_count": len(manifest),
         "terminal_run_count": ok + bad,
         "run_census_complete": True,
-        "run_states": {"completed/success": ok, "completed/failure": bad,
-                       "queued/none": active},
+        "run_states": {
+            "completed/success": ok,
+            "completed/failure": bad,
+            "queued/none": active,
+        },
         "run_manifest": manifest,
-        "job_metrics": {"sampled_jobs": 0, "queue_p50_s": None,
-                        "execution_p50_s": None},
-        "family_run_states": {"MIP": {"completed/success": ok,
-                                     "completed/failure": bad,
-                                     "queued/none": active}},
+        "job_metrics": {
+            "sampled_jobs": 0,
+            "queue_p50_s": None,
+            "execution_p50_s": None,
+        },
+        "family_run_states": {
+            "MIP": {
+                "completed/success": ok,
+                "completed/failure": bad,
+                "queued/none": active,
+            }
+        },
     }
 
 
 def doc():
-    return {"schema": M.INPUT,
-            "waves": [{"wave_id": "W1", "observations": [snap()]},
-                      {"wave_id": "W2", "observations": [snap(SHA2)]}]}
+    return {
+        "schema": M.INPUT,
+        "waves": [
+            {"wave_id": "W1", "observations": [snap()]},
+            {"wave_id": "W2", "observations": [snap(SHA2)]},
+        ],
+    }
 
 
 class WaveHistoryTests(unittest.TestCase):
@@ -73,11 +94,15 @@ class WaveHistoryTests(unittest.TestCase):
         self.assertEqual(c["status"], "INCOMPLETE_RUN_CENSUS")
 
     def test_separate_skips_failures_and_cancellations(self):
-        result = M.tally_states({
-            "completed/success": 1, "completed/failure": 2,
-            "completed/skipped": 4, "completed/cancelled": 1,
-            "queued/none": 3,
-        })
+        result = M.tally_states(
+            {
+                "completed/success": 1,
+                "completed/failure": 2,
+                "completed/skipped": 4,
+                "completed/cancelled": 1,
+                "queued/none": 3,
+            }
+        )
         self.assertEqual(result["failed"], 2)
         self.assertEqual(result["skipped"], 4)
         self.assertEqual(result["cancelled"], 1)
@@ -90,11 +115,15 @@ class WaveHistoryTests(unittest.TestCase):
             o["run_count"] = 2
             o["terminal_run_count"] = 2
             o["run_states"] = {"completed/success": 2}
-            o["run_manifest"].append({
-                "run_id": 2, "workflow_id": 500,
-                "name": "Repeat", "status": "completed",
-                "conclusion": "success",
-            })
+            o["run_manifest"].append(
+                {
+                    "run_id": 2,
+                    "workflow_id": 500,
+                    "name": "Repeat",
+                    "status": "completed",
+                    "conclusion": "success",
+                }
+            )
         compared = M.rollup(x)["wave_comparisons"][0]
         self.assertEqual(
             compared["by_repo"]["GBOGEB/ABACUS"]["status"],
@@ -141,45 +170,57 @@ class WaveHistoryTests(unittest.TestCase):
 
     def test_mip_pulse_requires_matched_sha(self):
         x = doc()
-        x["waves"][0]["mip_pulses"] = [{
-            "schema": "abacus.mip.wave-pulse.v1",
-            "repository": "GBOGEB/ABACUS",
-            "head_sha": SHA2, "wave_id": "W1",
-            "coverage": {"status": "COMPARABLE", "delta_pp": 1.0},
-            "root_counts": {},
-        }]
+        x["waves"][0]["mip_pulses"] = [
+            {
+                "schema": "abacus.mip.wave-pulse.v1",
+                "repository": "GBOGEB/ABACUS",
+                "head_sha": SHA2,
+                "wave_id": "W1",
+                "coverage": {"status": "COMPARABLE", "delta_pp": 1.0},
+                "root_counts": {},
+            }
+        ]
         with self.assertRaises(ValueError):
             M.rollup(x)
 
     def test_unknown_coverage_never_zero(self):
         x = doc()
-        x["waves"][0]["mip_pulses"] = [{
-            "schema": "abacus.mip.wave-pulse.v1",
-            "repository": "GBOGEB/ABACUS",
-            "head_sha": SHA1, "wave_id": "W1",
-            "coverage": {"status": "UNKNOWN"},
-            "root_counts": {"open": 2},
-        }]
+        x["waves"][0]["mip_pulses"] = [
+            {
+                "schema": "abacus.mip.wave-pulse.v1",
+                "repository": "GBOGEB/ABACUS",
+                "head_sha": SHA1,
+                "wave_id": "W1",
+                "coverage": {"status": "UNKNOWN"},
+                "root_counts": {"open": 2},
+            }
+        ]
         s = M.rollup(x)["waves"][0]
         self.assertIsNone(s["coverage_by_repo"]["GBOGEB/ABACUS"]["delta_pp"])
         self.assertIsNone(s["formal_root_closures_credited"])
 
     def test_solo_amber_not_approval(self):
         x = doc()
-        x["waves"][0]["solo_decisions"] = [{
-            "head_sha": SHA1, "decision": "AMBER_REQUESTED",
-            "merge_admitted": False,
-        }]
+        x["waves"][0]["solo_decisions"] = [
+            {
+                "head_sha": SHA1,
+                "decision": "AMBER_REQUESTED",
+                "merge_admitted": False,
+            }
+        ]
         s = M.rollup(x)["waves"][0]
         self.assertEqual(s["amber_requests"], 1)
         self.assertFalse(s["merge_admitted"])
 
     def test_fake_amber_authority_rejected(self):
         x = doc()
-        x["waves"][0]["solo_decisions"] = [{
-            "head_sha": SHA1, "decision": "AMBER_REQUESTED",
-            "merge_admitted": True,
-        }]
+        x["waves"][0]["solo_decisions"] = [
+            {
+                "head_sha": SHA1,
+                "decision": "AMBER_REQUESTED",
+                "merge_admitted": True,
+            }
+        ]
         with self.assertRaises(ValueError):
             M.rollup(x)
 

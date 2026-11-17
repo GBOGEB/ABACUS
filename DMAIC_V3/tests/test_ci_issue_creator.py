@@ -4,7 +4,6 @@ from unittest.mock import Mock
 
 import pytest
 
-
 SCRIPT_PATH = (
     Path(__file__).resolve().parents[2]
     / ".github"
@@ -42,7 +41,9 @@ def test_close_issue_for_test_closes_matching_open_issue():
 
 
 @pytest.mark.unit
-def test_process_test_results_closes_resolved_tests_before_creating_new_failures(tmp_path):
+def test_process_test_results_closes_resolved_tests_before_creating_new_failures(
+    tmp_path,
+):
     creator = object.__new__(CIIssueCreator)
     creator.created_issues = []
     creator.closed_issues = []

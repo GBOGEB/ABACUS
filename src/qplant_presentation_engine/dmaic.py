@@ -7,7 +7,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Mapping, Optional
 
-
 REPORTS_DIRNAME = "reports"
 INPUT_FILES = {
     "runtime_status": "runtime_status.json",
@@ -54,9 +53,15 @@ def build_dmaic_snapshot(
     resolved_reports_dir = reports_dir or (Path.cwd() / REPORTS_DIRNAME)
 
     runtime_status = _read_json(resolved_reports_dir / INPUT_FILES["runtime_status"])
-    runtime_registry_report = _read_json(resolved_reports_dir / INPUT_FILES["runtime_registry_report"])
-    dashboard_status = _read_json(resolved_reports_dir / INPUT_FILES["dashboard_status"])
-    truth_matrix_snapshot = _read_json(resolved_reports_dir / INPUT_FILES["truth_matrix_snapshot"])
+    runtime_registry_report = _read_json(
+        resolved_reports_dir / INPUT_FILES["runtime_registry_report"]
+    )
+    dashboard_status = _read_json(
+        resolved_reports_dir / INPUT_FILES["dashboard_status"]
+    )
+    truth_matrix_snapshot = _read_json(
+        resolved_reports_dir / INPUT_FILES["truth_matrix_snapshot"]
+    )
     pca_snapshot = _read_json(resolved_reports_dir / INPUT_FILES["pca_snapshot"])
     geti_snapshot = _read_json(resolved_reports_dir / INPUT_FILES["geti_snapshot"])
 
@@ -95,7 +100,10 @@ def build_dmaic_snapshot(
     dmaic_snapshot = {
         "artifact": "dmaic_snapshot",
         "generated_at": _utc_timestamp(),
-        "inputs": {key: str(resolved_reports_dir / filename) for key, filename in INPUT_FILES.items()},
+        "inputs": {
+            key: str(resolved_reports_dir / filename)
+            for key, filename in INPUT_FILES.items()
+        },
         "phase_status": phase_status,
         "source_metrics": {
             "runtime_status": runtime_status.get("runtime_status", "unknown"),

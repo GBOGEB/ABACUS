@@ -15,12 +15,12 @@ import os
 import sys
 from collections import defaultdict
 from datetime import datetime, timezone
-from pathlib import Path
 from http.client import HTTPSConnection
+from pathlib import Path
 from urllib.parse import urlsplit
 
-REPO     = os.environ.get("GITHUB_REPO", "GBOGEB/ABACUS")
-TOKEN    = os.environ.get("GITHUB_TOKEN", "")
+REPO = os.environ.get("GITHUB_REPO", "GBOGEB/ABACUS")
+TOKEN = os.environ.get("GITHUB_TOKEN", "")
 API_BASE = "https://api.github.com"
 
 # REX group taxonomy — matches [rex.groups.*] in security.toml
@@ -28,47 +28,63 @@ API_BASE = "https://api.github.com"
 REX_MAP = {
     # CodeQL rules
     "py/shell-command-constructed-from-input": "SEC_SUBPROCESS",
-    "py/path-injection":                       "SEC_PATH_TRAVERSAL",
-    "py/code-injection":                       "SEC_COMPILE_EXEC",
-    "py/unused-import":                        "QUAL_DEAD_CODE",
-    "py/unused-local-variable":                "QUAL_DEAD_CODE",
+    "py/path-injection": "SEC_PATH_TRAVERSAL",
+    "py/code-injection": "SEC_COMPILE_EXEC",
+    "py/unused-import": "QUAL_DEAD_CODE",
+    "py/unused-local-variable": "QUAL_DEAD_CODE",
     # Bandit / Semgrep / Ruff map by prefix
-    "B101": "SEC_ASSERT",   "S101": "SEC_ASSERT",
-    "B102": "SEC_COMPILE_EXEC", "S102": "SEC_COMPILE_EXEC",
-    "B108": "SEC_TEMPFILE",  "S108": "SEC_TEMPFILE",
-    "B602": "SEC_SUBPROCESS", "S602": "SEC_SUBPROCESS",
-    "B603": "SEC_SUBPROCESS", "S603": "SEC_SUBPROCESS",
-    "B604": "SEC_SUBPROCESS", "S604": "SEC_SUBPROCESS",
-    "B105": "SEC_HARDCODED_SECRET", "B106": "SEC_HARDCODED_SECRET",
-    "B301": "SEC_DESERIALIZATION", "B302": "SEC_DESERIALIZATION",
+    "B101": "SEC_ASSERT",
+    "S101": "SEC_ASSERT",
+    "B102": "SEC_COMPILE_EXEC",
+    "S102": "SEC_COMPILE_EXEC",
+    "B108": "SEC_TEMPFILE",
+    "S108": "SEC_TEMPFILE",
+    "B602": "SEC_SUBPROCESS",
+    "S602": "SEC_SUBPROCESS",
+    "B603": "SEC_SUBPROCESS",
+    "S603": "SEC_SUBPROCESS",
+    "B604": "SEC_SUBPROCESS",
+    "S604": "SEC_SUBPROCESS",
+    "B105": "SEC_HARDCODED_SECRET",
+    "B106": "SEC_HARDCODED_SECRET",
+    "B301": "SEC_DESERIALIZATION",
+    "B302": "SEC_DESERIALIZATION",
     "B506": "SEC_YAML_LOAD",
     "B324": "SEC_WEAK_HASH",
-    "F401": "QUAL_DEAD_CODE", "F841": "QUAL_DEAD_CODE",
+    "F401": "QUAL_DEAD_CODE",
+    "F841": "QUAL_DEAD_CODE",
     # Semgrep
     "python.lang.security.audit.subprocess-shell-true": "SEC_SUBPROCESS",
-    "python.lang.security.audit.hardcoded-password":    "SEC_HARDCODED_SECRET",
-    "python.lang.security.audit.pickle":                "SEC_DESERIALIZATION",
-    "python.lang.security.audit.yaml-load":             "SEC_YAML_LOAD",
-    "python.lang.security.insecure-hash-algorithms":    "SEC_WEAK_HASH",
+    "python.lang.security.audit.hardcoded-password": "SEC_HARDCODED_SECRET",
+    "python.lang.security.audit.pickle": "SEC_DESERIALIZATION",
+    "python.lang.security.audit.yaml-load": "SEC_YAML_LOAD",
+    "python.lang.security.insecure-hash-algorithms": "SEC_WEAK_HASH",
 }
 
 REX_META = {
-    "SEC_SUBPROCESS":       {"risk": "HIGH",   "emoji": "🔴"},
-    "SEC_PATH_TRAVERSAL":   {"risk": "HIGH",   "emoji": "🔴"},
-    "SEC_HARDCODED_SECRET": {"risk": "HIGH",   "emoji": "🔴"},
-    "SEC_COMPILE_EXEC":     {"risk": "MEDIUM", "emoji": "🟠"},
-    "SEC_TEMPFILE":         {"risk": "MEDIUM", "emoji": "🟠"},
-    "SEC_DESERIALIZATION":  {"risk": "MEDIUM", "emoji": "🟠"},
-    "SEC_YAML_LOAD":        {"risk": "MEDIUM", "emoji": "🟠"},
-    "SEC_WEAK_HASH":        {"risk": "MEDIUM", "emoji": "🟠"},
-    "SEC_ASSERT":           {"risk": "LOW",    "emoji": "🟡"},
-    "QUAL_DEAD_CODE":       {"risk": "LOW",    "emoji": "🟡"},
-    "OTHER":                {"risk": "INFO",   "emoji": "⚪"},
+    "SEC_SUBPROCESS": {"risk": "HIGH", "emoji": "🔴"},
+    "SEC_PATH_TRAVERSAL": {"risk": "HIGH", "emoji": "🔴"},
+    "SEC_HARDCODED_SECRET": {"risk": "HIGH", "emoji": "🔴"},
+    "SEC_COMPILE_EXEC": {"risk": "MEDIUM", "emoji": "🟠"},
+    "SEC_TEMPFILE": {"risk": "MEDIUM", "emoji": "🟠"},
+    "SEC_DESERIALIZATION": {"risk": "MEDIUM", "emoji": "🟠"},
+    "SEC_YAML_LOAD": {"risk": "MEDIUM", "emoji": "🟠"},
+    "SEC_WEAK_HASH": {"risk": "MEDIUM", "emoji": "🟠"},
+    "SEC_ASSERT": {"risk": "LOW", "emoji": "🟡"},
+    "QUAL_DEAD_CODE": {"risk": "LOW", "emoji": "🟡"},
+    "OTHER": {"risk": "INFO", "emoji": "⚪"},
 }
 
-SEVERITY_ORDER = {"critical": 0, "high": 1, "error": 1,
-                  "medium": 2, "warning": 2, "low": 3,
-                  "note": 4, "none": 5}
+SEVERITY_ORDER = {
+    "critical": 0,
+    "high": 1,
+    "error": 1,
+    "medium": 2,
+    "warning": 2,
+    "low": 3,
+    "note": 4,
+    "none": 5,
+}
 
 
 def gh_get(path: str) -> list:
@@ -131,6 +147,7 @@ def gh_get(path: str) -> list:
                 break
     return results
 
+
 def classify_rex(rule_id: str) -> str:
     """Map a rule ID to a REX group name."""
     if rule_id in REX_MAP:
@@ -149,34 +166,34 @@ def fetch_alerts(state: str = "open") -> list:
 def build_telemetry(alerts: list) -> dict:
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    by_tool:     dict = defaultdict(list)
-    by_rex:      dict = defaultdict(list)
+    by_tool: dict = defaultdict(list)
+    by_rex: dict = defaultdict(list)
     by_severity: dict = defaultdict(int)
-    by_file:     dict = defaultdict(int)
+    by_file: dict = defaultdict(int)
 
     for a in alerts:
-        tool    = a.get("tool", {}).get("name", "unknown")
+        tool = a.get("tool", {}).get("name", "unknown")
         rule_id = a.get("rule", {}).get("id", "")
-        sev     = a.get("rule", {}).get("severity", "none").lower()
-        inst    = a.get("most_recent_instance", {})
-        fpath   = inst.get("location", {}).get("path", "unknown")
-        line    = inst.get("location", {}).get("start_line", 0)
-        msg     = inst.get("message", {}).get("text", "")
-        number  = a.get("number")
-        url     = a.get("html_url", "")
+        sev = a.get("rule", {}).get("severity", "none").lower()
+        inst = a.get("most_recent_instance", {})
+        fpath = inst.get("location", {}).get("path", "unknown")
+        line = inst.get("location", {}).get("start_line", 0)
+        msg = inst.get("message", {}).get("text", "")
+        number = a.get("number")
+        url = a.get("html_url", "")
 
         rex = classify_rex(rule_id)
 
         entry = {
-            "number":  number,
-            "tool":    tool,
+            "number": number,
+            "tool": tool,
             "rule_id": rule_id,
             "severity": sev,
-            "file":    fpath,
-            "line":    line,
+            "file": fpath,
+            "line": line,
             "message": msg[:120],
-            "rex":     rex,
-            "url":     url,
+            "rex": rex,
+            "url": url,
         }
 
         by_tool[tool].append(entry)
@@ -189,13 +206,13 @@ def build_telemetry(alerts: list) -> dict:
 
     return {
         "generated_at": now,
-        "repo":         REPO,
-        "total_open":   len(alerts),
-        "by_severity":  dict(by_severity),
-        "by_tool":      {t: len(v) for t, v in by_tool.items()},
+        "repo": REPO,
+        "total_open": len(alerts),
+        "by_severity": dict(by_severity),
+        "by_tool": {t: len(v) for t, v in by_tool.items()},
         "by_rex_group": {g: len(v) for g, v in by_rex.items()},
-        "hot_files":    [{"file": f, "count": c} for f, c in hotfiles],
-        "groups":       {
+        "hot_files": [{"file": f, "count": c} for f, c in hotfiles],
+        "groups": {
             rex: sorted(items, key=lambda x: SEVERITY_ORDER.get(x["severity"], 9))
             for rex, items in by_rex.items()
         },
@@ -208,8 +225,7 @@ def render_markdown(tel: dict) -> str:
         "# ABACUS Security Dashboard",
         "",
         f"> Auto-generated {tel['generated_at']} from GitHub code scanning",
-        f"> **{tel['total_open']} open alerts** across "
-        f"{len(tel['by_tool'])} tools",
+        f"> **{tel['total_open']} open alerts** across " f"{len(tel['by_tool'])} tools",
         "",
         "## Severity counts",
         "",
@@ -248,8 +264,10 @@ def render_markdown(tel: dict) -> str:
     )
     return "\n".join(lines)
 
+
 def render_yaml(tel: dict) -> str:
     """Minimal YAML serializer (no external deps)."""
+
     def _val(v, indent=0):
         pad = "  " * indent
         if isinstance(v, dict):
@@ -277,12 +295,14 @@ def render_yaml(tel: dict) -> str:
             return v
         return str(v)
 
-    lines = ["# ABACUS Security Telemetry — machine-readable",
-             f"# generated: {tel['generated_at']}",
-             ""]
+    lines = [
+        "# ABACUS Security Telemetry — machine-readable",
+        f"# generated: {tel['generated_at']}",
+        "",
+    ]
     for k, v in tel.items():
         if k == "groups":
-            continue   # groups go in separate block to keep yaml readable
+            continue  # groups go in separate block to keep yaml readable
         rendered = _val(v)
         sep = "" if rendered.startswith("\n") else " "
         lines.append(f"{k}:{sep}{rendered}")
@@ -325,8 +345,7 @@ def main():
     for tool, cnt in sorted(tel["by_tool"].items(), key=lambda x: -x[1]):
         print(f"  {tool:30s}: {cnt}")
     print(f"\nREX groups:")
-    for rex, cnt in sorted(tel["by_rex_group"].items(),
-                           key=lambda x: -x[1]):
+    for rex, cnt in sorted(tel["by_rex_group"].items(), key=lambda x: -x[1]):
         meta = REX_META.get(rex, REX_META["OTHER"])
         print(f"  {meta['emoji']} {rex:30s}: {cnt} [{meta['risk']}]")
 

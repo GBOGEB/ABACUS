@@ -1,4 +1,5 @@
 """Synthetic regression tests for deep config and DAG syntax census."""
+
 from __future__ import annotations
 
 import importlib.util
@@ -10,7 +11,9 @@ from unittest import mock
 
 SPEC = importlib.util.spec_from_file_location(
     "config_surface_audit",
-    Path(__file__).resolve().parents[1] / "tools" / "triage"
+    Path(__file__).resolve().parents[1]
+    / "tools"
+    / "triage"
     / "config_surface_audit.py",
 )
 audit = importlib.util.module_from_spec(SPEC)
@@ -43,16 +46,12 @@ class ConfigSurfaceTest(unittest.TestCase):
         self.assertEqual(concerns, ["DYNAMIC_JOB_NEEDS_NOT_RESOLVED"])
 
     def test_workflow_dynamic_needs_preserves_literal_cycle(self):
-        source = (
-            "jobs:\n  a:\n    needs: [a, '${{ matrix.target }}']\n"
-        )
+        source = "jobs:\n  a:\n    needs: [a, '${{ matrix.target }}']\n"
         with self.assertRaisesRegex(ValueError, "cyclic"):
             audit.check_text(".github/workflows/x.yml", source)
 
     def test_workflow_dynamic_needs_preserves_literal_dangling_reference(self):
-        source = (
-            "jobs:\n  a:\n    needs: [missing, '${{ matrix.target }}']\n"
-        )
+        source = "jobs:\n  a:\n    needs: [missing, '${{ matrix.target }}']\n"
         with self.assertRaisesRegex(ValueError, "unknown workflow job"):
             audit.check_text(".github/workflows/x.yml", source)
 
@@ -111,9 +110,7 @@ class ConfigSurfaceTest(unittest.TestCase):
             base = Path(root)
             (base / "good.yaml").write_text("a: b\n", encoding="utf-8")
             (base / "bad.json").write_text('{"x": 1, "x": 2}', encoding="utf-8")
-            result = audit.audit(
-                base, ["good.yaml", "bad.json", "missing.toml"]
-            )
+            result = audit.audit(base, ["good.yaml", "bad.json", "missing.toml"])
             self.assertEqual(result["counts"]["SYNTAX_PASS"], 1)
             self.assertEqual(result["counts"]["SYNTAX_RED"], 1)
             self.assertEqual(result["counts"]["UNKNOWN_MISSING"], 1)
@@ -133,9 +130,7 @@ class ConfigSurfaceTest(unittest.TestCase):
                 (root / "internal-link.yaml").symlink_to(internal_target)
             except (NotImplementedError, OSError) as exc:
                 self.skipTest(f"symlinks unavailable: {exc}")
-            result = audit.audit(
-                root, ["config.yaml", "internal-link.yaml"]
-            )
+            result = audit.audit(root, ["config.yaml", "internal-link.yaml"])
             self.assertEqual(
                 result["counts"],
                 {"UNKNOWN_OUTSIDE_ROOT": 1, "UNKNOWN_SYMLINK": 1},
@@ -163,13 +158,12 @@ class ConfigSurfaceTest(unittest.TestCase):
             except (NotImplementedError, OSError) as exc:
                 self.skipTest(f"symlinks unavailable: {exc}")
             for destination in (source, alias):
-                with mock.patch.object(
-                    audit, "discover", return_value=["config.json"]
-                ), mock.patch.object(audit, "audit") as run_audit:
+                with (
+                    mock.patch.object(audit, "discover", return_value=["config.json"]),
+                    mock.patch.object(audit, "audit") as run_audit,
+                ):
                     with self.assertRaisesRegex(ValueError, "tracked source"):
-                        audit.main(
-                            ["--root", str(root), "--out", str(destination)]
-                        )
+                        audit.main(["--root", str(root), "--out", str(destination)])
                     run_audit.assert_not_called()
             self.assertEqual(source.read_text(encoding="utf-8"), '{"safe": true}')
 

@@ -113,7 +113,7 @@ Status: Scanning codebase (5000+ files scanned)
 python -m DMAIC_V3.dmaic_v3_engine --mode single --phase phase1_define --iteration 1
 ```
 
-### Run Phase 4 (Improve) 
+### Run Phase 4 (Improve)
 ```bash
 python -m DMAIC_V3.dmaic_v3_engine --mode single --phase phase4_improve --iteration 1
 ```

@@ -19,7 +19,9 @@ def test_code_improver_adds_docstrings_and_type_hints(tmp_path):
 
 def test_code_improver_reports_noop_when_nothing_to_change(tmp_path):
     source = tmp_path / "sample.py"
-    source.write_text('def ok() -> int:\n    """doc"""\n    return 1\n', encoding="utf-8")
+    source.write_text(
+        'def ok() -> int:\n    """doc"""\n    return 1\n', encoding="utf-8"
+    )
     improver = CodeImprover(tmp_path)
 
     assert improver.add_missing_docstrings(source)["success"] is False

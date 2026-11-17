@@ -249,22 +249,22 @@ monitor.register_alert_hook(lambda a: send_notification(a))
 for iteration in range(1, 11):
     # Scan workspace (triggers hooks)
     monitor.scan_workspace()
-    
+
     # Track maturity
     maturity = tracker.generate_report()
-    
+
     # Check convergence
     if maturity.convergence_score >= 95:
         # Create baseline
         git_mgr.create_baseline(f"v4_0_0", iteration)
-        
+
         # Bump to V4.0
         ver_mgr.bump_version(BumpType.MAJOR, changes)
         break
-    
+
     # Generate iteration report
     report_gen.generate_reports()
-    
+
     monitor.increment_iteration()
 ```
 

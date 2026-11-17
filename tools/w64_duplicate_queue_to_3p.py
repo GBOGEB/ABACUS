@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Convert W64 P2 duplicate-authority findings into generic 3P root items."""
+
 from __future__ import annotations
 
 import argparse
@@ -19,13 +20,15 @@ def convert(report: dict[str, object]) -> dict[str, object]:
         if not isinstance(finding, dict) or finding.get("type") != TYPE:
             continue
         paths = sorted(str(p) for p in finding.get("paths", []) or [])
-        items.append({
-            "scope": "GBOGEB/ABACUS",
-            "type": TYPE,
-            "cluster": finding.get("family"),
-            "members": paths,
-            "source_severity": finding.get("severity"),
-        })
+        items.append(
+            {
+                "scope": "GBOGEB/ABACUS",
+                "type": TYPE,
+                "cluster": finding.get("family"),
+                "members": paths,
+                "source_severity": finding.get("severity"),
+            }
+        )
     return {
         "schema_version": "W64-DUPLICATE-3P-INPUT-1.0.0",
         "source_finding_type": TYPE,
@@ -43,8 +46,14 @@ def main(argv: Iterable[str] | None = None) -> int:
     result = convert(report)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(json.dumps({"item_count": result["item_count"], "out": str(out)}, sort_keys=True))
+    out.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    print(
+        json.dumps(
+            {"item_count": result["item_count"], "out": str(out)}, sort_keys=True
+        )
+    )
     return 0
 
 

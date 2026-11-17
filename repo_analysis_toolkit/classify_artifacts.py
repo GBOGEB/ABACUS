@@ -40,8 +40,17 @@ except ImportError:  # pragma: no cover
     yaml = None
 
 
-DEFAULT_EXCLUDES = {".git", "node_modules", "__pycache__", ".venv",
-                    ".mypy_cache", ".pytest_cache", ".next", "dist", "build"}
+DEFAULT_EXCLUDES = {
+    ".git",
+    "node_modules",
+    "__pycache__",
+    ".venv",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".next",
+    "dist",
+    "build",
+}
 
 
 def load_config(path: str | None) -> dict:
@@ -55,7 +64,9 @@ def git_last_commit(repo: Path, rel: str) -> tuple[str, str]:
     """Return (iso_date, author) of the file's most recent commit."""
     out = subprocess.run(
         ["git", "-C", str(repo), "log", "-1", "--format=%ai|%an", "--", rel],
-        capture_output=True, text=True, check=False,
+        capture_output=True,
+        text=True,
+        check=False,
     )
     line = out.stdout.strip()
     if not line:
@@ -123,7 +134,7 @@ def classify(args: argparse.Namespace, cfg: dict) -> int:
     stale_age = int(cls_cfg.get("stale_age_days", 730))
 
     excludes = set(DEFAULT_EXCLUDES)
-    for pat in (cfg.get("exclude_patterns") or []):
+    for pat in cfg.get("exclude_patterns") or []:
         for token in pat.split("/"):
             if token and token != "**" and "*" not in token:
                 excludes.add(token)
@@ -180,7 +191,9 @@ def classify(args: argparse.Namespace, cfg: dict) -> int:
             if len(idxs) <= 1 or not sha1:
                 continue
             # Sort by age_days ascending — most recent first.
-            idxs.sort(key=lambda i: rows[i]["age_days"] if rows[i]["age_days"] >= 0 else 10**9)
+            idxs.sort(
+                key=lambda i: rows[i]["age_days"] if rows[i]["age_days"] >= 0 else 10**9
+            )
             keeper = idxs[0]
             for i in idxs[1:]:
                 if rows[i]["tag"] != "Corrupted":
@@ -191,9 +204,22 @@ def classify(args: argparse.Namespace, cfg: dict) -> int:
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()) if rows else
-                                ["path", "size_bytes", "age_days", "last_author",
-                                 "tag", "confidence", "sha1"])
+        writer = csv.DictWriter(
+            f,
+            fieldnames=(
+                list(rows[0].keys())
+                if rows
+                else [
+                    "path",
+                    "size_bytes",
+                    "age_days",
+                    "last_author",
+                    "tag",
+                    "confidence",
+                    "sha1",
+                ]
+            ),
+        )
         writer.writeheader()
         writer.writerows(rows)
 
@@ -212,7 +238,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--repo", required=True)
     ap.add_argument("--out", default="reports/classification.csv")
     ap.add_argument("--config", default=None)
-    ap.add_argument("--dedup", action="store_true", help="Compute SHA-1 and tag duplicates as Redundant")
+    ap.add_argument(
+        "--dedup",
+        action="store_true",
+        help="Compute SHA-1 and tag duplicates as Redundant",
+    )
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
     return classify(args, cfg)

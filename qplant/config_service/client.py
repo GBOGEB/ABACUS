@@ -36,10 +36,13 @@ class ConfigClient:
         self.base_url = base_url.rstrip("/")
         try:
             import requests
+
             self._requests = requests
         except ImportError:
             self._requests = None
-            logger.warning("requests library not available; install with: pip install requests")
+            logger.warning(
+                "requests library not available; install with: pip install requests"
+            )
 
     def _get(self, path: str) -> Any:
         if not self._requests:
@@ -68,10 +71,13 @@ class ConfigClient:
         result = self._get(f"/api/v1/config/value?path={path}")
         return result.get("value")
 
-    def set_value(self, path: str, value: Any, user: str = "sdk", reason: str = "") -> Dict:
-        return self._post("/api/v1/config/set", {
-            "path": path, "value": value, "user": user, "reason": reason
-        })
+    def set_value(
+        self, path: str, value: Any, user: str = "sdk", reason: str = ""
+    ) -> Dict:
+        return self._post(
+            "/api/v1/config/set",
+            {"path": path, "value": value, "user": user, "reason": reason},
+        )
 
     def validate(self) -> Dict[str, Any]:
         return self._get("/api/v1/config/validate")

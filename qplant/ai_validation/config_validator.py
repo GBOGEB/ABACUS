@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ValidationResult:
     """A single validation finding."""
+
     path: str
     level: str  # pass, info, warning, error
     check: str
@@ -181,20 +182,33 @@ class ConfigValidator:
         """Validate required fields exist."""
         results = []
         required = [
-            "version", "system", "flow_parameters", "pressure_parameters",
-            "compressor_specifications", "financial", "compliance",
+            "version",
+            "system",
+            "flow_parameters",
+            "pressure_parameters",
+            "compressor_specifications",
+            "financial",
+            "compliance",
         ]
         for field_name in required:
             if field_name in self.config:
-                results.append(ValidationResult(
-                    path=field_name, level="pass", check="required_field",
-                    message=f"Required field '{field_name}' present",
-                ))
+                results.append(
+                    ValidationResult(
+                        path=field_name,
+                        level="pass",
+                        check="required_field",
+                        message=f"Required field '{field_name}' present",
+                    )
+                )
             else:
-                results.append(ValidationResult(
-                    path=field_name, level="error", check="required_field",
-                    message=f"Required field '{field_name}' missing",
-                ))
+                results.append(
+                    ValidationResult(
+                        path=field_name,
+                        level="error",
+                        check="required_field",
+                        message=f"Required field '{field_name}' missing",
+                    )
+                )
         return results
 
     def _validate_ranges(self) -> List[ValidationResult]:
@@ -203,43 +217,63 @@ class ConfigValidator:
         for path, rule in self.ENGINEERING_RULES.items():
             value = self._get_value(path)
             if value is None:
-                results.append(ValidationResult(
-                    path=path, level="warning", check="range",
-                    message=f"Value not found for range check",
-                ))
+                results.append(
+                    ValidationResult(
+                        path=path,
+                        level="warning",
+                        check="range",
+                        message=f"Value not found for range check",
+                    )
+                )
                 continue
 
             # Type check
             if not isinstance(value, (int, float)):
-                results.append(ValidationResult(
-                    path=path, level="error", check="type",
-                    message=f"Expected {rule['type']}, got {type(value).__name__}",
-                    current_value=value,
-                ))
+                results.append(
+                    ValidationResult(
+                        path=path,
+                        level="error",
+                        check="type",
+                        message=f"Expected {rule['type']}, got {type(value).__name__}",
+                        current_value=value,
+                    )
+                )
                 continue
 
             # Range check
             if value < rule["min"] or value > rule["max"]:
-                results.append(ValidationResult(
-                    path=path, level="error", check="range",
-                    message=f"Value {value} outside range [{rule['min']}, {rule['max']}]",
-                    current_value=value,
-                    suggested_value=rule["recommended"],
-                ))
+                results.append(
+                    ValidationResult(
+                        path=path,
+                        level="error",
+                        check="range",
+                        message=f"Value {value} outside range [{rule['min']}, {rule['max']}]",
+                        current_value=value,
+                        suggested_value=rule["recommended"],
+                    )
+                )
             elif abs(value - rule["recommended"]) / rule["recommended"] > 0.2:
-                results.append(ValidationResult(
-                    path=path, level="info", check="range",
-                    message=f"Value {value} differs >20% from recommended {rule['recommended']}",
-                    current_value=value,
-                    suggested_value=rule["recommended"],
-                    confidence=0.5,
-                ))
+                results.append(
+                    ValidationResult(
+                        path=path,
+                        level="info",
+                        check="range",
+                        message=f"Value {value} differs >20% from recommended {rule['recommended']}",
+                        current_value=value,
+                        suggested_value=rule["recommended"],
+                        confidence=0.5,
+                    )
+                )
             else:
-                results.append(ValidationResult(
-                    path=path, level="pass", check="range",
-                    message=f"Value {value} within expected range",
-                    current_value=value,
-                ))
+                results.append(
+                    ValidationResult(
+                        path=path,
+                        level="pass",
+                        check="range",
+                        message=f"Value {value} within expected range",
+                        current_value=value,
+                    )
+                )
 
         return results
 
@@ -249,30 +283,45 @@ class ConfigValidator:
         for rule in self.DEPENDENCY_RULES:
             values = [self._get_value(f) for f in rule["fields"]]
             if any(v is None for v in values):
-                results.append(ValidationResult(
-                    path=", ".join(rule["fields"]),
-                    level="warning", check="dependency",
-                    message=f"Cannot check '{rule['name']}': missing values",
-                ))
+                results.append(
+                    ValidationResult(
+                        path=", ".join(rule["fields"]),
+                        level="warning",
+                        check="dependency",
+                        message=f"Cannot check '{rule['name']}': missing values",
+                    )
+                )
                 continue
 
             try:
                 if rule["check"](*values):
-                    results.append(ValidationResult(
-                        path=rule["name"], level="pass", check="dependency",
-                        message=f"Dependency check '{rule['name']}' passed",
-                    ))
+                    results.append(
+                        ValidationResult(
+                            path=rule["name"],
+                            level="pass",
+                            check="dependency",
+                            message=f"Dependency check '{rule['name']}' passed",
+                        )
+                    )
                 else:
-                    results.append(ValidationResult(
-                        path=rule["name"], level="error", check="dependency",
-                        message=f"Dependency check failed: {rule['message']}",
-                        current_value=values,
-                    ))
+                    results.append(
+                        ValidationResult(
+                            path=rule["name"],
+                            level="error",
+                            check="dependency",
+                            message=f"Dependency check failed: {rule['message']}",
+                            current_value=values,
+                        )
+                    )
             except Exception as e:
-                results.append(ValidationResult(
-                    path=rule["name"], level="warning", check="dependency",
-                    message=f"Dependency check error: {e}",
-                ))
+                results.append(
+                    ValidationResult(
+                        path=rule["name"],
+                        level="warning",
+                        check="dependency",
+                        message=f"Dependency check error: {e}",
+                    )
+                )
 
         return results
 
@@ -283,40 +332,57 @@ class ConfigValidator:
         # Check version format
         version = self.config.get("version", "")
         if version and all(p.isdigit() for p in version.split(".")):
-            results.append(ValidationResult(
-                path="version", level="pass", check="semantic",
-                message=f"Version '{version}' is valid semver",
-            ))
+            results.append(
+                ValidationResult(
+                    path="version",
+                    level="pass",
+                    check="semantic",
+                    message=f"Version '{version}' is valid semver",
+                )
+            )
         else:
-            results.append(ValidationResult(
-                path="version", level="error", check="semantic",
-                message=f"Version '{version}' is not valid semver",
-            ))
+            results.append(
+                ValidationResult(
+                    path="version",
+                    level="error",
+                    check="semantic",
+                    message=f"Version '{version}' is not valid semver",
+                )
+            )
 
         # Check redundancy — compressor count should support N+1
         count = self._get_value("compressor_specifications.hp_compressors.count")
         if count and count >= 3:
-            results.append(ValidationResult(
-                path="compressor_specifications.hp_compressors.count",
-                level="pass", check="semantic",
-                message=f"Compressor count {count} supports N+1 redundancy",
-            ))
+            results.append(
+                ValidationResult(
+                    path="compressor_specifications.hp_compressors.count",
+                    level="pass",
+                    check="semantic",
+                    message=f"Compressor count {count} supports N+1 redundancy",
+                )
+            )
         elif count:
-            results.append(ValidationResult(
-                path="compressor_specifications.hp_compressors.count",
-                level="warning", check="semantic",
-                message=f"Compressor count {count} may not support N+1 redundancy",
-                suggested_value=3,
-            ))
+            results.append(
+                ValidationResult(
+                    path="compressor_specifications.hp_compressors.count",
+                    level="warning",
+                    check="semantic",
+                    message=f"Compressor count {count} may not support N+1 redundancy",
+                    suggested_value=3,
+                )
+            )
 
         # Check energy cost reasonableness
         elec = self._get_value("financial.electricity_cost_eur_kwh")
         if elec and 0.05 <= elec <= 0.50:
-            results.append(ValidationResult(
-                path="financial.electricity_cost_eur_kwh",
-                level="pass", check="semantic",
-                message=f"Electricity cost €{elec}/kWh is reasonable for EU industrial",
-            ))
+            results.append(
+                ValidationResult(
+                    path="financial.electricity_cost_eur_kwh",
+                    level="pass",
+                    check="semantic",
+                    message=f"Electricity cost €{elec}/kWh is reasonable for EU industrial",
+                )
+            )
 
         return results
 
@@ -325,26 +391,32 @@ class ConfigValidator:
         suggestions = []
 
         # VFD efficiency suggestion
-        efficiency = self._get_value("compressor_specifications.fsd575.efficiency_percent")
+        efficiency = self._get_value(
+            "compressor_specifications.fsd575.efficiency_percent"
+        )
         if efficiency and isinstance(efficiency, list):
             avg_eff = sum(efficiency) / len(efficiency)
             if avg_eff < 80:
-                suggestions.append({
-                    "category": "efficiency",
-                    "message": f"Average VFD efficiency {avg_eff}% — consider higher-efficiency drives",
-                    "potential_impact": "5-10% energy cost reduction",
-                    "confidence": 0.6,
-                })
+                suggestions.append(
+                    {
+                        "category": "efficiency",
+                        "message": f"Average VFD efficiency {avg_eff}% — consider higher-efficiency drives",
+                        "potential_impact": "5-10% energy cost reduction",
+                        "confidence": 0.6,
+                    }
+                )
 
         # Operating hours optimisation
         hours = self._get_value("financial.operating_hours_year")
         if hours and hours > 7500:
-            suggestions.append({
-                "category": "maintenance",
-                "message": f"Operating {hours}h/year — ensure maintenance windows are scheduled",
-                "potential_impact": "Reduced unplanned downtime",
-                "confidence": 0.7,
-            })
+            suggestions.append(
+                {
+                    "category": "maintenance",
+                    "message": f"Operating {hours}h/year — ensure maintenance windows are scheduled",
+                    "potential_impact": "Reduced unplanned downtime",
+                    "confidence": 0.7,
+                }
+            )
 
         return suggestions
 

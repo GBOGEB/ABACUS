@@ -4,6 +4,7 @@
 Fail-safe rule: an incomplete local override never shadows its global parent.
 The global requirement remains effective until the full approval hierarchy is APPROVED.
 """
+
 import argparse
 import hashlib
 import json
@@ -35,7 +36,9 @@ def validate_global(registry):
 
 
 def approval_complete(item):
-    approvals = {entry["role"]: entry["state"] for entry in item.get("approval_chain", [])}
+    approvals = {
+        entry["role"]: entry["state"] for entry in item.get("approval_chain", [])
+    }
     return item.get("approval_state") == "APPROVED" and all(
         approvals.get(role) == "APPROVED" for role in REQUIRED_APPROVALS
     )
@@ -61,44 +64,57 @@ def resolve(global_registry, overlay):
 
         if item.get("mode", "addition") == "override":
             if approval_complete(item):
-                effective.append({
+                effective.append(
+                    {
+                        "effective_id": local_id,
+                        "scope": overlay["repo"],
+                        "source": "approved_local_override",
+                        "replaces": parent,
+                        "title": item["title"],
+                    }
+                )
+            else:
+                effective.append(
+                    {
+                        "effective_id": parent,
+                        "scope": overlay["repo"],
+                        "source": "global_fallback",
+                        "blocked_override": local_id,
+                        "title": global_map[parent]["title"],
+                    }
+                )
+                warnings.append(
+                    f"{local_id} override blocked: approval chain incomplete"
+                )
+        else:
+            effective.append(
+                {
                     "effective_id": local_id,
                     "scope": overlay["repo"],
-                    "source": "approved_local_override",
-                    "replaces": parent,
+                    "source": "local_addition",
+                    "parent_global_requirement": parent,
                     "title": item["title"],
-                })
-            else:
-                effective.append({
-                    "effective_id": parent,
-                    "scope": overlay["repo"],
-                    "source": "global_fallback",
-                    "blocked_override": local_id,
-                    "title": global_map[parent]["title"],
-                })
-                warnings.append(f"{local_id} override blocked: approval chain incomplete")
-        else:
-            effective.append({
-                "effective_id": local_id,
-                "scope": overlay["repo"],
-                "source": "local_addition",
-                "parent_global_requirement": parent,
-                "title": item["title"],
-            })
+                }
+            )
 
     resolved_parents = {
-        row.get("replaces") or row.get("parent_global_requirement") or row.get("effective_id")
+        row.get("replaces")
+        or row.get("parent_global_requirement")
+        or row.get("effective_id")
         for row in effective
-        if row.get("source") in ("approved_local_override", "local_addition", "global_fallback")
+        if row.get("source")
+        in ("approved_local_override", "local_addition", "global_fallback")
     }
     for global_id, requirement in global_map.items():
         if global_id not in resolved_parents:
-            effective.append({
-                "effective_id": global_id,
-                "scope": overlay["repo"],
-                "source": "global",
-                "title": requirement["title"],
-            })
+            effective.append(
+                {
+                    "effective_id": global_id,
+                    "scope": overlay["repo"],
+                    "source": "global",
+                    "title": requirement["title"],
+                }
+            )
 
     effective.sort(key=lambda row: row["effective_id"])
     receipt = {
@@ -122,7 +138,9 @@ def main():
     receipt = resolve(load(args.global_registry), load(args.overlay))
     Path(args.out).write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
     print(f"CReq resolution: {receipt['status']}")
-    print(f"repo={receipt['repo']} effective={len(receipt['effective_requirements'])} warnings={len(receipt['warnings'])}")
+    print(
+        f"repo={receipt['repo']} effective={len(receipt['effective_requirements'])} warnings={len(receipt['warnings'])}"
+    )
     for warning in receipt["warnings"]:
         print("WARN:", warning)
     print("sha256=" + receipt["sha256"])

@@ -5,6 +5,7 @@ It cannot authenticate Crew, accept REX, grant review, or authorize merge.
 Every source claim is pinned; absent data stays UNKNOWN, never a green/zero.
 Python 3.9+, standard library only.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -20,16 +21,37 @@ HEX40 = re.compile(r"^[0-9a-f]{40}$")
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
 ID = re.compile(r"^[A-Za-z][A-Za-z0-9_-]{0,63}$")
 KINDS = (
-    "static", "negative", "unit", "integration", "api", "gui",
-    "package", "security", "governance", "a10", "coverage", "artifact",
-    "debug", "federation", "rex", "full_ci", "root_census",
+    "static",
+    "negative",
+    "unit",
+    "integration",
+    "api",
+    "gui",
+    "package",
+    "security",
+    "governance",
+    "a10",
+    "coverage",
+    "artifact",
+    "debug",
+    "federation",
+    "rex",
+    "full_ci",
+    "root_census",
 )
 KIND_RANK = {k: n for n, k in enumerate(KINDS)}
 PRIORITIES = {"P0": 0, "P1": 1, "P2": 2}
 STATUS = {"completed", "queued", "in_progress", "waiting", "pending", "requested"}
 CONCLUSIONS = {
-    "success", "failure", "cancelled", "skipped", "timed_out", "neutral",
-    "action_required", "stale", "startup_failure",
+    "success",
+    "failure",
+    "cancelled",
+    "skipped",
+    "timed_out",
+    "neutral",
+    "action_required",
+    "stale",
+    "startup_failure",
 }
 CASE_STATES = {"PASS", "FAIL", "ERROR", "SKIP"}
 
@@ -48,10 +70,16 @@ def _positive(value, name):
 
 
 def _path(value):
-    if (type(value) is not str or not value or value.startswith("/")
-            or "\\" in value or ":" in value or value.endswith("/")
-            or any(ord(char) < 32 or ord(char) == 127 for char in value)
-            or any(p in ("", ".", "..") for p in value.split("/"))):
+    if (
+        type(value) is not str
+        or not value
+        or value.startswith("/")
+        or "\\" in value
+        or ":" in value
+        or value.endswith("/")
+        or any(ord(char) < 32 or ord(char) == 127 for char in value)
+        or any(p in ("", ".", "..") for p in value.split("/"))
+    ):
         raise ValueError("unsafe or noncanonical relative path")
     return value
 
@@ -109,13 +137,25 @@ def _tasks(payload):
         if not axes or any(not ID.fullmatch(x) for x in axes):
             raise ValueError("nonempty valid matrix axes required")
         estimate = row.get("estimate_seconds")
-        if estimate is not None and (type(estimate) not in (int, float)
-                                     or not math.isfinite(estimate) or estimate <= 0
-                                     or estimate > 1_000_000):
+        if estimate is not None and (
+            type(estimate) not in (int, float)
+            or not math.isfinite(estimate)
+            or estimate <= 0
+            or estimate > 1_000_000
+        ):
             raise ValueError("invalid non-evidence duration estimate")
-        by_id[name] = dict(row, id=name, kind=kind, needs=deps, paths=paths,
-                           axes=axes, mode=mode, required=required,
-                           priority=priority, estimate_seconds=estimate)
+        by_id[name] = dict(
+            row,
+            id=name,
+            kind=kind,
+            needs=deps,
+            paths=paths,
+            axes=axes,
+            mode=mode,
+            required=required,
+            priority=priority,
+            estimate_seconds=estimate,
+        )
     for name, row in by_id.items():
         if name in row["needs"] or any(dep not in by_id for dep in row["needs"]):
             raise ValueError("self dependency or missing upstream task")
@@ -137,9 +177,7 @@ def _waves(tasks, max_parallel):
         remaining -= ready
     blocked = {k for k, t in tasks.items() if t["mode"] == "CONTROLLED_MUTATION"}
     while True:
-        new = blocked | {
-            k for k, t in tasks.items() if set(t["needs"]) & blocked
-        }
+        new = blocked | {k for k, t in tasks.items() if set(t["needs"]) & blocked}
         if new == blocked:
             break
         blocked = new
@@ -149,7 +187,9 @@ def _waves(tasks, max_parallel):
         ready = [tasks[k] for k in waiting if set(tasks[k]["needs"]) <= finished]
         if not ready:
             raise ValueError("unresolvable read-only test dependency")
-        ready.sort(key=lambda t: (PRIORITIES[t["priority"]], KIND_RANK[t["kind"]], t["id"]))
+        ready.sort(
+            key=lambda t: (PRIORITIES[t["priority"]], KIND_RANK[t["kind"]], t["id"])
+        )
         # Pack independent tasks into bounded parallel batches. A simple
         # max_parallel slice is unsafe: sibling tasks can claim the same
         # file, a parent directory, or a Windows case-folded path alias.
@@ -160,7 +200,8 @@ def _waves(tasks, max_parallel):
             for task in remaining_ready:
                 collision = any(
                     _path_overlap(path, other)
-                    for path in task["paths"] for other in leased
+                    for path in task["paths"]
+                    for other in leased
                 )
                 if len(selected) < max_parallel and not collision:
                     selected.append(task)
@@ -169,17 +210,20 @@ def _waves(tasks, max_parallel):
                     deferred.append(task)
             batches.append(selected)
             remaining_ready = deferred
-        waves.append({
-            "wave": len(waves) + 1,
-            "batches": [[t["id"] for t in batch] for batch in batches],
-            "task_ids": [t["id"] for t in ready],
-            "predicted_wall_seconds": (
-                sum(max(t["estimate_seconds"] for t in batch) for batch in batches)
-                if all(t["estimate_seconds"] is not None for t in ready) else None
-            ),
-            "timing_class": "UNVALIDATED_ESTIMATE_NOT_NATIVE_DURATION",
-            "lease_model": "CASEFOLDED_LEXICAL_PLAN_NOT_AUTHENTICATED",
-        })
+        waves.append(
+            {
+                "wave": len(waves) + 1,
+                "batches": [[t["id"] for t in batch] for batch in batches],
+                "task_ids": [t["id"] for t in ready],
+                "predicted_wall_seconds": (
+                    sum(max(t["estimate_seconds"] for t in batch) for batch in batches)
+                    if all(t["estimate_seconds"] is not None for t in ready)
+                    else None
+                ),
+                "timing_class": "UNVALIDATED_ESTIMATE_NOT_NATIVE_DURATION",
+                "lease_model": "CASEFOLDED_LEXICAL_PLAN_NOT_AUTHENTICATED",
+            }
+        )
         finished.update(t["id"] for t in ready)
         waiting.difference_update(finished)
     return waves, sorted(blocked)
@@ -212,10 +256,14 @@ def _native_timing(j):
     queue = _interval_seconds(j.get("created_at"), j.get("started_at"))
     runtime = _interval_seconds(j.get("started_at"), j.get("completed_at"))
     elapsed = _interval_seconds(j.get("created_at"), j.get("completed_at"))
-    if (j.get("status") != "completed" and j.get("completed_at") is not None):
+    if j.get("status") != "completed" and j.get("completed_at") is not None:
         raise ValueError("nonterminal job has completed_at timestamp")
-    if (queue is not None and runtime is not None and elapsed is not None
-            and abs(queue + runtime - elapsed) > 0.001):
+    if (
+        queue is not None
+        and runtime is not None
+        and elapsed is not None
+        and abs(queue + runtime - elapsed) > 0.001
+    ):
         raise ValueError("contradictory native timing timestamps")
     return {"queue_seconds": queue, "runtime_seconds": runtime}
 
@@ -242,7 +290,9 @@ def _jobs(entries, expected_sha, tasks, name):
         _sha(j.get("source_sha"), "job source SHA")
         if j["source_sha"] != expected_sha:
             raise ValueError("stale or mixed job source SHA")
-        ident = tuple(_positive(j.get(k), k) for k in ("run_id", "run_attempt", "job_id"))
+        ident = tuple(
+            _positive(j.get(k), k) for k in ("run_id", "run_attempt", "job_id")
+        )
         if ident in seen:
             raise ValueError("duplicate native run/attempt/job identity")
         seen.add(ident)
@@ -274,8 +324,11 @@ def _task_result(task, selected, source_sha):
         return "UNVERIFIED_CHECKOUT_IDENTITY"
     if any(row["status"] != "completed" for row in selected_rows):
         return "PENDING_NATIVE_JOBS"
-    if any(row["conclusion"] in ("failure", "timed_out", "startup_failure", "action_required")
-           for row in selected_rows):
+    if any(
+        row["conclusion"]
+        in ("failure", "timed_out", "startup_failure", "action_required")
+        for row in selected_rows
+    ):
         return "OBSERVED_RED"
     if any(row["conclusion"] != "success" for row in selected_rows):
         return "NOT_PROVEN_GREEN"
@@ -299,11 +352,19 @@ def _cases(block, expected_sha, name):
         if type(case) is not dict:
             raise ValueError("invalid test case")
         case_id, result = case.get("id"), case.get("outcome")
-        if type(case_id) is not str or not case_id or case_id in index or result not in CASE_STATES:
+        if (
+            type(case_id) is not str
+            or not case_id
+            or case_id in index
+            or result not in CASE_STATES
+        ):
             raise ValueError("missing/duplicate test identity or invalid case outcome")
         duration = case.get("duration_seconds")
-        if duration is not None and (type(duration) not in (int, float)
-                                     or not math.isfinite(duration) or duration < 0):
+        if duration is not None and (
+            type(duration) not in (int, float)
+            or not math.isfinite(duration)
+            or duration < 0
+        ):
             raise ValueError("invalid native testcase duration")
         index[case_id] = result
     if block["complete"] and not cases:
@@ -313,13 +374,21 @@ def _cases(block, expected_sha, name):
 
 def _case_transitions(prior, current):
     if prior is None or current is None:
-        return {"state": "UNKNOWN", "comparable": None, "events": None,
-                "reason": "complete native per-test cohorts not supplied"}
+        return {
+            "state": "UNKNOWN",
+            "comparable": None,
+            "events": None,
+            "reason": "complete native per-test cohorts not supplied",
+        }
     before, b = prior
     after, a = current
     if not before["complete"] or not after["complete"]:
-        return {"state": "UNKNOWN", "comparable": None, "events": None,
-                "reason": "incomplete test collection"}
+        return {
+            "state": "UNKNOWN",
+            "comparable": None,
+            "events": None,
+            "reason": "incomplete test collection",
+        }
     fields = ("selection_digest", "environment_digest", "definition_digest")
     comparable = all(before[f] == after[f] for f in fields)
     events = []
@@ -340,10 +409,23 @@ def _case_transitions(prior, current):
             kind = "PASS_TO_SKIP_TEST_OBLIGATION_LOSS"
         else:
             kind = "OTHER_TEST_TRANSITION"
-        events.append({"test_id": name, "prior": left, "current": right,
-                       "kind": kind, "accepted_root_closure": None})
-    return {"state": "OBSERVED", "comparable": comparable, "events": events,
-            "reason": None if comparable else "mismatched case selection/environment/definition"}
+        events.append(
+            {
+                "test_id": name,
+                "prior": left,
+                "current": right,
+                "kind": kind,
+                "accepted_root_closure": None,
+            }
+        )
+    return {
+        "state": "OBSERVED",
+        "comparable": comparable,
+        "events": events,
+        "reason": (
+            None if comparable else "mismatched case selection/environment/definition"
+        ),
+    }
 
 
 def compile_plan(payload):
@@ -363,17 +445,25 @@ def compile_plan(payload):
     tasks = _tasks(payload)
     waves, withheld = _waves(tasks, payload.get("max_parallel", 2))
     current = _jobs(payload.get("current_jobs", []), source_sha, tasks, "current_jobs")
-    previous = _jobs(payload.get("previous_jobs", []), previous_sha, tasks, "previous_jobs")
+    previous = _jobs(
+        payload.get("previous_jobs", []), previous_sha, tasks, "previous_jobs"
+    )
     cases = _case_transitions(
         _cases(payload.get("previous_cases"), previous_sha, "previous_cases"),
         _cases(payload.get("current_cases"), source_sha, "current_cases"),
     )
     entries = []
-    for task in sorted(tasks.values(), key=lambda t: (PRIORITIES[t["priority"]], KIND_RANK[t["kind"]], t["id"])):
+    for task in sorted(
+        tasks.values(),
+        key=lambda t: (PRIORITIES[t["priority"]], KIND_RANK[t["kind"]], t["id"]),
+    ):
         result = _task_result(task, current, source_sha)
         prior = _task_result(task, previous, previous_sha)
-        receipt_values = [current[(task["id"], axis)].get("receipt_source_sha")
-                          for axis in task["axes"] if (task["id"], axis) in current]
+        receipt_values = [
+            current[(task["id"], axis)].get("receipt_source_sha")
+            for axis in task["axes"]
+            if (task["id"], axis) in current
+        ]
         if any(v != source_sha for v in receipt_values if v is not None):
             receipt_identity = "MISMATCH_REJECT_ARTIFACT_SOURCE"
         elif receipt_values and all(v == source_sha for v in receipt_values):
@@ -402,29 +492,62 @@ def compile_plan(payload):
             transition = "CURRENT_RED_BASELINE_UNKNOWN_OR_RED"
         else:
             transition = "NO_VERIFIED_JOB_TRANSITION"
-        entries.append({
-            "id": task["id"], "kind": task["kind"], "priority": task["priority"],
-            "required": task["required"], "mode": task["mode"],
-            "needs": task["needs"], "axes": task["axes"],
-            "paths_intersect_changed": any(_path_overlap(p, c) for p in task["paths"] for c in changed)
-            if task["paths"] else None,
-            "previous": prior, "current": result, "transition": transition,
-            "artifact_receipt_identity": receipt_identity,
-            "decision": decision, "native_job_evidence": [
-                {k: current[(task["id"], axis)].get(k) for k in
-                 ("source_sha", "checkout_sha", "receipt_source_sha", "run_id", "run_attempt", "job_id", "status", "conclusion")}
-                for axis in task["axes"] if (task["id"], axis) in current
-            ],
-        })
+        entries.append(
+            {
+                "id": task["id"],
+                "kind": task["kind"],
+                "priority": task["priority"],
+                "required": task["required"],
+                "mode": task["mode"],
+                "needs": task["needs"],
+                "axes": task["axes"],
+                "paths_intersect_changed": (
+                    any(_path_overlap(p, c) for p in task["paths"] for c in changed)
+                    if task["paths"]
+                    else None
+                ),
+                "previous": prior,
+                "current": result,
+                "transition": transition,
+                "artifact_receipt_identity": receipt_identity,
+                "decision": decision,
+                "native_job_evidence": [
+                    {
+                        k: current[(task["id"], axis)].get(k)
+                        for k in (
+                            "source_sha",
+                            "checkout_sha",
+                            "receipt_source_sha",
+                            "run_id",
+                            "run_attempt",
+                            "job_id",
+                            "status",
+                            "conclusion",
+                        )
+                    }
+                    for axis in task["axes"]
+                    if (task["id"], axis) in current
+                ],
+            }
+        )
     timing = [_native_timing(j) for j in current.values()]
-    queue_samples = [x["queue_seconds"] for x in timing if x["queue_seconds"] is not None]
-    runtime_samples = [x["runtime_seconds"] for x in timing if x["runtime_seconds"] is not None]
+    queue_samples = [
+        x["queue_seconds"] for x in timing if x["queue_seconds"] is not None
+    ]
+    runtime_samples = [
+        x["runtime_seconds"] for x in timing if x["runtime_seconds"] is not None
+    ]
     return {
-        "schema": OUTPUT, "repository": payload["repository"],
-        "base_sha": payload["base_sha"], "previous_sha": previous_sha,
-        "source_sha": source_sha, "changed_paths_count": len(changed),
-        "waves": waves, "withheld_task_ids": withheld,
-        "task_count": len(entries), "tasks": entries,
+        "schema": OUTPUT,
+        "repository": payload["repository"],
+        "base_sha": payload["base_sha"],
+        "previous_sha": previous_sha,
+        "source_sha": source_sha,
+        "changed_paths_count": len(changed),
+        "waves": waves,
+        "withheld_task_ids": withheld,
+        "task_count": len(entries),
+        "tasks": entries,
         "native_queue_samples": len(queue_samples),
         "native_runtime_samples": len(runtime_samples),
         "queue_seconds_p50": _nearest_rank(queue_samples, 50),
@@ -434,11 +557,16 @@ def compile_plan(payload):
         "timing_inference": "DESCRIPTIVE_ONLY_NOT_INDEPENDENT_STABILITY_CYCLES",
         "test_case_comparison": cases,
         "native_current_job_observations": len(current),
-        "independent_stable_cycles": None, "spc_control_limit": None,
-        "accepted_root_closures": None, "crew_launch_authenticated": None,
-        "accepted_rex_receipts": None, "merge_authorized": False,
-        "security_waiver": False, "authority_transfer": False,
-        "admission": "HOLD", "dispatch": "NOT_PERFORMED_READ_ONLY_PLAN",
+        "independent_stable_cycles": None,
+        "spc_control_limit": None,
+        "accepted_root_closures": None,
+        "crew_launch_authenticated": None,
+        "accepted_rex_receipts": None,
+        "merge_authorized": False,
+        "security_waiver": False,
+        "authority_transfer": False,
+        "admission": "HOLD",
+        "dispatch": "NOT_PERFORMED_READ_ONLY_PLAN",
     }
 
 
@@ -448,8 +576,16 @@ def main():
     parser.add_argument("--output", required=True)
     opts = parser.parse_args()
     result = compile_plan(json.loads(Path(opts.input).read_text(encoding="utf-8")))
-    Path(opts.output).write_text(json.dumps(result, sort_keys=True, indent=2) + "\n", encoding="utf-8")
-    print("proposed waves:", len(result["waves"]), "tasks:", result["task_count"], "admission: HOLD")
+    Path(opts.output).write_text(
+        json.dumps(result, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+    )
+    print(
+        "proposed waves:",
+        len(result["waves"]),
+        "tasks:",
+        result["task_count"],
+        "admission: HOLD",
+    )
 
 
 if __name__ == "__main__":

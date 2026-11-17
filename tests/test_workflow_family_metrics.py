@@ -1,4 +1,5 @@
 """Adversarial regression tranche for repeat-aware native workflow census."""
+
 from __future__ import annotations
 
 import copy
@@ -8,8 +9,13 @@ from tools.mip2.workflow_family_metrics import summarize_families
 
 
 def run(rid, wf, state="completed", conclusion="success", attempt=1):
-    return {"id": rid, "workflow_id": wf, "run_attempt": attempt,
-            "status": state, "conclusion": conclusion}
+    return {
+        "id": rid,
+        "workflow_id": wf,
+        "run_attempt": attempt,
+        "status": state,
+        "conclusion": conclusion,
+    }
 
 
 def qps_cohort():
@@ -59,35 +65,42 @@ class FamilyMetricsTests(unittest.TestCase):
         self.assertEqual(r["family_clean_success"], 0)
 
     def test_duplicate_success_success_and_cancel_cap(self):
-        r = summarize_families([run(1, 2), run(2, 2), run(3, 2, conclusion="cancelled")])
+        r = summarize_families(
+            [run(1, 2), run(2, 2), run(3, 2, conclusion="cancelled")]
+        )
         self.assertEqual(r["success_excess_from_repeat_runs"], 1)
         self.assertEqual(r["family_any_cancelled"], 1)
         self.assertEqual(r["family_clean_success"], 0)
 
     def test_repeated_failed_runs_do_not_fake_success_excess(self):
-        r = summarize_families([run(1, 2, conclusion="failure"),
-                                run(2, 2, conclusion="failure")])
+        r = summarize_families(
+            [run(1, 2, conclusion="failure"), run(2, 2, conclusion="failure")]
+        )
         self.assertEqual(r["success_excess_from_repeat_runs"], 0)
         self.assertEqual(r["family_any_failure"], 1)
         self.assertEqual(r["run_failure"], 2)
 
     def test_timeout_action_required_startup_failure_classified_red(self):
-        rows = [run(i + 1, i + 1, conclusion=s) for i, s in enumerate(
-            ("timed_out", "action_required", "startup_failure"))]
+        rows = [
+            run(i + 1, i + 1, conclusion=s)
+            for i, s in enumerate(("timed_out", "action_required", "startup_failure"))
+        ]
         r = summarize_families(rows)
         self.assertEqual(r["run_failure"], 3)
         self.assertEqual(r["family_any_failure"], 3)
 
     def test_skipped_neutral_separate_from_failure(self):
-        r = summarize_families([run(1, 2, conclusion="skipped"),
-                                run(2, 3, conclusion="neutral")])
+        r = summarize_families(
+            [run(1, 2, conclusion="skipped"), run(2, 3, conclusion="neutral")]
+        )
         self.assertEqual(r["run_other_terminal"], 2)
         self.assertEqual(r["run_failure"], 0)
         self.assertEqual(r["terminal_runs"], 2)
 
     def test_every_allowed_open_state_is_not_terminal(self):
-        for i, state in enumerate(("queued", "pending", "in_progress",
-                                   "requested", "waiting"), 1):
+        for i, state in enumerate(
+            ("queued", "pending", "in_progress", "requested", "waiting"), 1
+        ):
             with self.subTest(state=state):
                 r = summarize_families([run(i, i, state, None)])
                 self.assertEqual(r["run_nonterminal"], 1)
@@ -139,15 +152,17 @@ class FamilyMetricsTests(unittest.TestCase):
             summarize_families([run(1, 2), run(1, 3, attempt=2)])
 
     def test_stable_run_manifest_sorted_by_workflow_and_run(self):
-        r = summarize_families([run(3, 12, attempt=2), run(1, 11),
-                                run(2, 12, attempt=1)])
+        r = summarize_families(
+            [run(3, 12, attempt=2), run(1, 11), run(2, 12, attempt=1)]
+        )
         self.assertEqual([x["workflow_id"] for x in r["manifest"]], [11, 12])
         self.assertEqual(r["manifest"][1]["run_ids"], [2, 3])
         self.assertEqual(r["manifest"][1]["attempts_observed"], [1, 2])
 
     def test_manifests_classify_mixed_statuses_without_promoting(self):
-        r = summarize_families([run(1, 2, conclusion="failure"),
-                                run(2, 2, "queued", None), run(3, 2)])
+        r = summarize_families(
+            [run(1, 2, conclusion="failure"), run(2, 2, "queued", None), run(3, 2)]
+        )
         m = r["manifest"][0]
         self.assertEqual((m["success"], m["failure"], m["nonterminal"]), (1, 1, 1))
         self.assertFalse(m["clean_success"])
@@ -156,8 +171,7 @@ class FamilyMetricsTests(unittest.TestCase):
         self.assertIsNone(r["verified_root_closure"])
 
     def test_repeat_excess_counts_distinct_families(self):
-        r = summarize_families([run(1, 2), run(2, 2),
-                                run(3, 4), run(4, 4), run(5, 4)])
+        r = summarize_families([run(1, 2), run(2, 2), run(3, 4), run(4, 4), run(5, 4)])
         self.assertEqual(r["families_with_repeats"], 2)
         self.assertEqual(r["repeated_executions"], 3)
 

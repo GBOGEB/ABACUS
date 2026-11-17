@@ -47,8 +47,12 @@ def bootstrap_ci_diff_means(
         return float("nan"), float("nan"), float("nan")
     diff_hat = float(b_values.mean() - a_values.mean())
     generator = _rng(random_state)
-    a_samples = generator.choice(a_values, size=(n_bootstrap, a_values.size), replace=True)
-    b_samples = generator.choice(b_values, size=(n_bootstrap, b_values.size), replace=True)
+    a_samples = generator.choice(
+        a_values, size=(n_bootstrap, a_values.size), replace=True
+    )
+    b_samples = generator.choice(
+        b_values, size=(n_bootstrap, b_values.size), replace=True
+    )
     diffs = b_samples.mean(axis=1) - a_samples.mean(axis=1)
     low = float(np.percentile(diffs, 100 * alpha / 2))
     high = float(np.percentile(diffs, 100 * (1 - alpha / 2)))
@@ -95,7 +99,9 @@ def load_from_folders(root: Path, ext: str = ".txt") -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def analyse_group(name: str, scores: Iterable[float], out_dir: Path, alpha: float = 0.05) -> dict[str, object]:
+def analyse_group(
+    name: str, scores: Iterable[float], out_dir: Path, alpha: float = 0.05
+) -> dict[str, object]:
     out_dir.mkdir(parents=True, exist_ok=True)
     values = np.asarray(list(scores), dtype=float)
     values = values[~np.isnan(values)]
@@ -116,7 +122,9 @@ def analyse_group(name: str, scores: Iterable[float], out_dir: Path, alpha: floa
     }
 
 
-def run_analysis(frame: pd.DataFrame, alpha: float = 0.05, out_dir: Path | str = "output") -> None:
+def run_analysis(
+    frame: pd.DataFrame, alpha: float = 0.05, out_dir: Path | str = "output"
+) -> None:
     out_path = Path(out_dir)
     out_path.mkdir(parents=True, exist_ok=True)
     report_lines = [
@@ -136,6 +144,10 @@ def run_analysis(frame: pd.DataFrame, alpha: float = 0.05, out_dir: Path | str =
         report_lines.append(f"- {group}: n={result['n']} mean={result['mean']:.3f}")
     report_lines.extend(["", "## Pairwise Group Comparisons"])
     for left, right in combinations(groups, 2):
-        diff, low, high = bootstrap_ci_diff_means(groups[left], groups[right], alpha=alpha)
-        report_lines.append(f"- {left} vs {right}: diff={diff:.3f} ci=[{low:.3f}, {high:.3f}]")
+        diff, low, high = bootstrap_ci_diff_means(
+            groups[left], groups[right], alpha=alpha
+        )
+        report_lines.append(
+            f"- {left} vs {right}: diff={diff:.3f} ci=[{low:.3f}, {high:.3f}]"
+        )
     (out_path / "report.md").write_text("\n".join(report_lines), encoding="utf-8")

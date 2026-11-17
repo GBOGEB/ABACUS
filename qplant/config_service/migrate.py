@@ -42,7 +42,13 @@ class ConfigMigration:
         }
 
         if not self.config_path.exists():
-            report["checks"].append({"check": "file_exists", "status": "FAIL", "detail": "Config file not found"})
+            report["checks"].append(
+                {
+                    "check": "file_exists",
+                    "status": "FAIL",
+                    "detail": "Config file not found",
+                }
+            )
             return report
 
         with open(self.config_path) as f:
@@ -52,42 +58,58 @@ class ConfigMigration:
         version = config.get("version", "")
         parts = version.split(".")
         version_ok = len(parts) == 3 and all(p.isdigit() for p in parts)
-        report["checks"].append({
-            "check": "version_format",
-            "status": "PASS" if version_ok else "FAIL",
-            "detail": f"Version: {version}",
-        })
+        report["checks"].append(
+            {
+                "check": "version_format",
+                "status": "PASS" if version_ok else "FAIL",
+                "detail": f"Version: {version}",
+            }
+        )
 
         # Check required sections
         required_sections = [
-            "system", "flow_parameters", "pressure_parameters",
-            "compressor_specifications", "financial", "compliance",
+            "system",
+            "flow_parameters",
+            "pressure_parameters",
+            "compressor_specifications",
+            "financial",
+            "compliance",
         ]
         for section in required_sections:
             present = section in config
-            report["checks"].append({
-                "check": f"section_{section}",
-                "status": "PASS" if present else "FAIL",
-                "detail": f"{'Present' if present else 'Missing'}",
-            })
+            report["checks"].append(
+                {
+                    "check": f"section_{section}",
+                    "status": "PASS" if present else "FAIL",
+                    "detail": f"{'Present' if present else 'Missing'}",
+                }
+            )
             if not present:
                 report["migrations_needed"].append(f"Add missing section: {section}")
 
         # Check compressor count alignment
-        hp_count = config.get("compressor_specifications", {}).get("hp_compressors", {}).get("count", 0)
+        hp_count = (
+            config.get("compressor_specifications", {})
+            .get("hp_compressors", {})
+            .get("count", 0)
+        )
         if hp_count != 3:
             report["migrations_needed"].append(f"Fix compressor count: {hp_count} → 3")
 
         # Check for environment overlay files
         for env in ["dev", "staging", "prod", "dr"]:
             overlay = self.config_path.parent / f"config.{env}.yaml"
-            report["checks"].append({
-                "check": f"env_overlay_{env}",
-                "status": "PASS" if overlay.exists() else "INFO",
-                "detail": f"{'Exists' if overlay.exists() else 'Not created (optional)'}",
-            })
+            report["checks"].append(
+                {
+                    "check": f"env_overlay_{env}",
+                    "status": "PASS" if overlay.exists() else "INFO",
+                    "detail": f"{'Exists' if overlay.exists() else 'Not created (optional)'}",
+                }
+            )
 
-        report["overall"] = "PASS" if not report["migrations_needed"] else "NEEDS_MIGRATION"
+        report["overall"] = (
+            "PASS" if not report["migrations_needed"] else "NEEDS_MIGRATION"
+        )
         return report
 
     def execute(self, target_version: str = "4.2.0") -> Dict[str, Any]:
@@ -101,7 +123,9 @@ class ConfigMigration:
 
         # 1. Backup current config
         backup_path = self._backup()
-        result["steps"].append({"step": "backup", "status": "OK", "path": str(backup_path)})
+        result["steps"].append(
+            {"step": "backup", "status": "OK", "path": str(backup_path)}
+        )
 
         # 2. Load config
         with open(self.config_path) as f:
@@ -111,11 +135,13 @@ class ConfigMigration:
         old_version = config.get("version", "unknown")
         config["version"] = target_version
         config["last_updated"] = datetime.now(timezone.utc).isoformat()
-        result["steps"].append({
-            "step": "version_update",
-            "status": "OK",
-            "detail": f"{old_version} → {target_version}",
-        })
+        result["steps"].append(
+            {
+                "step": "version_update",
+                "status": "OK",
+                "detail": f"{old_version} → {target_version}",
+            }
+        )
 
         # 4. Create environment overlays if missing
         for env in ["dev", "staging", "prod", "dr"]:
@@ -124,11 +150,13 @@ class ConfigMigration:
                 overlay = self._generate_env_overlay(env)
                 with open(overlay_path, "w") as f:
                     yaml.dump(overlay, f, default_flow_style=False)
-                result["steps"].append({
-                    "step": f"create_overlay_{env}",
-                    "status": "OK",
-                    "path": str(overlay_path),
-                })
+                result["steps"].append(
+                    {
+                        "step": f"create_overlay_{env}",
+                        "status": "OK",
+                        "path": str(overlay_path),
+                    }
+                )
 
         # 5. Save migrated config
         with open(self.config_path, "w") as f:
@@ -188,7 +216,9 @@ def main():
     parser = argparse.ArgumentParser(description="QPLANT Config Migration Tool")
     parser.add_argument("--check", action="store_true", help="Dry-run check")
     parser.add_argument("--execute", action="store_true", help="Execute migration")
-    parser.add_argument("--rollback", action="store_true", help="Rollback last migration")
+    parser.add_argument(
+        "--rollback", action="store_true", help="Rollback last migration"
+    )
     parser.add_argument("--config", default="data/config.yaml", help="Config file path")
     parser.add_argument("--version", default="4.2.0", help="Target version")
     args = parser.parse_args()

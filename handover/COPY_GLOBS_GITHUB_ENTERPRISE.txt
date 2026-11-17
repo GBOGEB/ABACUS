@@ -281,7 +281,7 @@ templates/**/*.md
 
 # This file defines patterns for creating a comprehensive GitHub Enterprise
 # handover bundle that includes:
-# 
+#
 # 1. All Python code (error-free)
 # 2. Complete test suite (pytest)
 # 3. CI/CD pipelines (GitHub Actions)

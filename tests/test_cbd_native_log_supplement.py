@@ -1,4 +1,5 @@
 """Adversarial native first-red supplement contract and classifier tests."""
+
 import copy
 import json
 import sys
@@ -49,28 +50,43 @@ class SupplementEvidenceTests(unittest.TestCase):
         self.assertEqual(c["QUALITY_BLACK_ISORT"], 1)
 
     def test_naive_isort_mention_is_not_an_isort_failure(self):
-        r = {"first_failed_step": "Install dependencies",
-             "diagnostic_tail_sanitized": ["pip install pytest isort"],
-             "untrusted_broad_search_hits": ["isort"]}
-        self.assertEqual(classify_supplement_first_red(r), "UNCLASSIFIED_REQUIRES_REVIEW")
+        r = {
+            "first_failed_step": "Install dependencies",
+            "diagnostic_tail_sanitized": ["pip install pytest isort"],
+            "untrusted_broad_search_hits": ["isort"],
+        }
+        self.assertEqual(
+            classify_supplement_first_red(r), "UNCLASSIFIED_REQUIRES_REVIEW"
+        )
 
     def test_true_isort_requires_explicit_failing_scan(self):
-        r = next(x for x in self.supplement["records"]
-                 if x["validated_signature"] == "QUALITY_BLACK_ISORT")
+        r = next(
+            x
+            for x in self.supplement["records"]
+            if x["validated_signature"] == "QUALITY_BLACK_ISORT"
+        )
         self.assertEqual(classify_supplement_first_red(r), "QUALITY_BLACK_ISORT")
         spoof = copy.deepcopy(r)
         spoof["diagnostic_tail_sanitized"] = ["pip install isort"]
-        self.assertEqual(classify_supplement_first_red(spoof), "UNCLASSIFIED_REQUIRES_REVIEW")
+        self.assertEqual(
+            classify_supplement_first_red(spoof), "UNCLASSIFIED_REQUIRES_REVIEW"
+        )
 
     def test_black_reformat_distinct_from_isort(self):
-        r = next(x for x in self.supplement["records"]
-                 if x["validated_signature"] == "BLACK_REFORMAT")
+        r = next(
+            x
+            for x in self.supplement["records"]
+            if x["validated_signature"] == "BLACK_REFORMAT"
+        )
         self.assertEqual(classify_supplement_first_red(r), "BLACK_REFORMAT")
         self.assertNotEqual(classify_supplement_first_red(r), "QUALITY_BLACK_ISORT")
 
     def test_external_api_rate_limit_is_not_code_vulnerability(self):
-        r = next(x for x in self.supplement["records"]
-                 if x["validated_signature"] == "GITHUB_API_RATE_LIMIT")
+        r = next(
+            x
+            for x in self.supplement["records"]
+            if x["validated_signature"] == "GITHUB_API_RATE_LIMIT"
+        )
         self.assertEqual(classify_supplement_first_red(r), "GITHUB_API_RATE_LIMIT")
 
     def test_external_actor_forged_snapshot_scope_rejected(self):
@@ -79,7 +95,9 @@ class SupplementEvidenceTests(unittest.TestCase):
             replay_supplement(self.snapshot, self.supplement)
 
     def test_duplicate_run_id_rejected(self):
-        self.supplement["records"][1]["run_id"] = self.supplement["records"][0]["run_id"]
+        self.supplement["records"][1]["run_id"] = self.supplement["records"][0][
+            "run_id"
+        ]
         with self.assertRaisesRegex(ValueError, "duplicate or unbound"):
             replay_supplement(self.snapshot, self.supplement)
 
@@ -99,18 +117,28 @@ class SupplementEvidenceTests(unittest.TestCase):
             replay_supplement(self.snapshot, self.supplement)
 
     def test_forged_witness_for_known_matplotlib_rejected(self):
-        r = next(x for x in self.supplement["records"]
-                 if x["validated_signature"] == "MATPLOTLIB_RESOLVER")
+        r = next(
+            x
+            for x in self.supplement["records"]
+            if x["validated_signature"] == "MATPLOTLIB_RESOLVER"
+        )
         r["diagnostic_tail_sanitized"] = ["pytest-asyncio installed"]
         with self.assertRaisesRegex(ValueError, "unsupported first-red"):
             replay_supplement(self.snapshot, self.supplement)
 
     def test_incidental_word_will_not_count_as_genuine_isort(self):
-        r = next(x for x in self.supplement["records"]
-                 if x["validated_signature"] == "MATPLOTLIB_RESOLVER")
+        r = next(
+            x
+            for x in self.supplement["records"]
+            if x["validated_signature"] == "MATPLOTLIB_RESOLVER"
+        )
         r["untrusted_broad_search_hits"] = ["isort", "black", "safety"]
-        self.assertEqual(replay_supplement(self.snapshot, self.supplement)
-                         ["classified_first_red_supplement"]["MATPLOTLIB_RESOLVER"], 1)
+        self.assertEqual(
+            replay_supplement(self.snapshot, self.supplement)[
+                "classified_first_red_supplement"
+            ]["MATPLOTLIB_RESOLVER"],
+            1,
+        )
 
     def test_false_log_sampling_denominator_rejected(self):
         self.supplement["new_logs_downloaded"] += 1
@@ -130,8 +158,9 @@ class SupplementEvidenceTests(unittest.TestCase):
             replay_supplement(self.snapshot, self.supplement)
 
     def test_missing_raw_crypto_hash_not_mislabeled_as_byte_proof(self):
-        self.assertTrue(all(r["raw_log_sha256"] is None
-                            for r in self.supplement["records"]))
+        self.assertTrue(
+            all(r["raw_log_sha256"] is None for r in self.supplement["records"])
+        )
         out = replay_supplement(self.snapshot, self.supplement)
         self.assertTrue(out["historical_first_red_proof_only"])
 

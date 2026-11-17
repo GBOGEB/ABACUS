@@ -53,7 +53,7 @@ class TestValidateSlideId:
 
 class TestCheckMarkdownFile:
     def test_valid_front_matter(self, tmp_dir):
-        content = '---\nslide_id: test-intro-001\n---\n# Hello\n'
+        content = "---\nslide_id: test-intro-001\n---\n# Hello\n"
         path = tmp_dir / "slide_test.md"
         path.write_text(content)
         findings = check_markdown_file(str(path))
@@ -80,6 +80,7 @@ class TestCheckMarkdownFile:
 class TestCheckYamlFile:
     def test_yaml_with_slide_id(self, tmp_dir):
         import yaml
+
         content = {"slide_id": "test-overview-001", "title": "Test"}
         path = tmp_dir / "test.yaml"
         path.write_text(yaml.dump(content))
@@ -88,6 +89,7 @@ class TestCheckYamlFile:
 
     def test_yaml_with_slides_array(self, tmp_dir):
         import yaml
+
         content = {
             "slides": [
                 {"slide_id": "test-one-001", "title": "First"},
@@ -102,6 +104,7 @@ class TestCheckYamlFile:
 
     def test_yaml_missing_slide_id_in_array(self, tmp_dir):
         import yaml
+
         content = {
             "slides": [
                 {"title": "No ID"},
@@ -119,9 +122,7 @@ class TestCheckLineageManifest:
         manifest = {
             "version": "1.0.0",
             "assets": [],
-            "lineage": [
-                {"slide_id": "arch-overview-001", "derived_from": "test.yaml"}
-            ],
+            "lineage": [{"slide_id": "arch-overview-001", "derived_from": "test.yaml"}],
         }
         path = tmp_dir / "lineage_manifest.json"
         path.write_text(json.dumps(manifest))
@@ -140,10 +141,13 @@ class TestEnforcerResults:
 
     def test_results_with_violation(self):
         from engines.SLIDE_ID_ENFORCER import EnforcerFinding
+
         results = EnforcerResults()
-        results.add(EnforcerFinding(
-            file="test.md", slide_id=None, valid=False, message="Missing ID"
-        ))
+        results.add(
+            EnforcerFinding(
+                file="test.md", slide_id=None, valid=False, message="Missing ID"
+            )
+        )
         assert not results.passed
 
     def test_json_output(self):

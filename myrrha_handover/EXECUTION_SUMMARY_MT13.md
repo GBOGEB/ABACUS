@@ -13,7 +13,7 @@
 **Comprehensive 400V electrical engineering analysis**
 
 - **Executive Summary:** 400V supply FEASIBLE; €736k CAPEX estimate
-- **Load Calculations:** 
+- **Load Calculations:**
   - HCC: 1,137 kW (3× FSD 575 @ 68 Hz)
   - PVPS: 150 kW (10 units, N+1)
   - HVAC: 130 kW

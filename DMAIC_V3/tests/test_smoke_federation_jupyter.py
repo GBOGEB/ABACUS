@@ -12,8 +12,9 @@ Marked @pytest.mark.smoke so they run in the fast pre-merge gate
 (pytest -m smoke) as well as the full suite.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 # Repo root is three levels up from this file:
 # DMAIC_V3/tests/test_smoke_federation_jupyter.py -> DMAIC_V3/tests -> DMAIC_V3 -> root
@@ -29,6 +30,7 @@ _NOTEBOOK_REPO = "GBOGEB/CODESPACES_jyperter"
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _load_yaml(path: Path):
     try:
         import yaml
@@ -41,15 +43,16 @@ def _load_yaml(path: Path):
 # Tests
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.smoke
 def test_manifest_registers_notebook_member():
     """federation/manifest.yaml must list GBOGEB/CODESPACES_jyperter as a member."""
     data = _load_yaml(FEDERATION_MANIFEST)
     members = data.get("federation", {}).get("member_repos", [])
     names = [m.get("name") for m in members]
-    assert _NOTEBOOK_REPO in names, (
-        f"{_NOTEBOOK_REPO} not found in federation member_repos; got: {names}"
-    )
+    assert (
+        _NOTEBOOK_REPO in names
+    ), f"{_NOTEBOOK_REPO} not found in federation member_repos; got: {names}"
 
 
 @pytest.mark.smoke
@@ -59,12 +62,12 @@ def test_manifest_notebook_plane_active():
     members = data.get("federation", {}).get("member_repos", [])
     entry = next((m for m in members if m.get("name") == _NOTEBOOK_REPO), None)
     assert entry is not None, f"{_NOTEBOOK_REPO} missing from member_repos"
-    assert entry.get("plane") == "notebook", (
-        f"Expected plane='notebook', got '{entry.get('plane')}'"
-    )
-    assert entry.get("status") == "active", (
-        f"Expected status='active', got '{entry.get('status')}'"
-    )
+    assert (
+        entry.get("plane") == "notebook"
+    ), f"Expected plane='notebook', got '{entry.get('plane')}'"
+    assert (
+        entry.get("status") == "active"
+    ), f"Expected status='active', got '{entry.get('status')}'"
 
 
 @pytest.mark.smoke
@@ -72,13 +75,13 @@ def test_manifest_planes_has_notebook():
     """federation/manifest.yaml planes section must include a 'notebook' entry."""
     data = _load_yaml(FEDERATION_MANIFEST)
     planes = data.get("federation", {}).get("planes", {})
-    assert "notebook" in planes, (
-        f"'notebook' plane not defined in federation.planes; got: {list(planes.keys())}"
-    )
+    assert (
+        "notebook" in planes
+    ), f"'notebook' plane not defined in federation.planes; got: {list(planes.keys())}"
     notebook_plane = planes["notebook"]
-    assert notebook_plane.get("repository") == _NOTEBOOK_REPO, (
-        f"notebook plane repository mismatch: {notebook_plane.get('repository')}"
-    )
+    assert (
+        notebook_plane.get("repository") == _NOTEBOOK_REPO
+    ), f"notebook plane repository mismatch: {notebook_plane.get('repository')}"
 
 
 @pytest.mark.smoke
@@ -86,17 +89,17 @@ def test_spec_defines_notebook_plane():
     """codex-abacus-federation.yaml must define a 'notebook_plane' section."""
     data = _load_yaml(FEDERATION_SPEC)
     fed = data.get("federation", {})
-    assert "notebook_plane" in fed, (
-        "Missing 'notebook_plane' in runtime/federation/codex-abacus-federation.yaml"
-    )
+    assert (
+        "notebook_plane" in fed
+    ), "Missing 'notebook_plane' in runtime/federation/codex-abacus-federation.yaml"
     nb = fed["notebook_plane"]
-    assert nb.get("repository") == _NOTEBOOK_REPO, (
-        f"notebook_plane repository mismatch: {nb.get('repository')}"
-    )
+    assert (
+        nb.get("repository") == _NOTEBOOK_REPO
+    ), f"notebook_plane repository mismatch: {nb.get('repository')}"
     responsibilities = nb.get("responsibilities", nb.get("responsibility", []))
-    assert "notebook_execution" in responsibilities, (
-        "'notebook_execution' not listed in notebook_plane responsibilities"
-    )
+    assert (
+        "notebook_execution" in responsibilities
+    ), "'notebook_execution' not listed in notebook_plane responsibilities"
 
 
 @pytest.mark.smoke

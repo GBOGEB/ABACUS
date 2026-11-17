@@ -147,10 +147,10 @@ tests = glob.glob("tests/**/*test*.py", recursive=True)
    ```python
    import sys
    from pathlib import Path
-   
+
    qplant_root = Path("QPLANT_UNIFIED_HANDOVER")
    sys.path.insert(0, str(qplant_root / "phases" / "phase_1_2b_parsing"))
-   
+
    from orchestrator import PipelineOrchestrator
    ```
 
@@ -250,7 +250,7 @@ All files include SHA256 checksums in the manifest for integrity verification:
 import json
 with open('metadata/manifest.json') as f:
     manifest = json.load(f)
-    
+
 # Verify file integrity
 for phase in manifest['phases'].values():
     for file_info in phase['files']:

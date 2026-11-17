@@ -82,7 +82,7 @@ ruff>=0.1.0
 
 `ci/cd`, `bug`, `code-quality`, `P1`
 """,
-        "labels": ["ci/cd", "bug", "code-quality", "P1"]
+        "labels": ["ci/cd", "bug", "code-quality", "P1"],
     },
     {
         "title": "Fix Bridge Smoke Tests - Missing 'dmaic' module",
@@ -162,7 +162,7 @@ from DMAIC_V3.dmaic import Idempotency, provenance, metrics as handover_metrics,
 
 `ci/cd`, `bug`, `tests`, `P0`
 """,
-        "labels": ["ci/cd", "bug", "tests", "P0"]
+        "labels": ["ci/cd", "bug", "tests", "P0"],
     },
     {
         "title": "Fix Bridge Unit Tests - Import and dependency issues",
@@ -201,7 +201,7 @@ Based on the Bridge Smoke Tests failure, this workflow likely has similar import
 
 `ci/cd`, `tests`, `P1`
 """,
-        "labels": ["ci/cd", "tests", "P1"]
+        "labels": ["ci/cd", "tests", "P1"],
     },
     {
         "title": "Fix Bridge Integration Tests - Import errors",
@@ -241,7 +241,7 @@ Apply fixes from Bridge Smoke Tests issue.
 
 `ci/cd`, `tests`, `P1`
 """,
-        "labels": ["ci/cd", "tests", "P1"]
+        "labels": ["ci/cd", "tests", "P1"],
     },
     {
         "title": "Fix Full Deployment Test - Dependency and integration issues",
@@ -284,9 +284,10 @@ This is a comprehensive test that may fail due to:
 
 `ci/cd`, `tests`, `deployment`, `P2`
 """,
-        "labels": ["ci/cd", "tests", "deployment", "P2"]
-    }
+        "labels": ["ci/cd", "tests", "deployment", "P2"],
+    },
 ]
+
 
 def generate_issue_files():
     """Generate markdown files for each issue"""
@@ -296,13 +297,16 @@ def generate_issue_files():
     print("📝 Generating GitHub Issue Files...\n")
 
     for i, issue in enumerate(ISSUES, 1):
-        filename = output_dir / f"issue_{i:02d}_{issue['title'].lower().replace(' ', '_').replace('-', '_')[:50]}.md"
+        filename = (
+            output_dir
+            / f"issue_{i:02d}_{issue['title'].lower().replace(' ', '_').replace('-', '_')[:50]}.md"
+        )
 
-        with open(filename, 'w', encoding='utf-8') as f:
+        with open(filename, "w", encoding="utf-8") as f:
             f.write(f"# {issue['title']}\n\n")
-            f.write(issue['body'])
+            f.write(issue["body"])
             f.write(f"\n\n## Labels\n\n")
-            f.write(", ".join(f"`{label}`" for label in issue['labels']))
+            f.write(", ".join(f"`{label}`" for label in issue["labels"]))
 
         print(f"✅ Created: {filename}")
 
@@ -311,14 +315,14 @@ def generate_issue_files():
 
     # Generate summary
     summary_file = output_dir / "README.md"
-    with open(summary_file, 'w', encoding='utf-8') as f:
+    with open(summary_file, "w", encoding="utf-8") as f:
         f.write("# GitHub Issues for Failed Workflow Checks\n\n")
         f.write("## Summary\n\n")
         f.write(f"Total issues: {len(ISSUES)}\n\n")
         f.write("## Issues\n\n")
 
         for i, issue in enumerate(ISSUES, 1):
-            priority = [label for label in issue['labels'] if label.startswith('P')]
+            priority = [label for label in issue["labels"] if label.startswith("P")]
             priority_str = priority[0] if priority else "P2"
             f.write(f"{i}. **{issue['title']}** - Priority: {priority_str}\n")
 
@@ -333,11 +337,11 @@ def generate_issue_files():
         f.write("### Option 2: GitHub CLI (if installed)\n\n")
         f.write("```bash\n")
         for i, issue in enumerate(ISSUES, 1):
-            labels_str = ",".join(issue['labels'])
+            labels_str = ",".join(issue["labels"])
             f.write(f"# Issue {i}\n")
             f.write(f"gh issue create --repo GBOGEB/ABACUS \\\n")
             f.write(f"  --title \"{issue['title']}\" \\\n")
-            f.write(f"  --label \"{labels_str}\" \\\n")
+            f.write(f'  --label "{labels_str}" \\\n')
             f.write(f"  --body-file github_issues/issue_{i:02d}_*.md\n\n")
         f.write("```\n\n")
 
@@ -348,14 +352,14 @@ def generate_issue_files():
 
     # Generate quick reference
     quick_ref = output_dir / "QUICK_REFERENCE.md"
-    with open(quick_ref, 'w', encoding='utf-8') as f:
+    with open(quick_ref, "w", encoding="utf-8") as f:
         f.write("# Quick Reference - Failed Checks\n\n")
         f.write("## Priority Order\n\n")
 
         # Sort by priority
-        p0_issues = [i for i in ISSUES if 'P0' in i['labels']]
-        p1_issues = [i for i in ISSUES if 'P1' in i['labels']]
-        p2_issues = [i for i in ISSUES if 'P2' in i['labels']]
+        p0_issues = [i for i in ISSUES if "P0" in i["labels"]]
+        p1_issues = [i for i in ISSUES if "P1" in i["labels"]]
+        p2_issues = [i for i in ISSUES if "P2" in i["labels"]]
 
         if p0_issues:
             f.write("### 🔴 P0 - Critical (Fix First)\n\n")
@@ -404,5 +408,6 @@ def generate_issue_files():
     print(f"✅ Created quick reference: {quick_ref}")
     print("\n🎉 Done! Check the 'github_issues/' directory for all files.")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     generate_issue_files()

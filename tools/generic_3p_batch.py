@@ -86,7 +86,16 @@ def main(argv: Iterable[str] | None = None) -> int:
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(json.dumps({"item_count": len(items), "out": str(out), "wall_time_ms": summary["wall_time_ms"]}, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                "item_count": len(items),
+                "out": str(out),
+                "wall_time_ms": summary["wall_time_ms"],
+            },
+            sort_keys=True,
+        )
+    )
     return 0
 
 

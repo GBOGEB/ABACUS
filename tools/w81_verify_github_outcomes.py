@@ -10,6 +10,7 @@ from pathlib import Path
 API = "https://api.github.com"
 REPO = "GBOGEB/ABACUS"
 
+
 def get_json(url: str) -> dict:
     headers = {
         "Accept": "application/vnd.github+json",
@@ -22,6 +23,7 @@ def get_json(url: str) -> dict:
     req = urllib.request.Request(url, headers=headers)
     with urllib.request.urlopen(req, timeout=30) as response:
         return json.load(response)
+
 
 def verify_observation(source_sha: str, obs: dict) -> dict:
     run = get_json(f"{API}/repos/{REPO}/actions/runs/{int(obs['run_id'])}")
@@ -60,6 +62,7 @@ def verify_observation(source_sha: str, obs: dict) -> dict:
         "verified": True,
     }
 
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--contract", required=True)
@@ -78,12 +81,14 @@ def main() -> int:
             raise ValueError(
                 f"{state['label']} Actions count changed: expected {expected}, got {actual}"
             )
-        missing.append({
-            "label": state["label"],
-            "source_sha": state["source_sha"],
-            "actions_run_count": actual,
-            "status": "NO_ACTIONS_EVIDENCE" if actual == 0 else "OBSERVED",
-        })
+        missing.append(
+            {
+                "label": state["label"],
+                "source_sha": state["source_sha"],
+                "actions_run_count": actual,
+                "status": "NO_ACTIONS_EVIDENCE" if actual == 0 else "OBSERVED",
+            }
+        )
 
     observations = []
     for episode in contract["episodes"]:
@@ -110,9 +115,12 @@ def main() -> int:
         "authority_transfer": False,
         "formal_credit_delta": 0,
     }
-    Path(args.out).write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    Path(args.out).write_text(
+        json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps(receipt, sort_keys=True))
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

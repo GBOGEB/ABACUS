@@ -7,7 +7,9 @@ TOOL = Path("tools/mc2_federated_telemetry.py")
 FIXTURE = Path("fixtures/mc2_semantic_5of5_variance_gate_v0.1.json")
 
 
-def test_semantic_5of5_passes_denominator_but_withholds_pca_without_second_varying_axis(tmp_path):
+def test_semantic_5of5_passes_denominator_but_withholds_pca_without_second_varying_axis(
+    tmp_path,
+):
     out = tmp_path / "receipt.json"
     result = subprocess.run(
         [sys.executable, str(TOOL), str(FIXTURE), "--out", str(out)],

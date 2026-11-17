@@ -1,7 +1,6 @@
 import importlib.util
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 VALIDATOR_PATH = REPO_ROOT / "scripts" / "validate_review_package.py"
 
@@ -42,18 +41,13 @@ def test_w000_externalized_supplier_a_intent_is_provenance_bound():
         "docs/Q3_Q4_Q5/WHAT_SUPPLIER_A_IS_REALLY_ASKING.md"
         not in validator.REQUIRED_DOCS
     )
-    assert validator.REQUIRED_EXTERNALIZED_ARTIFACTS[
-        "tender-supplier-a-intent"
-    ] == {
+    assert validator.REQUIRED_EXTERNALIZED_ARTIFACTS["tender-supplier-a-intent"] == {
         "state": "externalized_private",
         "external_repo": "GBOGEB/cryoplant-project",
-        "original_path": (
-            "docs/Q3_Q4_Q5/WHAT_SUPPLIER_A_IS_REALLY_ASKING.md"
-        ),
+        "original_path": ("docs/Q3_Q4_Q5/WHAT_SUPPLIER_A_IS_REALLY_ASKING.md"),
         "provenance_path": "tender_library/PROVENANCE.csv",
         "sha256": (
-            "03a0d496913d642102358492a2000363"
-            "e61fde352159dfc67fa43559584c3a45"
+            "03a0d496913d642102358492a2000363" "e61fde352159dfc67fa43559584c3a45"
         ),
     }
 
@@ -83,7 +77,4 @@ def test_w000_rejects_unregistered_externalized_artifact(monkeypatch):
 
     validator._validate_manifest(errors)
 
-    assert (
-        "unregistered-artifact is not an approved externalized artifact"
-        in errors
-    )
+    assert "unregistered-artifact is not an approved externalized artifact" in errors

@@ -42,7 +42,7 @@ from bootstrap_eval import (
     load_from_folders,
     analyse_group,
     run_analysis,
-    sanitize_name
+    sanitize_name,
 )
 
 
@@ -53,7 +53,9 @@ class TestBootstrapMeanCI:
     def test_basic_bootstrap_ci(self):
         """Test basic bootstrap confidence interval computation"""
         data = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-        ci_low, ci_high, boot_means = bootstrap_ci_mean(data, alpha=0.05, n_bootstrap=1000)
+        ci_low, ci_high, boot_means = bootstrap_ci_mean(
+            data, alpha=0.05, n_bootstrap=1000
+        )
 
         assert isinstance(ci_low, (int, float))
         assert isinstance(ci_high, (float, np.floating))
@@ -79,8 +81,12 @@ class TestBootstrapMeanCI:
         """Test that results are reproducible with same random seed"""
         data = np.random.normal(100, 10, 30)
 
-        ci_low_1, ci_high_1, _ = bootstrap_ci_mean(data, alpha=0.05, n_bootstrap=1000, random_state=42)
-        ci_low_2, ci_high_2, _ = bootstrap_ci_mean(data, alpha=0.05, n_bootstrap=1000, random_state=42)
+        ci_low_1, ci_high_1, _ = bootstrap_ci_mean(
+            data, alpha=0.05, n_bootstrap=1000, random_state=42
+        )
+        ci_low_2, ci_high_2, _ = bootstrap_ci_mean(
+            data, alpha=0.05, n_bootstrap=1000, random_state=42
+        )
 
         assert abs(ci_low_1 - ci_low_2) < 0.01
         assert abs(ci_high_1 - ci_high_2) < 0.01
@@ -89,7 +95,9 @@ class TestBootstrapMeanCI:
     def test_bootstrap_empty_input(self):
         """Test bootstrap with empty input"""
         data = np.array([])
-        ci_low, ci_high, boot_means = bootstrap_ci_mean(data, alpha=0.05, n_bootstrap=100)
+        ci_low, ci_high, boot_means = bootstrap_ci_mean(
+            data, alpha=0.05, n_bootstrap=100
+        )
 
         assert math.isnan(ci_low)
         assert math.isnan(ci_high)
@@ -99,7 +107,9 @@ class TestBootstrapMeanCI:
     def test_bootstrap_single_value(self):
         """Test bootstrap with single value"""
         data = np.array([42.0])
-        ci_low, ci_high, boot_means = bootstrap_ci_mean(data, alpha=0.05, n_bootstrap=100)
+        ci_low, ci_high, boot_means = bootstrap_ci_mean(
+            data, alpha=0.05, n_bootstrap=100
+        )
 
         assert len(boot_means) == 100
         assert all(bm == 42.0 for bm in boot_means)
@@ -108,7 +118,9 @@ class TestBootstrapMeanCI:
     def test_bootstrap_with_large_sample(self):
         """Test bootstrap with large sample size"""
         data = np.random.normal(50, 10, 500)
-        ci_low, ci_high, boot_means = bootstrap_ci_mean(data, alpha=0.05, n_bootstrap=5000)
+        ci_low, ci_high, boot_means = bootstrap_ci_mean(
+            data, alpha=0.05, n_bootstrap=5000
+        )
 
         assert len(boot_means) == 5000
         assert abs(np.mean(boot_means) - 50) < 2
@@ -159,7 +171,9 @@ class TestCompareGroupsBootstrap:
         group_a = np.array([10.0, 12.0, 11.0, 13.0, 12.0])
         group_b = np.array([15.0, 17.0, 16.0, 18.0, 17.0])
 
-        diff_hat, ci_low, ci_high = bootstrap_ci_diff_means(group_a, group_b, alpha=0.05, n_bootstrap=1000)
+        diff_hat, ci_low, ci_high = bootstrap_ci_diff_means(
+            group_a, group_b, alpha=0.05, n_bootstrap=1000
+        )
 
         assert isinstance(diff_hat, (float, np.floating))
         assert isinstance(ci_low, (float, np.floating))
@@ -173,7 +187,9 @@ class TestCompareGroupsBootstrap:
         group_a = np.array([100.0, 102.0, 101.0, 103.0, 102.0])
         group_b = np.array([101.0, 103.0, 102.0, 104.0, 103.0])
 
-        diff_hat, ci_low, ci_high = bootstrap_ci_diff_means(group_a, group_b, alpha=0.05, n_bootstrap=1000)
+        diff_hat, ci_low, ci_high = bootstrap_ci_diff_means(
+            group_a, group_b, alpha=0.05, n_bootstrap=1000
+        )
 
         includes_zero = ci_low <= 0 <= ci_high
         assert includes_zero, "CI should include zero for similar groups"
@@ -184,7 +200,9 @@ class TestCompareGroupsBootstrap:
         group_a = np.array([10.0, 12.0, 11.0, 13.0, 12.0, 14.0, 11.0])
         group_b = np.array([15.0, 17.0, 16.0])
 
-        diff_hat, ci_low, ci_high = bootstrap_ci_diff_means(group_a, group_b, alpha=0.05, n_bootstrap=1000)
+        diff_hat, ci_low, ci_high = bootstrap_ci_diff_means(
+            group_a, group_b, alpha=0.05, n_bootstrap=1000
+        )
 
         assert isinstance(diff_hat, (float, np.floating))
         assert diff_hat > 0
@@ -195,7 +213,9 @@ class TestCompareGroupsBootstrap:
         group_a = np.array([10.0, 12.0, 11.0])
         group_b = np.array([])
 
-        diff_hat, ci_low, ci_high = bootstrap_ci_diff_means(group_a, group_b, alpha=0.05, n_bootstrap=100)
+        diff_hat, ci_low, ci_high = bootstrap_ci_diff_means(
+            group_a, group_b, alpha=0.05, n_bootstrap=100
+        )
 
         assert math.isnan(diff_hat)
         assert math.isnan(ci_low)
@@ -205,7 +225,9 @@ class TestCompareGroupsBootstrap:
     def test_diff_means_identical_groups(self):
         """Test difference of means with identical groups"""
         group = np.array([10.0, 12.0, 14.0, 16.0, 18.0])
-        diff_hat, ci_low, ci_high = bootstrap_ci_diff_means(group, group, alpha=0.05, n_bootstrap=1000)
+        diff_hat, ci_low, ci_high = bootstrap_ci_diff_means(
+            group, group, alpha=0.05, n_bootstrap=1000
+        )
 
         assert abs(diff_hat) < 0.01
         assert ci_low <= 0 <= ci_high
@@ -235,7 +257,7 @@ class TestDataLoading:
     @pytest.mark.data_loading
     def test_load_from_csv(self):
         """Test loading data from CSV"""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("group,score\n")
             f.write("test_a,95.5\n")
             f.write("test_a,94.2\n")
@@ -246,9 +268,9 @@ class TestDataLoading:
         try:
             df = load_from_csv(Path(temp_path))
             assert len(df) == 4
-            assert 'group' in df.columns
-            assert 'score' in df.columns
-            assert len(df['group'].unique()) == 2
+            assert "group" in df.columns
+            assert "score" in df.columns
+            assert len(df["group"].unique()) == 2
         finally:
             Path(temp_path).unlink()
 
@@ -256,7 +278,7 @@ class TestDataLoading:
     @pytest.mark.edge_cases
     def test_load_from_csv_missing_columns(self):
         """Test loading CSV with missing required columns"""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("name,value\n")
             f.write("test,100\n")
             temp_path = f.name
@@ -286,9 +308,9 @@ class TestDataLoading:
             df = load_from_folders(tmppath, ext=".txt")
 
             assert len(df) == 4
-            assert 'group' in df.columns
-            assert 'score' in df.columns
-            assert set(df['group'].unique()) == {'group_a', 'group_b'}
+            assert "group" in df.columns
+            assert "score" in df.columns
+            assert set(df["group"].unique()) == {"group_a", "group_b"}
 
     @pytest.mark.data_loading
     @pytest.mark.edge_cases
@@ -314,20 +336,20 @@ class TestAnalysisWorkflow:
             scores = np.array([90.0, 92.0, 91.0, 93.0, 92.0])
             result = analyse_group("test_group", scores, Path(tmpdir), alpha=0.05)
 
-            assert result['name'] == 'test_group'
-            assert result['n'] == 5
-            assert isinstance(result['mean'], (float, np.floating))
-            assert isinstance(result['std'], (float, np.floating))
-            assert 'ci_norm_low' in result
-            assert 'ci_norm_high' in result
-            assert 'ci_boot_low' in result
-            assert 'ci_boot_high' in result
-            assert 'plot_path' in result
+            assert result["name"] == "test_group"
+            assert result["n"] == 5
+            assert isinstance(result["mean"], (float, np.floating))
+            assert isinstance(result["std"], (float, np.floating))
+            assert "ci_norm_low" in result
+            assert "ci_norm_high" in result
+            assert "ci_boot_low" in result
+            assert "ci_boot_high" in result
+            assert "plot_path" in result
 
     @pytest.mark.integration
     def test_complete_csv_workflow(self):
         """Test complete workflow from CSV loading to analysis"""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("group,score\n")
             for i in range(20):
                 f.write(f"group_a,{90 + i % 5}\n")
@@ -338,11 +360,15 @@ class TestAnalysisWorkflow:
         try:
             df = load_from_csv(Path(temp_path))
 
-            group_a_data = df[df['group'] == 'group_a']['score'].values
-            group_b_data = df[df['group'] == 'group_b']['score'].values
+            group_a_data = df[df["group"] == "group_a"]["score"].values
+            group_b_data = df[df["group"] == "group_b"]["score"].values
 
-            ci_low_a, ci_high_a, _ = bootstrap_ci_mean(group_a_data, alpha=0.05, n_bootstrap=1000)
-            ci_low_b, ci_high_b, _ = bootstrap_ci_mean(group_b_data, alpha=0.05, n_bootstrap=1000)
+            ci_low_a, ci_high_a, _ = bootstrap_ci_mean(
+                group_a_data, alpha=0.05, n_bootstrap=1000
+            )
+            ci_low_b, ci_high_b, _ = bootstrap_ci_mean(
+                group_b_data, alpha=0.05, n_bootstrap=1000
+            )
             diff_hat, ci_diff_low, ci_diff_high = bootstrap_ci_diff_means(
                 group_a_data, group_b_data, alpha=0.05, n_bootstrap=1000
             )
@@ -358,7 +384,7 @@ class TestAnalysisWorkflow:
         """Test run_analysis function with full workflow"""
         with tempfile.TemporaryDirectory() as tmpdir:
             csv_path = Path(tmpdir) / "test_scores.csv"
-            with open(csv_path, 'w') as f:
+            with open(csv_path, "w") as f:
                 f.write("group,score\n")
                 for i in range(15):
                     f.write(f"group_a,{90 + i % 5}\n")
@@ -383,24 +409,26 @@ class TestAnalysisWorkflow:
     def test_multiple_groups_analysis(self):
         """Test analysis with multiple groups"""
         groups = {
-            'high': np.random.normal(95, 5, 30),
-            'medium': np.random.normal(85, 5, 30),
-            'low': np.random.normal(75, 5, 30)
+            "high": np.random.normal(95, 5, 30),
+            "medium": np.random.normal(85, 5, 30),
+            "low": np.random.normal(75, 5, 30),
         }
 
         results = {}
         for group_name, group_data in groups.items():
-            ci_low, ci_high, boot_means = bootstrap_ci_mean(group_data, alpha=0.05, n_bootstrap=1000)
+            ci_low, ci_high, boot_means = bootstrap_ci_mean(
+                group_data, alpha=0.05, n_bootstrap=1000
+            )
             results[group_name] = {
-                'mean': group_data.mean(),
-                'ci_low': ci_low,
-                'ci_high': ci_high
+                "mean": group_data.mean(),
+                "ci_low": ci_low,
+                "ci_high": ci_high,
             }
 
         assert len(results) == 3
-        assert all('mean' in r for r in results.values())
-        assert results['high']['mean'] > results['medium']['mean']
-        assert results['medium']['mean'] > results['low']['mean']
+        assert all("mean" in r for r in results.values())
+        assert results["high"]["mean"] > results["medium"]["mean"]
+        assert results["medium"]["mean"] > results["low"]["mean"]
 
 
 class TestEdgeCases:
@@ -411,7 +439,9 @@ class TestEdgeCases:
         """Test bootstrap with NaN values (after cleaning)"""
         data = np.array([1.0, 2.0, np.nan, 4.0, 5.0])
         clean_data = data[~np.isnan(data)]
-        ci_low, ci_high, boot_means = bootstrap_ci_mean(clean_data, alpha=0.05, n_bootstrap=1000)
+        ci_low, ci_high, boot_means = bootstrap_ci_mean(
+            clean_data, alpha=0.05, n_bootstrap=1000
+        )
 
         assert len(boot_means) == 1000
         assert not math.isnan(ci_low)
@@ -421,7 +451,9 @@ class TestEdgeCases:
     def test_bootstrap_with_negative_values(self):
         """Test bootstrap with negative values"""
         data = np.array([-5.0, -3.0, -1.0, 1.0, 3.0, 5.0])
-        ci_low, ci_high, boot_means = bootstrap_ci_mean(data, alpha=0.05, n_bootstrap=1000)
+        ci_low, ci_high, boot_means = bootstrap_ci_mean(
+            data, alpha=0.05, n_bootstrap=1000
+        )
 
         mean = data.mean()
         assert abs(mean) < 1.0
@@ -432,7 +464,9 @@ class TestEdgeCases:
     def test_bootstrap_large_variance(self):
         """Test bootstrap with large variance"""
         data = np.array([10.0, 100.0, 15.0, 95.0, 20.0, 90.0])
-        ci_low, ci_high, boot_means = bootstrap_ci_mean(data, alpha=0.05, n_bootstrap=1000)
+        ci_low, ci_high, boot_means = bootstrap_ci_mean(
+            data, alpha=0.05, n_bootstrap=1000
+        )
 
         assert ci_high - ci_low > 20, "CI should be wide for high variance data"
 
@@ -440,7 +474,9 @@ class TestEdgeCases:
     def test_bootstrap_small_variance(self):
         """Test bootstrap with small variance"""
         data = np.array([50.0, 50.1, 49.9, 50.2, 49.8])
-        ci_low, ci_high, boot_means = bootstrap_ci_mean(data, alpha=0.05, n_bootstrap=1000)
+        ci_low, ci_high, boot_means = bootstrap_ci_mean(
+            data, alpha=0.05, n_bootstrap=1000
+        )
 
         assert ci_high - ci_low < 1.0, "CI should be narrow for low variance data"
 

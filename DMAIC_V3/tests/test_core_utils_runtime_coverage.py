@@ -95,7 +95,9 @@ def test_archive_failure_is_not_reported_as_success(tmp_path, monkeypatch):
         raise OSError("unavailable archive destination")
 
     monkeypatch.setattr(utils.shutil, "make_archive", reject_archive)
-    assert utils.archive_directory(tmp_path, tmp_path / "output" / "bundle.zip") is False
+    assert (
+        utils.archive_directory(tmp_path, tmp_path / "output" / "bundle.zip") is False
+    )
 
 
 def test_durations_timestamps_and_invalid_parse():
@@ -118,12 +120,17 @@ def test_truncation_sanitization_and_relative_paths(tmp_path):
     base = tmp_path / "base"
     child = base / "nested" / "file.txt"
     assert utils.get_relative_path(child, base).as_posix() == "nested/file.txt"
-    assert utils.get_relative_path(tmp_path / "outside.txt", base) == tmp_path / "outside.txt"
+    assert (
+        utils.get_relative_path(tmp_path / "outside.txt", base)
+        == tmp_path / "outside.txt"
+    )
 
 
 def test_file_logger_writes_evidence_to_selected_file(tmp_path):
     log_file = tmp_path / "log" / "runtime.log"
-    logger = utils.setup_logger("dmaic-utils-c2-test", log_file=log_file, level=logging.DEBUG)
+    logger = utils.setup_logger(
+        "dmaic-utils-c2-test", log_file=log_file, level=logging.DEBUG
+    )
     try:
         logger.info("recorded C2 path")
         for handler in logger.handlers:

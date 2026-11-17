@@ -1,4 +1,5 @@
 """Pure deterministic CBD job/step graph tests: fixture data are NOT native proof."""
+
 import copy
 import hashlib
 import importlib.util
@@ -30,13 +31,18 @@ class CBDJobGraphTests(unittest.TestCase):
                 "workflow": entry["workflow"],
                 "trust": graph.TRUST,
                 "run_attempt": 1,
-                "failed_jobs": [{
-                    "job_id": rid + 100000000000,
-                    "job_name": "Full Red Proof Summary" if rid % 2
-                    else "Independent subject step",
-                    "first_failed_step": {"number": 5, "name": "Seeded error"},
-                    "step_causality": "UNATTRIBUTED",
-                }],
+                "failed_jobs": [
+                    {
+                        "job_id": rid + 100000000000,
+                        "job_name": (
+                            "Full Red Proof Summary"
+                            if rid % 2
+                            else "Independent subject step"
+                        ),
+                        "first_failed_step": {"number": 5, "name": "Seeded error"},
+                        "step_causality": "UNATTRIBUTED",
+                    }
+                ],
                 "failed_job_count": 1,
                 "full_log_read": False,
                 "first_red_causal_root": None,
@@ -85,9 +91,11 @@ class CBDJobGraphTests(unittest.TestCase):
 
     def test_duplicate_job_id_rejected(self):
         rid = next(iter(self.native))
+
         def change(d):
             d[rid]["failed_jobs"].append(copy.deepcopy(d[rid]["failed_jobs"][0]))
             d[rid]["failed_job_count"] = 2
+
         with self.assertRaisesRegex(ValueError, "duplicate job"):
             self.mutated(change)
 
@@ -107,14 +115,17 @@ class CBDJobGraphTests(unittest.TestCase):
             lambda d: d[rid]["failed_jobs"][0].update(first_failed_step=None)
         )
         self.assertEqual(1, dag["metrics"]["jobs_without_failed_step"])
-        self.assertTrue(any(
-            x["first_failed_step"] == "UNKNOWN_FIRST_FAILED_STEP"
-            for x in dag["candidate_signatures"]
-        ))
+        self.assertTrue(
+            any(
+                x["first_failed_step"] == "UNKNOWN_FIRST_FAILED_STEP"
+                for x in dag["candidate_signatures"]
+            )
+        )
         self.assertIsNone(dag["metrics"]["confirmed_roots_closed"])
 
     def test_withheld_readback_preserves_unknown(self):
         rid = next(iter(self.native))
+
         def withhold(d):
             d[rid].update(
                 status="READBACK_WITHHELD",
@@ -123,6 +134,7 @@ class CBDJobGraphTests(unittest.TestCase):
                 first_red_causal_root=None,
                 full_log_read=False,
             )
+
         dag = self.mutated(withhold)
         self.assertEqual(1, dag["metrics"]["runs_withheld"])
         self.assertEqual(252, dag["metrics"]["runs_bound"])
@@ -132,9 +144,9 @@ class CBDJobGraphTests(unittest.TestCase):
     def test_withheld_cannot_carry_failure_count(self):
         rid = next(iter(self.native))
         with self.assertRaisesRegex(ValueError, "withheld readback"):
-            self.mutated(lambda d: d[rid].update(
-                status="READBACK_WITHHELD", failed_jobs=None
-            ))
+            self.mutated(
+                lambda d: d[rid].update(status="READBACK_WITHHELD", failed_jobs=None)
+            )
 
     def test_measured_zero_and_unknown_have_separate_types(self):
         dag = graph.analyze(self.snapshot, self.native)
@@ -149,25 +161,27 @@ class CBDJobGraphTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "run attempt"):
             self.mutated(lambda d: d[rid].update(run_attempt=0))
         with self.assertRaisesRegex(ValueError, "first failed step"):
-            self.mutated(lambda d: d[rid]["failed_jobs"][0].update(
-                first_failed_step={"number": False, "name": ""}
-            ))
+            self.mutated(
+                lambda d: d[rid]["failed_jobs"][0].update(
+                    first_failed_step={"number": False, "name": ""}
+                )
+            )
 
     def test_causal_step_forgery_rejected(self):
         rid = next(iter(self.native))
         with self.assertRaisesRegex(ValueError, "forged causal"):
-            self.mutated(lambda d: d[rid]["failed_jobs"][0].update(
-                step_causality="ROOT_CONFIRMED"
-            ))
+            self.mutated(
+                lambda d: d[rid]["failed_jobs"][0].update(
+                    step_causality="ROOT_CONFIRMED"
+                )
+            )
 
     def test_top_frequency_is_descriptive_only(self):
         dag = graph.analyze(self.snapshot, self.native)
         ranks = dag["candidate_signatures"]
         self.assertEqual(1, ranks[0]["priority_rank_by_observation_frequency"])
         self.assertEqual(253, sum(x["manifestations"] for x in ranks))
-        self.assertTrue(any(
-            x["treatment"] == "DOWNSTREAM_SUSPECT" for x in ranks
-        ))
+        self.assertTrue(any(x["treatment"] == "DOWNSTREAM_SUSPECT" for x in ranks))
         self.assertTrue(all(x["causal_root_id"] is None for x in ranks))
 
     def test_render_html_escapes_untrusted_labels(self):
@@ -198,15 +212,18 @@ class CBDJobGraphTests(unittest.TestCase):
             destination = directory / "output"
             with mock.patch.dict("sys.modules", {"cbd_260": cbd}):
                 with mock.patch("builtins.print"):
-                    graph.main([
-                        *(str(p) for p in PATHS),
-                        "--native-jobs", str(native),
-                        "--output-dir", str(destination),
-                    ])
+                    graph.main(
+                        [
+                            *(str(p) for p in PATHS),
+                            "--native-jobs",
+                            str(native),
+                            "--output-dir",
+                            str(destination),
+                        ]
+                    )
             dag = json.loads((destination / "candidate_dag.json").read_text())
             self.assertEqual(253, dag["metrics"]["runs_bound"])
             self.assertTrue((destination / "candidate_index.html").exists())
-
 
     def test_bound_native_run_without_failed_jobs_is_not_a_green(self):
         rid = next(iter(self.native))
@@ -231,8 +248,10 @@ class CBDJobGraphTests(unittest.TestCase):
             argv = [
                 str(ROOT / "scripts" / "cbd_job_graph.py"),
                 *(str(path) for path in PATHS),
-                "--native-jobs", str(native_file),
-                "--output-dir", str(output),
+                "--native-jobs",
+                str(native_file),
+                "--output-dir",
+                str(output),
             ]
             with mock.patch.dict(sys.modules, {"cbd_260": cbd}):
                 with mock.patch.object(sys, "argv", argv):

@@ -67,7 +67,7 @@ confidence = "medium"
 # =============================================================================
 [ruff]
 line-length = 120
-target-version = "py310"
+target-version = "py311"
 src = ["DMAIC_V3"]
 exclude = [
   "*_corrupted.py",

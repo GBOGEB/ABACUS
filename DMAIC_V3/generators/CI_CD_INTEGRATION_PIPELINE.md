@@ -217,11 +217,11 @@ Hooks configured:
    - Python 3.9, 3.10, 3.11, 3.12
    - Quick execution tests
    - Integration pipeline tests
-   
+
 2. **Lint** - Code quality checks
    - Flake8 linting
    - Black formatting check
-   
+
 3. **Integration** - Full CI pipeline
    - Runs after test + lint pass
    - Executes `make ci`

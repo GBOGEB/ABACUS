@@ -19,7 +19,11 @@ class ProcessFlowRenderer:
     ) -> str:
         normalized = self.validate_schema(schema)
         renderer = SVGRenderer(scale=scale, style_hooks=style_hooks)
-        lineage_payload = {"renderer": "process_flow", "wave": "W003", "runtime_evidence": True}
+        lineage_payload = {
+            "renderer": "process_flow",
+            "wave": "W003",
+            "runtime_evidence": True,
+        }
         if lineage:
             lineage_payload.update(dict(lineage))
         return renderer.render(
@@ -37,7 +41,9 @@ class ProcessFlowRenderer:
         lineage: Optional[Mapping[str, object]] = None,
     ) -> str:
         renderer = SVGRenderer(scale=scale, style_hooks=style_hooks)
-        svg = self.render(schema=schema, scale=scale, style_hooks=style_hooks, lineage=lineage)
+        svg = self.render(
+            schema=schema, scale=scale, style_hooks=style_hooks, lineage=lineage
+        )
         return renderer.to_html(svg, title=str(schema.get("title", "Process Flow")))
 
     def validate_schema(self, schema: Mapping[str, object]) -> Dict[str, object]:
@@ -46,7 +52,9 @@ class ProcessFlowRenderer:
 
         missing = [field for field in self.REQUIRED_FIELDS if field not in schema]
         if missing:
-            raise ValueError("schema missing required fields: {}".format(", ".join(missing)))
+            raise ValueError(
+                "schema missing required fields: {}".format(", ".join(missing))
+            )
 
         if schema["type"] != "process_flow":
             raise ValueError("schema type must be 'process_flow'")

@@ -100,7 +100,8 @@ for r in ledger:
         or str(r.get("attempt1_conclusion")).startswith("UNKNOWN")
     ):
         warnings.append(
-            f"{where}: run {r['run']} attempt {r['attempt']} - attempt-1 outcome at same SHA unrecorded (rerun-pass risk)"
+            f"{where}: run {r['run']} attempt {r['attempt']} - "
+            "attempt-1 outcome at same SHA unrecorded (rerun-pass risk)"
         )
     if r.get("superseded_by") and r["superseded_by"] not in ids:
         errors.append(f"{where}: superseded_by {r['superseded_by']} not in ledger")

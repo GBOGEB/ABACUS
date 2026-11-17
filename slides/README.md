@@ -94,7 +94,7 @@ Example of adding a custom slide:
 def _custom_slide(prs, doc_number):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     _title_block(slide, "Your Title", "Optional subtitle")
-    
+
     # Add your content using _text_box or other shape methods
     _text_box(
         slide,
@@ -188,7 +188,7 @@ The script requires Python 3.8 or later and the `python-pptx` library.
 
 **Problem**: Fonts don't display correctly in PowerPoint
 
-**Solution**: 
+**Solution**:
 - Ensure Calibri is installed on your system (included with Microsoft Office)
 - On Linux, install Microsoft fonts: `sudo apt-get install ttf-mscorefonts-installer`
 - Alternatively, update `TITLE_FONT` and `BODY_FONT` constants to use system fonts like "Arial" or "Liberation Sans"
@@ -250,7 +250,7 @@ done
     python slides/qplant_sckcen_template.py \
       --doc-number "SCK CEN/${{ github.run_number }}" \
       --output artifacts/slides.pptx
-    
+
 - name: Upload presentation
   uses: actions/upload-artifact@v3
   with:

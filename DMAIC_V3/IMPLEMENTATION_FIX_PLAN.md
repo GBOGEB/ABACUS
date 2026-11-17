@@ -46,7 +46,7 @@ def scan_codebase(self):
     """Scan entire workspace, not just DMAIC_V3 directory"""
     # Use workspace root from config
     base_path = Path(self.config.workspace_root)  # ✅ CORRECT
-    
+
     # Exclude DMAIC_V3_OUTPUT and other generated directories
     exclude_dirs = {
         'DMAIC_V3_OUTPUT',
@@ -64,7 +64,7 @@ def scan_codebase(self):
         'build',
         '*.egg-info'
     }
-    
+
     files = []
     for item in base_path.rglob("*"):
         # Skip excluded directories
@@ -72,11 +72,11 @@ def scan_codebase(self):
             continue
         if item.is_file():
             files.append(item)
-    
+
     # Implement chunking for large file sets
     if len(files) > self.config.max_files_per_chunk:
         files = self._chunk_files(files, self.config.max_files_per_chunk)
-    
+
     return files
 ```
 
@@ -87,7 +87,7 @@ class DMAICConfig:
     workspace_root: str = "."  # Current directory (Master_Input)
     max_files_per_chunk: int = 49000
     max_total_files: int = 130000
-    
+
     # Add exclusion patterns
     exclude_patterns: List[str] = [
         "**/DMAIC_V3_OUTPUT/**",
@@ -133,9 +133,9 @@ def measure_codebase(self):
     """Measure all files from Phase 1, with proper chunking"""
     phase1_data = self.load_phase1_output()
     all_files = phase1_data['files']
-    
+
     print(f"📊 Measuring {len(all_files)} files...")
-    
+
     # Process in chunks to avoid memory issues
     chunk_size = 1000
     metrics = {
@@ -145,16 +145,16 @@ def measure_codebase(self):
         'file_sizes': [],
         'import_counts': []
     }
-    
+
     for i in range(0, len(all_files), chunk_size):
         chunk = all_files[i:i+chunk_size]
         chunk_metrics = self._measure_chunk(chunk)
         self._aggregate_metrics(metrics, chunk_metrics)
-        
+
         # Progress indicator
         progress = (i + len(chunk)) / len(all_files) * 100
         print(f"  Progress: {progress:.1f}% ({i + len(chunk)}/{len(all_files)})")
-    
+
     return metrics
 
 def _measure_chunk(self, files):
@@ -165,7 +165,7 @@ def _measure_chunk(self, files):
         'sizes': [],
         'imports': []
     }
-    
+
     for file_path in files:
         if file_path.endswith('.py'):
             chunk_metrics['python_files'] += 1
@@ -174,7 +174,7 @@ def _measure_chunk(self, files):
             chunk_metrics['complexity'].append(metrics['complexity'])
             chunk_metrics['sizes'].append(metrics['size'])
             chunk_metrics['imports'].append(metrics['imports'])
-    
+
     return chunk_metrics
 
 def _measure_python_file(self, file_path):
@@ -182,11 +182,11 @@ def _measure_python_file(self, file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
-            
+
         # Calculate metrics
         lines = content.split('\n')
         imports = len([l for l in lines if l.strip().startswith(('import ', 'from '))])
-        
+
         # Use radon for complexity if available
         try:
             import radon.complexity as radon_cc
@@ -194,7 +194,7 @@ def _measure_python_file(self, file_path):
         except:
             # Fallback: simple complexity estimate
             complexity = len([l for l in lines if l.strip().startswith(('if ', 'for ', 'while ', 'def ', 'class '))])
-        
+
         return {
             'complexity': complexity,
             'size': len(lines),
@@ -238,11 +238,11 @@ def improve_codebase(self):
 def improve_codebase(self):
     """Identify AND apply improvements"""
     improvements = self.identify_improvements()
-    
+
     # NEW: Actually apply improvements
     modifications_made = 0
     files_improved = []
-    
+
     for improvement in improvements:
         if improvement['priority'] in ['critical', 'high']:
             # Apply high-priority improvements
@@ -250,7 +250,7 @@ def improve_codebase(self):
             if result['success']:
                 modifications_made += result['modifications']
                 files_improved.extend(result['files'])
-    
+
     return {
         'improvements': improvements,
         'total_modifications_made': modifications_made,  # ✅ Actual count
@@ -261,25 +261,25 @@ def apply_improvement(self, improvement):
     """Actually apply an improvement to files"""
     modifications = 0
     files_modified = []
-    
+
     if improvement['category'] == 'Complexity Reduction':
         # Apply complexity reduction
         for file_path in improvement['affected_files']:
             if self._reduce_complexity(file_path):
                 modifications += 1
                 files_modified.append(file_path)
-    
+
     elif improvement['category'] == 'Documentation':
         # Add missing docstrings
         for file_path in improvement['affected_files']:
             if self._add_docstrings(file_path):
                 modifications += 1
                 files_modified.append(file_path)
-    
+
     # Git commit if enabled
     if self.config.git_enabled and modifications > 0:
         self._git_commit(files_modified, improvement['description'])
-    
+
     return {
         'success': modifications > 0,
         'modifications': modifications,
@@ -291,17 +291,17 @@ def _reduce_complexity(self, file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
-        
+
         # Apply automated refactoring
         # Example: Extract long methods
         modified_content = self._extract_long_methods(content)
-        
+
         # Only write if actually changed
         if modified_content != content:
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(modified_content)
             return True
-        
+
         return False
     except Exception as e:
         print(f"  ⚠️ Error reducing complexity in {file_path}: {e}")
@@ -312,11 +312,11 @@ def _add_docstrings(self, file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
-        
+
         # Parse AST and add docstrings
         import ast
         tree = ast.parse(content)
-        
+
         # Find functions/classes without docstrings
         modified = False
         for node in ast.walk(tree):
@@ -325,12 +325,12 @@ def _add_docstrings(self, file_path):
                     # Add docstring
                     # (This is simplified - real implementation would be more complex)
                     modified = True
-        
+
         if modified:
             # Write modified content
             # (Actual implementation would reconstruct the file with docstrings)
             return True
-        
+
         return False
     except Exception as e:
         print(f"  ⚠️ Error adding docstrings to {file_path}: {e}")
@@ -370,21 +370,21 @@ def apply_controls(self):
 def apply_controls(self):
     """Define AND enforce control mechanisms"""
     controls = self.define_quality_gates()
-    
+
     # NEW: Enforce quality gates
     violations = self.check_quality_gates(controls)
-    
+
     # NEW: Fix violations
     bugs_fixed = 0
     fixes_applied = []
-    
+
     for violation in violations:
         if violation['auto_fixable']:
             result = self.fix_violation(violation)
             if result['success']:
                 bugs_fixed += 1
                 fixes_applied.append(result)
-    
+
     return {
         'controls': controls,
         'violations_found': len(violations),
@@ -395,10 +395,10 @@ def apply_controls(self):
 def check_quality_gates(self, controls):
     """Check all files against quality gates"""
     violations = []
-    
+
     # Load Phase 2 metrics
     phase2_data = self.load_phase2_output()
-    
+
     for file_path, metrics in phase2_data['file_metrics'].items():
         # Check complexity gate
         if metrics['complexity'] > controls['complexity_gate']['threshold']:
@@ -409,7 +409,7 @@ def check_quality_gates(self, controls):
                 'threshold': controls['complexity_gate']['threshold'],
                 'auto_fixable': True
             })
-        
+
         # Check file size gate
         if metrics['size'] > controls['file_size_gate']['threshold']:
             violations.append({
@@ -419,7 +419,7 @@ def check_quality_gates(self, controls):
                 'threshold': controls['file_size_gate']['threshold'],
                 'auto_fixable': False  # Manual review needed
             })
-        
+
         # Check import count gate
         if metrics['imports'] > controls['coupling_gate']['threshold']:
             violations.append({
@@ -429,7 +429,7 @@ def check_quality_gates(self, controls):
                 'threshold': controls['coupling_gate']['threshold'],
                 'auto_fixable': True
             })
-    
+
     return violations
 
 def fix_violation(self, violation):
@@ -439,14 +439,14 @@ def fix_violation(self, violation):
             # Reduce complexity
             success = self._reduce_file_complexity(violation['file'])
             return {'success': success, 'fix': 'complexity_reduction'}
-        
+
         elif violation['gate'] == 'imports':
             # Reduce imports
             success = self._reduce_imports(violation['file'])
             return {'success': success, 'fix': 'import_reduction'}
-        
+
         return {'success': False, 'fix': 'not_implemented'}
-    
+
     except Exception as e:
         print(f"  ⚠️ Error fixing violation in {violation['file']}: {e}")
         return {'success': False, 'error': str(e)}
@@ -462,7 +462,7 @@ def _reduce_imports(self, file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
-        
+
         # Remove unused imports
         # (This is simplified - real implementation would use tools like autoflake)
         modified = False
@@ -477,12 +477,12 @@ def _reduce_imports(self, file_path):
                     modified = True
             else:
                 new_lines.append(line)
-        
+
         if modified:
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.writelines(new_lines)
             return True
-        
+
         return False
     except Exception as e:
         print(f"  ⚠️ Error reducing imports in {file_path}: {e}")
@@ -520,25 +520,25 @@ def acquire_knowledge(self):
 def acquire_knowledge(self):
     """Extract knowledge from codebase analysis"""
     knowledge_items = []
-    
+
     # Extract patterns from Phase 3 analysis
     patterns = self._extract_code_patterns()
     knowledge_items.extend(patterns)
-    
+
     # Extract best practices
     best_practices = self._extract_best_practices()
     knowledge_items.extend(best_practices)
-    
+
     # Extract architecture insights
     architecture = self._extract_architecture()
     knowledge_items.extend(architecture)
-    
+
     # Update canonical knowledge base
     self._update_knowledge_base(knowledge_items)
-    
+
     # Generate human-readable report
     self._generate_knowledge_report(knowledge_items)
-    
+
     return {
         'knowledge_items': knowledge_items,
         'total_items': len(knowledge_items)
@@ -547,10 +547,10 @@ def acquire_knowledge(self):
 def _extract_code_patterns(self):
     """Extract common code patterns"""
     patterns = []
-    
+
     # Load Phase 2 metrics
     phase2_data = self.load_phase2_output()
-    
+
     # Analyze patterns
     # Example: Find common design patterns
     patterns.append({
@@ -560,7 +560,7 @@ def _extract_code_patterns(self):
         'files': ['file1.py', 'file2.py'],
         'description': 'Singleton pattern used for configuration management'
     })
-    
+
     # Example: Find common code structures
     patterns.append({
         'type': 'code_structure',
@@ -569,13 +569,13 @@ def _extract_code_patterns(self):
         'files': ['factory1.py', 'factory2.py'],
         'description': 'Factory pattern used for object creation'
     })
-    
+
     return patterns
 
 def _extract_best_practices(self):
     """Extract best practices from codebase"""
     best_practices = []
-    
+
     # Analyze code for best practices
     best_practices.append({
         'type': 'best_practice',
@@ -584,7 +584,7 @@ def _extract_best_practices(self):
         'examples': ['with open(file) as f: ...'],
         'adoption_rate': 0.85
     })
-    
+
     best_practices.append({
         'type': 'best_practice',
         'category': 'Type Hints',
@@ -592,13 +592,13 @@ def _extract_best_practices(self):
         'examples': ['def func(x: int) -> str: ...'],
         'adoption_rate': 0.65
     })
-    
+
     return best_practices
 
 def _extract_architecture(self):
     """Extract architecture insights"""
     architecture = []
-    
+
     # Analyze project structure
     architecture.append({
         'type': 'architecture',
@@ -607,29 +607,29 @@ def _extract_architecture(self):
         'dependencies': ['Phase 0 → Phase 1 → ... → Phase 8'],
         'key_files': ['full_pipeline_orchestrator.py', 'dmaic_v3_engine.py']
     })
-    
+
     return architecture
 
 def _update_knowledge_base(self, knowledge_items):
     """Update canonical knowledge base"""
     knowledge_base_path = Path('DMAIC_V3/CANONICAL_KNOWLEDGE')
     knowledge_base_path.mkdir(exist_ok=True)
-    
+
     # Save knowledge items
     for item in knowledge_items:
         category = item['type']
         category_path = knowledge_base_path / f"{category}.json"
-        
+
         # Load existing knowledge
         if category_path.exists():
             with open(category_path, 'r') as f:
                 existing = json.load(f)
         else:
             existing = []
-        
+
         # Add new item
         existing.append(item)
-        
+
         # Save updated knowledge
         with open(category_path, 'w') as f:
             json.dump(existing, f, indent=2)
@@ -637,11 +637,11 @@ def _update_knowledge_base(self, knowledge_items):
 def _generate_knowledge_report(self, knowledge_items):
     """Generate human-readable knowledge report"""
     report_path = self.output_dir / 'KNOWLEDGE_REPORT.md'
-    
+
     with open(report_path, 'w') as f:
         f.write('# Knowledge Acquisition Report\n\n')
         f.write(f'**Total Items:** {len(knowledge_items)}\n\n')
-        
+
         # Group by type
         by_type = {}
         for item in knowledge_items:
@@ -649,7 +649,7 @@ def _generate_knowledge_report(self, knowledge_items):
             if item_type not in by_type:
                 by_type[item_type] = []
             by_type[item_type].append(item)
-        
+
         # Write each type
         for item_type, items in by_type.items():
             f.write(f'## {item_type.replace("_", " ").title()}\n\n')
@@ -690,25 +690,25 @@ def track_actions(self):
 def track_actions(self):
     """Collect and track actions from all previous phases"""
     actions = []
-    
+
     # Collect from Phase 4 (Improvements)
     phase4_actions = self._collect_phase4_actions()
     actions.extend(phase4_actions)
-    
+
     # Collect from Phase 5 (Bug Fixes)
     phase5_actions = self._collect_phase5_actions()
     actions.extend(phase5_actions)
-    
+
     # Collect from Phase 6 (Knowledge Gaps)
     phase6_actions = self._collect_phase6_actions()
     actions.extend(phase6_actions)
-    
+
     # Assign to agents and iterations
     self._assign_actions(actions)
-    
+
     # Generate action report
     self._generate_action_report(actions)
-    
+
     return {
         'actions': actions,
         'total_actions': len(actions),
@@ -719,9 +719,9 @@ def track_actions(self):
 def _collect_phase4_actions(self):
     """Collect actions from Phase 4 improvements"""
     actions = []
-    
+
     phase4_data = self.load_phase4_output()
-    
+
     for improvement in phase4_data.get('refactoring_tasks', []):
         actions.append({
             'id': f"ACTION-P4-{improvement['task_id']}",
@@ -734,15 +734,15 @@ def _collect_phase4_actions(self):
             'assigned_to': None,
             'iteration': None
         })
-    
+
     return actions
 
 def _collect_phase5_actions(self):
     """Collect actions from Phase 5 bug fixes"""
     actions = []
-    
+
     phase5_data = self.load_phase5_output()
-    
+
     for violation in phase5_data.get('violations_found', []):
         if not violation.get('fixed', False):
             actions.append({
@@ -756,15 +756,15 @@ def _collect_phase5_actions(self):
                 'assigned_to': None,
                 'iteration': None
             })
-    
+
     return actions
 
 def _collect_phase6_actions(self):
     """Collect actions from Phase 6 knowledge gaps"""
     actions = []
-    
+
     phase6_data = self.load_phase6_output()
-    
+
     # Example: Create actions for knowledge gaps
     for item in phase6_data.get('knowledge_items', []):
         if item.get('needs_documentation', False):
@@ -779,7 +779,7 @@ def _collect_phase6_actions(self):
                 'assigned_to': None,
                 'iteration': None
             })
-    
+
     return actions
 
 def _assign_actions(self, actions):
@@ -787,15 +787,15 @@ def _assign_actions(self, actions):
     # Sort by priority
     priority_order = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
     actions.sort(key=lambda x: priority_order.get(x['priority'], 999))
-    
+
     # Assign to iterations
     iteration_capacity = 150  # Actions per iteration
     current_iteration = 2  # Start with iteration 2
-    
+
     for i, action in enumerate(actions):
         iteration = current_iteration + (i // iteration_capacity)
         action['iteration'] = iteration
-        
+
         # Assign to agent based on type
         if action['type'] == 'refactoring':
             action['assigned_to'] = 'RefactoringAgent'
@@ -807,25 +807,25 @@ def _assign_actions(self, actions):
 def _generate_action_report(self, actions):
     """Generate human-readable action report"""
     report_path = self.output_dir / 'action_report.md'
-    
+
     with open(report_path, 'w') as f:
         f.write('# Action Tracking Report\n\n')
         f.write(f'**Total Actions:** {len(actions)}\n\n')
-        
+
         # By status
         by_status = self._count_by_status(actions)
         f.write('## By Status\n\n')
         for status, count in by_status.items():
             f.write(f'- {status}: {count}\n')
         f.write('\n')
-        
+
         # By priority
         by_priority = self._count_by_priority(actions)
         f.write('## By Priority\n\n')
         for priority, count in by_priority.items():
             f.write(f'- {priority}: {count}\n')
         f.write('\n')
-        
+
         # By iteration
         by_iteration = {}
         for action in actions:
@@ -833,7 +833,7 @@ def _generate_action_report(self, actions):
             if iteration not in by_iteration:
                 by_iteration[iteration] = []
             by_iteration[iteration].append(action)
-        
+
         f.write('## By Iteration\n\n')
         for iteration in sorted(by_iteration.keys()):
             f.write(f'### Iteration {iteration}\n\n')
@@ -874,31 +874,31 @@ def manage_todos(self):
 def manage_todos(self):
     """Collect and manage TODOs from all phases"""
     todos = []
-    
+
     # Collect from Phase 7 (Actions)
     phase7_todos = self._collect_phase7_todos()
     todos.extend(phase7_todos)
-    
+
     # Collect from Phase 4 (Improvements)
     phase4_todos = self._collect_phase4_todos()
     todos.extend(phase4_todos)
-    
+
     # Collect from Phase 5 (Bug Fixes)
     phase5_todos = self._collect_phase5_todos()
     todos.extend(phase5_todos)
-    
+
     # Prioritize by ROI
     self._prioritize_todos(todos)
-    
+
     # Create links between TODOs
     self._create_todo_links(todos)
-    
+
     # Generate TODO report
     self._generate_todo_report(todos)
-    
+
     # Export to YAML for easy consumption
     self._export_todos_yaml(todos)
-    
+
     return {
         'todos': todos,
         'total_todos': len(todos),
@@ -909,9 +909,9 @@ def manage_todos(self):
 def _collect_phase7_todos(self):
     """Convert Phase 7 actions to TODOs"""
     todos = []
-    
+
     phase7_data = self.load_phase7_output()
-    
+
     for action in phase7_data.get('actions', []):
         todos.append({
             'id': f"TODO-{action['id']}",
@@ -926,15 +926,15 @@ def _collect_phase7_todos(self):
             'estimated_effort': self._estimate_effort(action),
             'roi_score': self._calculate_roi(action)
         })
-    
+
     return todos
 
 def _collect_phase4_todos(self):
     """Collect TODOs from Phase 4 improvements"""
     todos = []
-    
+
     phase4_data = self.load_phase4_output()
-    
+
     for improvement in phase4_data.get('refactoring_tasks', []):
         if improvement.get('status') != 'completed':
             todos.append({
@@ -950,15 +950,15 @@ def _collect_phase4_todos(self):
                 'estimated_effort': improvement.get('estimated_effort', 'Unknown'),
                 'roi_score': improvement.get('roi_score', 0)
             })
-    
+
     return todos
 
 def _collect_phase5_todos(self):
     """Collect TODOs from Phase 5 bug fixes"""
     todos = []
-    
+
     phase5_data = self.load_phase5_output()
-    
+
     for violation in phase5_data.get('violations_found', []):
         if not violation.get('fixed', False):
             todos.append({
@@ -974,14 +974,14 @@ def _collect_phase5_todos(self):
                 'estimated_effort': 'Low',
                 'roi_score': 8.0
             })
-    
+
     return todos
 
 def _prioritize_todos(self, todos):
     """Prioritize TODOs by ROI score"""
     # Sort by ROI (highest first)
     todos.sort(key=lambda x: x.get('roi_score', 0), reverse=True)
-    
+
     # Assign priority ranks
     for i, todo in enumerate(todos):
         todo['priority_rank'] = i + 1
@@ -999,25 +999,25 @@ def _create_todo_links(self, todos):
 def _generate_todo_report(self, todos):
     """Generate human-readable TODO report"""
     report_path = self.output_dir / 'todo_report.md'
-    
+
     with open(report_path, 'w') as f:
         f.write('# TODO Management Report\n\n')
         f.write(f'**Total TODOs:** {len(todos)}\n\n')
-        
+
         # By status
         by_status = self._count_by_status(todos)
         f.write('## By Status\n\n')
         for status, count in by_status.items():
             f.write(f'- {status}: {count}\n')
         f.write('\n')
-        
+
         # By priority
         by_priority = self._count_by_priority(todos)
         f.write('## By Priority\n\n')
         for priority, count in by_priority.items():
             f.write(f'- {priority}: {count}\n')
         f.write('\n')
-        
+
         # Top 20 prioritized TODOs
         f.write('## Prioritized TODOs (Top 20)\n\n')
         for todo in todos[:20]:
@@ -1031,9 +1031,9 @@ def _generate_todo_report(self, todos):
 def _export_todos_yaml(self, todos):
     """Export TODOs to YAML for easy consumption"""
     import yaml
-    
+
     yaml_path = self.output_dir / 'prioritized_todos.yaml'
-    
+
     with open(yaml_path, 'w') as f:
         yaml.dump({
             'todos': todos,

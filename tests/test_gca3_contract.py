@@ -1,4 +1,5 @@
 """GCA-3 fail-closed request and acceptance counter regression tests."""
+
 import copy
 import json
 from pathlib import Path
@@ -7,11 +8,7 @@ import pytest
 
 from scripts import gca3_contract as gca
 
-TEMPLATE = (
-    Path(__file__).resolve().parents[1]
-    / "MIP"
-    / "GCA3_REQUEST_TEMPLATE.json"
-)
+TEMPLATE = Path(__file__).resolve().parents[1] / "MIP" / "GCA3_REQUEST_TEMPLATE.json"
 REQ = json.loads(TEMPLATE.read_text(encoding="utf-8"))
 
 
@@ -20,9 +17,7 @@ def wave(i, *, status="PASS", gates="PASS"):
         "attempt_index": i,
         "planned_wave_n": REQ["baseline"]["accepted_n"] + i,
         "status": status,
-        "pulses": [
-            {"id": "U1", "status": "PASS", "evidence": ["native-job-id"]}
-        ],
+        "pulses": [{"id": "U1", "status": "PASS", "evidence": ["native-job-id"]}],
         "source_heads": ["a" * 40],
         "gate_results": {k: gates for k in REQ["required_gates"]},
         "engineering_dov": status == "PASS",

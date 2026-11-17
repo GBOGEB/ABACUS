@@ -91,8 +91,7 @@ def reconcile(observations, canary=None):
         roots[root] += 1
         exact_heads.add(head)
         grouped.setdefault(root, []).append(
-            {"head_sha": head, "run_id": run_id,
-             "job_id": job_id, "attempt": attempt}
+            {"head_sha": head, "run_id": run_id, "job_id": job_id, "attempt": attempt}
         )
 
     if canary is None:
@@ -112,16 +111,22 @@ def reconcile(observations, canary=None):
             raise ValueError("successful canary needs native evidence reference")
     ordered_roots = []
     for root in sorted(roots, key=lambda x: (-roots[x], x)):
-        ordered_roots.append({
-            "root_id": root,
-            "manifestations": roots[root],
-            "action": ACTIONS[root],
-            "members": sorted(
-                grouped[root],
-                key=lambda x: (x["head_sha"], x["run_id"],
-                               x["job_id"], x["attempt"]),
-            ),
-        })
+        ordered_roots.append(
+            {
+                "root_id": root,
+                "manifestations": roots[root],
+                "action": ACTIONS[root],
+                "members": sorted(
+                    grouped[root],
+                    key=lambda x: (
+                        x["head_sha"],
+                        x["run_id"],
+                        x["job_id"],
+                        x["attempt"],
+                    ),
+                ),
+            }
+        )
     quota_manifestations = roots["API_QUOTA"]
     return {
         "schema": SCHEMA,

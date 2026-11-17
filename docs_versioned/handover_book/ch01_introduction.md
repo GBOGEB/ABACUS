@@ -2,8 +2,8 @@
 
 ## 1.1 What is ABACUS?
 
-ABACUS (Automated Build And Continuous Unified System) is a recursive, self-improving multi-agent 
-system that applies the DMAIC (Define, Measure, Analyze, Improve, Control) methodology to 
+ABACUS (Automated Build And Continuous Unified System) is a recursive, self-improving multi-agent
+system that applies the DMAIC (Define, Measure, Analyze, Improve, Control) methodology to
 cryogenic engineering analysis, specifically for the QPLANT cryoplant system at SCK•CEN.
 
 ## 1.2 The QPLANT Context

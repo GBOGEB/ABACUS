@@ -21,4 +21,3 @@ MIP scope for this surface:
 ## DoV
 
 Withheld until the smoke test and self-index are both bound to the same parent commit SHA, and one reusable CODESPACE/Jupyter candidate is packaged or rejected with evidence.
-

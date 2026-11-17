@@ -1,32 +1,47 @@
-# Federation integration + bridge acceptance — 26 October 2026
+# Federation bridge admission — 26 October 2026
 
-Status: implementation proposal, **not** exact-head admission or deployment.
+Status: **HOLD** for any unproven execution, deployment or owner gate.
 
-## Authority and baseline correction
+## Math authority
 
-The 25 October integration report called CODEX `pca_engine` canonical. The subsequently merged [ABACUS #2474](https://github.com/GBOGEB/ABACUS/pull/2474) and CODEX `pca_engine/MATH_SSOT_BINDING.md` supersede that wording: **gg_MATH/kernels** owns mathematical authority; CODEX remains the semantic/governance hub; ABACUS owns runtime and the slide-reviewer; cryoplant owns its private engineering evidence. Historical smoke numbers must not be represented as current exact-head PASS.
+The 25 October integration report described CODEX `pca_engine` as the
+canonical mathematical runtime. ABACUS PR #2474 superseded that assignment.
+[gg_MATH](https://github.com/GBOGEB/gg_MATH) owns the math kernels.
+CODEX owns semantic provenance and governance. ABACUS owns analytical
+execution. The private cryoplant repository owns QPS engineering evidence.
 
-## Six bridge contracts to qualify
+## Six bridge edges and evidence obligations
 
-| Edge | Required proof | Current disposition |
+| Edge | Required proof | Initial status |
 | --- | --- | --- |
-| Tuple → handover | valid tuple schema, matching input SHA and generated handover manifest | UNKNOWN until live receipt |
-| Handover → CI | PR-triggered tuple validator, exact tested commit and failed negative fixture | GAP: legacy `.github/workflows/ci.yml` is dispatch-only |
-| Temporal metadata → Phase 6 knowledge | nonempty typed refs with matched source IDs and version | UNKNOWN |
-| Handover → agent execution | idempotent task identity and result receipt; no state mutation on invalid handover | UNKNOWN |
-| CI → HTML/dashboard | matched run ID, source SHA, artifact digest and deployment readback | UNKNOWN |
-| Tuple tests → smoke CI | assertions run on exact PR head with a negative case | REQUIRED |
+| Tuple to handover | Source SHA and validated manifest | UNKNOWN |
+| Handover to CI | Head-matched validator and RED fixture | UNKNOWN |
+| Temporal to Phase 6 | Typed references and source identity | UNKNOWN |
+| Handover to agent | Replay-safe task and result receipt | UNKNOWN |
+| CI to dashboard | Run, source SHA, artifact digest | UNKNOWN |
+| Tuple test to smoke | Exact-head positive and RED tests | UNKNOWN |
 
-Bridge catalog: [BRIDGES_AND_CONNECTIONS.md](BRIDGES_AND_CONNECTIONS.md). The historical badge `6 connected` is **not a live CI measurement**.
+The historical bridge badge is not a live measurement.
+See [the bridge catalog](BRIDGES_AND_CONNECTIONS.md) for source paths.
 
-## Governing rules
+## Governance rules
 
-- A declared bridge is not an executed bridge. Keep `declared`, `tested`, `deployed`, `owner_accepted` distinct.
-- The slide-reviewer BT preflight in `qps_slide_reviewer/lib/bt_admission.ts` checks the provider's necessary graph condition; it does not certify convergence or produce authoritative rankings. All DEFER cases must block promotion.
-- Treat CODEX `pca_engine` as a consumer. Preserve provider SHA binding and explicit regularization/normalization differences.
-- Do not auto-prune snapshots or remote branches. Review the existing `docs/PRUNE_MANIFEST.md` before any separate deletion PR.
-- Never treat CI green as engineering-owner approval or independent review.
+- Declaration, execution, deployment and owner acceptance are separate states.
+- The TS Bradley–Terry preflight only tests necessary graph conditions.
+  A positive preflight does not certify a provider fit or a finite MLE.
+- CODEX `pca_engine` is a consumer of gg_MATH, not math authority.
+- A `DEFER` result must block ranking or release promotion.
+- An unavailable receipt is UNKNOWN, never PASS.
+- Legacy `.github/workflows/ci.yml` is dispatch-only.
+  The dedicated federation bridge workflow adds a PR-triggered check.
+- No auto-pruning, review bypass or waiver is allowed.
 
-## Proposed tests
+## Reproduction
 
-Run `python -m pytest DMAIC_V3/tests/test_tuple_metadata_validation.py -q` and `python scripts/validate_tuple_metadata.py --input <fixture>` with both valid/invalid fixtures. Test BT preflight with cycles, total-order separation, disconnected components, ties-only and invalid winners. For TS tests run `node --experimental-strip-types --test qps_slide_reviewer/tests/bt_admission.test.ts` on a Node version supporting type stripping; otherwise use the repository's compatible TypeScript runner. Confirm actual CI result rather than assuming a local script command executes in Actions.
+```bash
+python -m pytest -q DMAIC_V3/tests/test_tuple_metadata_validation.py
+python -m pytest -q DMAIC_V3/tests/test_federation_bridge_contracts.py
+```
+
+For TS preflight, execute the TypeScript tests with the pinned Node runner.
+Do not infer runtime enforcement or deployment from test presence alone.

@@ -4,6 +4,7 @@ Code Index Generator V2.3.0
 Scans the workspace and generates a canonical index of V2.3 system components
 Outputs both YAML (code_index.yaml) and JSON (code_index.json) at the repo root
 """
+
 import ast
 import json
 import sys
@@ -17,6 +18,7 @@ __date__ = "2025-11-11"
 
 try:
     import yaml
+
     _HAS_YAML = True
 except ImportError:
     _HAS_YAML = False
@@ -94,16 +96,18 @@ def scan_directory(directory: Path, component_type: str) -> List[Dict[str, Any]]
         classes = _extract_classes(py_file)
         stub = _is_stub(py_file)
 
-        components.append({
-            "name": canonical,
-            "file": str(py_file.relative_to(_REPO_ROOT)),
-            "type": component_type,
-            "version": version,
-            "v2.3": is_v23,
-            "classes": classes,
-            "stub": stub,
-            "status": "stub" if stub else "active",
-        })
+        components.append(
+            {
+                "name": canonical,
+                "file": str(py_file.relative_to(_REPO_ROOT)),
+                "type": component_type,
+                "version": version,
+                "v2.3": is_v23,
+                "classes": classes,
+                "stub": stub,
+                "status": "stub" if stub else "active",
+            }
+        )
 
     return components
 
@@ -171,7 +175,9 @@ def write_yaml(index: Dict[str, Any], output: Path) -> None:
         print("Warning: pyyaml not installed; skipping YAML output", file=sys.stderr)
         return
     with open(output, "w", encoding="utf-8") as fh:
-        yaml.dump(index, fh, default_flow_style=False, allow_unicode=True, sort_keys=False)
+        yaml.dump(
+            index, fh, default_flow_style=False, allow_unicode=True, sort_keys=False
+        )
 
 
 def main(argv: List[str] = None) -> int:
@@ -190,7 +196,9 @@ def main(argv: List[str] = None) -> int:
         default=str(_REPO_ROOT / "code_index.yaml"),
         help="YAML output path (default: <repo_root>/code_index.yaml)",
     )
-    parser.add_argument("--stdout", action="store_true", help="Also print JSON to stdout")
+    parser.add_argument(
+        "--stdout", action="store_true", help="Also print JSON to stdout"
+    )
     args = parser.parse_args(argv)
 
     print("=" * 70)
@@ -209,7 +217,9 @@ def main(argv: List[str] = None) -> int:
         print(json.dumps(index, indent=2))
 
     s = index["summary"]
-    print(f"Agents scanned  : {s['total_agents']} ({s['v2.3_agents']} v2.3, {s['stub_agents']} stubs)")
+    print(
+        f"Agents scanned  : {s['total_agents']} ({s['v2.3_agents']} v2.3, {s['stub_agents']} stubs)"
+    )
     print(f"Tools scanned   : {s['total_tools']}")
     print(f"Orchestrator    : {'present' if s['orchestrator_present'] else 'missing'}")
     print(f"JSON written    : {json_path}")

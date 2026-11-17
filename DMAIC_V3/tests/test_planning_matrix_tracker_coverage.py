@@ -115,7 +115,12 @@ def test_scan_actual_state_reads_valid_iterations_and_skips_malformed(tmp_path):
     ids = {item["id"] for item in result["actual_items"]}
     assert ids == {"iter2_phase1", "iter2_phase2"}
     assert all(item["status"] == "COMPLETED" for item in result["actual_items"])
-    assert next(item for item in result["actual_items"] if item["id"] == "iter2_phase2")["success"] is True
+    assert (
+        next(item for item in result["actual_items"] if item["id"] == "iter2_phase2")[
+            "success"
+        ]
+        is True
+    )
     assert tracker.matrix["actual"] == result["actual_items"]
 
 

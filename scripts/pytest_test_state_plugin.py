@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import pytest
 
-
 TEST_STATES = (
     "NO_TEST",
     "TEST_EXISTS_UNCOLLECTED",
@@ -49,9 +48,7 @@ def _marker_states(item: pytest.Item) -> list[str]:
 
 def _set_property(item: pytest.Item, name: str, value: str) -> None:
     item.user_properties[:] = [
-        (key, current)
-        for key, current in item.user_properties
-        if key != name
+        (key, current) for key, current in item.user_properties if key != name
     ]
     item.user_properties.append((name, value))
 

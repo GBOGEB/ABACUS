@@ -23,7 +23,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.11"
+          python-version: "3.14"
 
       - name: Run W77 helper tests
         shell: bash
@@ -65,7 +65,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.11"
+          python-version: "3.14"
 
       - name: Execute phase-instrumented exact-SHA probe
         shell: bash
@@ -103,10 +103,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.11"
+          python-version: "3.14"
 
       - name: Download W77 phase probes
-        uses: actions/download-artifact@v8.0.2
+        uses: actions/download-artifact@v8
         with:
           pattern: r*-*
           path: architecture/w77/probes

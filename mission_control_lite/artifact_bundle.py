@@ -2,6 +2,7 @@
 
 This does not imply governed admission, security closure or human approval.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -36,7 +37,11 @@ def _relative(value):
 def _bounded_source(root, name):
     rel = _relative(name)
     source = root.joinpath(*rel.parts)
-    if source.is_symlink() or not source.is_file() or not source.resolve().is_relative_to(root):
+    if (
+        source.is_symlink()
+        or not source.is_file()
+        or not source.resolve().is_relative_to(root)
+    ):
         raise ValueError("untrusted input path")
     return source
 
@@ -76,9 +81,13 @@ def stage(receipt_path, artifact_root, bundle_root, companions=()):
         copyfile(source, out)
     if not verify(receipt, destination):
         raise ValueError("staged evidence failed trusted-byte verification")
-    return {"path_contract": "evidence/ relative to upload root",
-            "source_sha": receipt["source_sha"], "attested": len(declared),
-            "unattested_companions": len(companions), "admission": "HOLD"}
+    return {
+        "path_contract": "evidence/ relative to upload root",
+        "source_sha": receipt["source_sha"],
+        "attested": len(declared),
+        "unattested_companions": len(companions),
+        "admission": "HOLD",
+    }
 
 
 def verify_zip(zip_path, github_sha256, *, ingest_roundtrip=False):
@@ -124,18 +133,25 @@ def verify_zip(zip_path, github_sha256, *, ingest_roundtrip=False):
         identity = "UNKNOWN"
         if provenance.exists():
             value = json.loads(provenance.read_text(encoding="utf-8"))
-            if (value.get("executed_sha") != receipt["source_sha"] or
-                    value.get("pull_head_sha") != receipt["source_sha"] or
-                    value.get("checkout_kind") != "pull_head"):
+            if (
+                value.get("executed_sha") != receipt["source_sha"]
+                or value.get("pull_head_sha") != receipt["source_sha"]
+                or value.get("checkout_kind") != "pull_head"
+            ):
                 raise ValueError("receipt SHA is not executed PR head")
             identity = "PULL_HEAD_NOT_SYNTHETIC_EVENT"
         if ingest_roundtrip:
             ingest(root / "reingest.sqlite", receipt, root)
-        return {"zip_sha256": observed, "attested": len(declared),
-                "source_sha": receipt["source_sha"], "source_identity": identity,
-                "path_contract": "PASS", "trusted_bytes": "PASS",
-                "ingest_roundtrip": "PASS" if ingest_roundtrip else "NOT_EXECUTED",
-                "admission": "HOLD"}
+        return {
+            "zip_sha256": observed,
+            "attested": len(declared),
+            "source_sha": receipt["source_sha"],
+            "source_identity": identity,
+            "path_contract": "PASS",
+            "trusted_bytes": "PASS",
+            "ingest_roundtrip": "PASS" if ingest_roundtrip else "NOT_EXECUTED",
+            "admission": "HOLD",
+        }
 
 
 def main():
@@ -151,9 +167,11 @@ def main():
     vr.add_argument("--github-sha256", required=True)
     vr.add_argument("--ingest", action="store_true")
     args = parser.parse_args()
-    result = (stage(args.receipt, args.artifact_root, args.bundle_root, args.companion)
-              if args.command == "stage" else
-              verify_zip(args.zip, args.github_sha256, ingest_roundtrip=args.ingest))
+    result = (
+        stage(args.receipt, args.artifact_root, args.bundle_root, args.companion)
+        if args.command == "stage"
+        else verify_zip(args.zip, args.github_sha256, ingest_roundtrip=args.ingest)
+    )
     print(json.dumps(result, indent=2, sort_keys=True))
 
 

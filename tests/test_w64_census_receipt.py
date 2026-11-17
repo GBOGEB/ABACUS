@@ -45,10 +45,16 @@ def test_receipt_candidates_when_no_blockers(tmp_path):
     assert receipt["status"] == "receipt_candidate_no_blockers"
     assert receipt["p1_asset_count"] == 3
     assert receipt["p2_blocker_count"] == 0
-    assert receipt["downstream_gate"]["binaries_release_regression_credit"] == "allowed_to_continue_to_next_receipt_gate"
+    assert (
+        receipt["downstream_gate"]["binaries_release_regression_credit"]
+        == "allowed_to_continue_to_next_receipt_gate"
+    )
     assert str(census_path) in receipt["source_artifact_digests"]
     assert str(reverse_path) in receipt["source_artifact_digests"]
-    assert receipt["stale_generated_unknown_register"][0]["type"] == "generated_output_inflation_guard"
+    assert (
+        receipt["stale_generated_unknown_register"][0]["type"]
+        == "generated_output_inflation_guard"
+    )
 
 
 def test_receipt_blocks_when_reverse_pressure_has_blockers(tmp_path):
@@ -95,7 +101,10 @@ def test_receipt_blocks_when_reverse_pressure_has_blockers(tmp_path):
             "required_action": "Resolve or waive duplicate authority before release credit.",
         }
     ]
-    assert receipt["stale_generated_unknown_register"][0]["type"] == "release_critical_unknown_assets"
+    assert (
+        receipt["stale_generated_unknown_register"][0]["type"]
+        == "release_critical_unknown_assets"
+    )
 
 
 def test_main_writes_receipt(tmp_path, capsys):
@@ -103,9 +112,24 @@ def test_main_writes_receipt(tmp_path, capsys):
     reverse_path = tmp_path / "p2.json"
     out = tmp_path / "receipt.json"
     write_json(census_path, {"asset_count": 1, "assets": []})
-    write_json(reverse_path, {"finding_count": 0, "blocker_count": 0, "warning_count": 0, "findings": []})
+    write_json(
+        reverse_path,
+        {"finding_count": 0, "blocker_count": 0, "warning_count": 0, "findings": []},
+    )
 
-    assert w64_census_receipt.main(["--census", str(census_path), "--reverse-pressure", str(reverse_path), "--out", str(out)]) == 0
+    assert (
+        w64_census_receipt.main(
+            [
+                "--census",
+                str(census_path),
+                "--reverse-pressure",
+                str(reverse_path),
+                "--out",
+                str(out),
+            ]
+        )
+        == 0
+    )
     payload = json.loads(out.read_text(encoding="utf-8"))
     assert payload["status"] == "receipt_candidate_no_blockers"
     printed = json.loads(capsys.readouterr().out)

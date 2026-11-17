@@ -12,11 +12,12 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
-
 # ── Enums ────────────────────────────────────────────────────────────
+
 
 class AudienceType(str, Enum):
     """Stakeholder presentation audience types."""
+
     executive = "executive"
     technical = "technical"
     financial = "financial"
@@ -24,14 +25,17 @@ class AudienceType(str, Enum):
 
 class CompressorModel(str, Enum):
     """Supported compressor model identifiers."""
+
     FSD575 = "FSD575"
     HSD_TWIN_COMBI = "HSD_TWIN_COMBI"
 
 
 # ── Config Models ────────────────────────────────────────────────────
 
+
 class ConfigSummary(BaseModel):
     """Summary of SSoT configuration."""
+
     version: str
     last_updated: str
     hp_compressor_count: int
@@ -43,22 +47,30 @@ class ConfigSummary(BaseModel):
 
 class ConfigDetail(BaseModel):
     """Full SSoT configuration export."""
+
     version: str
     config: Dict[str, Any]
 
 
 # ── Leak Rate Models ─────────────────────────────────────────────────
 
+
 class LeakRateRequest(BaseModel):
     """Request for leak-rate calculation."""
+
     leak_rate_mbar_l_s: float = Field(..., gt=0, description="Leak rate in mbar·L/s")
     temperature_k: float = Field(..., gt=0, description="Temperature in Kelvin")
-    pressure_bar_abs: float = Field(default=1.0, gt=0, description="Absolute pressure in bar")
-    reference_pressure_bar: float = Field(default=1.0, gt=0, description="Reference pressure in bar")
+    pressure_bar_abs: float = Field(
+        default=1.0, gt=0, description="Absolute pressure in bar"
+    )
+    reference_pressure_bar: float = Field(
+        default=1.0, gt=0, description="Reference pressure in bar"
+    )
 
 
 class LeakRateResponse(BaseModel):
     """Response with calculated leak-rate conversions."""
+
     leak_rate_mbar_l_s: float
     temperature_k: float
     pressure_bar_abs: float
@@ -71,14 +83,17 @@ class LeakRateResponse(BaseModel):
 
 class BatchLeakRateRequest(BaseModel):
     """Request for multiple leak-rate calculations."""
+
     items: List[LeakRateRequest]
     he_price_eur_kg: float = Field(default=120.0, gt=0)
 
 
 # ── Monte Carlo Models ───────────────────────────────────────────────
 
+
 class MonteCarloRequest(BaseModel):
     """Request for Monte Carlo simulation."""
+
     n_simulations: int = Field(default=10000, ge=100, le=100000)
     he_price_min: float = Field(default=117.0, gt=0)
     he_price_mode: float = Field(default=120.0, gt=0)
@@ -89,6 +104,7 @@ class MonteCarloRequest(BaseModel):
 
 class MonteCarloResult(BaseModel):
     """Response with Monte Carlo simulation results."""
+
     n_simulations: int
     mean_annual_cost_eur: float
     median_annual_cost_eur: float
@@ -101,8 +117,10 @@ class MonteCarloResult(BaseModel):
 
 # ── Compressor Models ────────────────────────────────────────────────
 
+
 class CompressorConfigRequest(BaseModel):
     """Request for compressor reliability analysis."""
+
     total_units: int = Field(default=3, ge=1, le=10)
     required_units: int = Field(default=2, ge=1)
     mtbf_hours: float = Field(default=8760.0, gt=0)
@@ -112,6 +130,7 @@ class CompressorConfigRequest(BaseModel):
 
 class CompressorReliabilityResponse(BaseModel):
     """Response with compressor reliability metrics."""
+
     configuration: str
     total_units: int
     required_units: int
@@ -126,8 +145,10 @@ class CompressorReliabilityResponse(BaseModel):
 
 # ── Health & Status Models ───────────────────────────────────────────
 
+
 class BuildStatus(BaseModel):
     """System build status."""
+
     version: str
     build_time: Optional[str] = None
     tests_passing: int
@@ -139,6 +160,7 @@ class BuildStatus(BaseModel):
 
 class HealthResponse(BaseModel):
     """System health check response."""
+
     status: str  # "healthy" | "degraded" | "error"
     version: str
     uptime_seconds: float
@@ -149,8 +171,10 @@ class HealthResponse(BaseModel):
 
 # ── Visualization Models ─────────────────────────────────────────────
 
+
 class PlotlyChartData(BaseModel):
     """Plotly chart data for frontend rendering."""
+
     chart_id: str
     title: str
     chart_type: str  # bar, scatter, line, heatmap, etc.

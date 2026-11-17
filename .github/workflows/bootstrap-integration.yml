@@ -49,7 +49,7 @@ on:
           - dmaic
 
 env:
-  PYTHON_VERSION: '3.12'
+  PYTHON_VERSION: '3.14'
   REPORTS_DIR: test_reports
 
 jobs:

@@ -19,17 +19,17 @@ Core bridge module connecting the test system to DMAIC V3 engine:
   - Integrates with StateManager and HandoverBridge
   - Provides MCP control point logging
   - Tracks versions and actions
-  
+
 - **MCPControlPoint**: Monitoring and control
   - Logs execution points with timestamps
   - Tracks metadata at each control point
   - Stores logs in `.mcp/monitor.log`
-  
+
 - **TestExecutionResult**: Test result data structure
   - Captures returncode, stdout, stderr
   - Tracks duration and success status
   - Validates expected artifacts
-  
+
 - **DeploymentMetrics**: Deployment readiness metrics
   - Tests passed/failed counts
   - Runtime error tracking
@@ -49,22 +49,22 @@ Main deployment orchestration script:
   - Runs pytest suites (unit, integration, smoke, or all)
   - Captures test results and statistics
   - Supports test markers for selective execution
-  
+
 - **Phase 2: Static Analysis**
   - Runs flake8, mypy, pylint (optional)
   - Validates code quality
   - Can be skipped with `--skip-static`
-  
+
 - **Phase 3: Runtime Error Detection**
   - Analyzes test failures
   - Extracts runtime errors from stderr
   - Categorizes error types
-  
+
 - **Phase 4: Deployment Metrics**
   - Generates comprehensive metrics
   - Calculates deployment readiness
   - Tracks execution time
-  
+
 - **Phase 5: Report Generation**
   - Saves JSON deployment report
   - Logs actions to actions.json
@@ -80,11 +80,11 @@ Comprehensive test suite for bridge functionality:
   - Bridge initialization
   - Version management
   - Action logging
-  
+
 - **Unit Tests** (2 tests)
   - TestExecutionResult creation
   - DeploymentMetrics creation
-  
+
 - **Integration Tests** (3 tests)
   - Simple command execution
   - Runtime error detection

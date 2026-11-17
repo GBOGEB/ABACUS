@@ -1,4 +1,5 @@
 """Fast native tests for CI telemetry; never impersonate GitHub evidence."""
+
 import importlib.util
 import pathlib
 import unittest
@@ -11,22 +12,35 @@ SHA = "a" * 40
 
 
 def run(ident=1, status="completed", conclusion="success"):
-    return {"id": ident, "head_sha": SHA, "status": status,
-            "conclusion": conclusion, "name": "MIP Coverage"}
+    return {
+        "id": ident,
+        "head_sha": SHA,
+        "status": status,
+        "conclusion": conclusion,
+        "name": "MIP Coverage",
+    }
 
 
 def job(ident=1, run_id=1, status="completed"):
-    return {"id": ident, "run_id": run_id, "status": status,
-            "created_at": "2026-10-15T08:00:00Z",
-            "started_at": "2026-10-15T08:00:10Z",
-            "completed_at": "2026-10-15T08:00:40Z"}
+    return {
+        "id": ident,
+        "run_id": run_id,
+        "status": status,
+        "created_at": "2026-10-15T08:00:00Z",
+        "started_at": "2026-10-15T08:00:10Z",
+        "completed_at": "2026-10-15T08:00:40Z",
+    }
 
 
 class MissionTelemetryTests(unittest.TestCase):
     def test_provenance_holds_and_no_admission_credit(self):
-        x = M.summarize("GBOGEB/ABACUS", SHA,
-                        {"total_count": 1, "workflow_runs": [run()]},
-                        {1: [job()]}, 10)
+        x = M.summarize(
+            "GBOGEB/ABACUS",
+            SHA,
+            {"total_count": 1, "workflow_runs": [run()]},
+            {1: [job()]},
+            10,
+        )
         self.assertFalse(x["merge_admitted"])
         self.assertEqual(x["provenance"], "LIVE_GITHUB_API_READ_ONLY")
         self.assertIsNone(x["coverage_delta_pp"])
@@ -69,37 +83,46 @@ class MissionTelemetryTests(unittest.TestCase):
 
     def test_duplicate_runs_rejected(self):
         with self.assertRaisesRegex(ValueError, "duplicate run ID"):
-            M.summarize("GBOGEB/ABACUS", SHA,
-                        {"total_count": 2, "workflow_runs": [run(), run()]},
-                        {}, 10)
+            M.summarize(
+                "GBOGEB/ABACUS",
+                SHA,
+                {"total_count": 2, "workflow_runs": [run(), run()]},
+                {},
+                10,
+            )
 
     def test_wrong_sha_rejected(self):
         x = run()
         x["head_sha"] = "b" * 40
         with self.assertRaisesRegex(ValueError, "source SHA mismatch"):
-            M.summarize("GBOGEB/ABACUS", SHA,
-                        {"total_count": 1, "workflow_runs": [x]}, {}, 10)
+            M.summarize(
+                "GBOGEB/ABACUS", SHA, {"total_count": 1, "workflow_runs": [x]}, {}, 10
+            )
 
     def test_foreign_job_run_rejected(self):
         with self.assertRaisesRegex(ValueError, "cross-run job mismatch"):
-            M.summarize("GBOGEB/ABACUS", SHA,
-                        {"total_count": 1, "workflow_runs": [run()]},
-                        {1: [job(run_id=9)]}, 10)
+            M.summarize(
+                "GBOGEB/ABACUS",
+                SHA,
+                {"total_count": 1, "workflow_runs": [run()]},
+                {1: [job(run_id=9)]},
+                10,
+            )
 
     def test_incomplete_run_page_flagged(self):
-        out = M.summarize("GBOGEB/ABACUS", SHA,
-                          {"total_count": 200, "workflow_runs": [run()]},
-                          {}, 10)
+        out = M.summarize(
+            "GBOGEB/ABACUS", SHA, {"total_count": 200, "workflow_runs": [run()]}, {}, 10
+        )
         self.assertFalse(out["run_census_complete"])
 
     def test_invalid_repository_rejected(self):
         with self.assertRaises(ValueError):
-            M.summarize("other/private", SHA,
-                        {"total_count": 0, "workflow_runs": []}, {}, 10)
+            M.summarize(
+                "other/private", SHA, {"total_count": 0, "workflow_runs": []}, {}, 10
+            )
 
     def test_subsecond_negative_clock_invalid(self):
-        self.assertIsNone(M.elapsed(
-            "2026-10-15T08:00:40Z", "2026-10-15T08:00:10Z"))
+        self.assertIsNone(M.elapsed("2026-10-15T08:00:40Z", "2026-10-15T08:00:10Z"))
         self.assertIsNone(M.elapsed("bad", "2026-10-15T08:00:10Z"))
 
     def test_name_taxonomy_is_only_hint(self):
@@ -109,25 +132,27 @@ class MissionTelemetryTests(unittest.TestCase):
 
     def test_snapshot_reads_bounded_jobs(self):
         urls = []
+
         def fake_get(url, token):
             urls.append(url)
             if url.endswith("/jobs?per_page=100"):
                 return {"jobs": [job()]}
             return {"total_count": 1, "workflow_runs": [run()]}
-        data = M.snapshot("GBOGEB/ABACUS", SHA, "fake", max_jobs_runs=1,
-                          get=fake_get)
+
+        data = M.snapshot("GBOGEB/ABACUS", SHA, "fake", max_jobs_runs=1, get=fake_get)
         self.assertEqual(len(urls), 2)
         self.assertEqual(data["job_metrics"]["sampled_jobs"], 1)
 
     def test_snapshot_enforces_bounded_sample(self):
         with self.assertRaises(ValueError):
-            M.snapshot("GBOGEB/ABACUS", SHA, "fake", max_jobs_runs=41,
-                       get=lambda *_: {})
+            M.snapshot(
+                "GBOGEB/ABACUS", SHA, "fake", max_jobs_runs=41, get=lambda *_: {}
+            )
 
     def test_markdown_calls_unknown_unknown(self):
-        x = M.summarize("GBOGEB/ABACUS", SHA,
-                        {"total_count": 1, "workflow_runs": [run()]},
-                        {}, 10)
+        x = M.summarize(
+            "GBOGEB/ABACUS", SHA, {"total_count": 1, "workflow_runs": [run()]}, {}, 10
+        )
         text = M.make_markdown(x)
         self.assertIn("UNKNOWN", text)
         self.assertIn("no synthetic gains", text)

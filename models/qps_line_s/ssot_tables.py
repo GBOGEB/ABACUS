@@ -37,16 +37,16 @@ class LumpedMassKg:
 @dataclass(frozen=True)
 class HeatLoadAValues:
     # Q1: TS Mass → Cold Mass
-    q1_cond_a_m: float        # signed lumped coefficient [m]
+    q1_cond_a_m: float  # signed lumped coefficient [m]
     q1_rad_a_w_per_k4: float  # [W/K^4]
     # Q2: Ambient → TS Mass
-    q2_cond_a_m: float        # signed lumped coefficient [m]
+    q2_cond_a_m: float  # signed lumped coefficient [m]
     q2_rad_a_w_per_k4: float  # [W/K^4]
 
 
 # SSOT Table 27 — lumped masses
 SSOT_TABLE_27_MASS_KG: dict[LinacConfig, LumpedMassKg] = {
-    "LINAC_24": LumpedMassKg(cold_mass_kg=9885.0,  ts_mass_kg=8602.0),
+    "LINAC_24": LumpedMassKg(cold_mass_kg=9885.0, ts_mass_kg=8602.0),
     "LINAC_30": LumpedMassKg(cold_mass_kg=12356.0, ts_mass_kg=10753.0),
 }
 
@@ -57,36 +57,40 @@ SSOT_TABLE_27_MASS_KG: dict[LinacConfig, LumpedMassKg] = {
 # so the sign produces positive heat flow from hotter to colder node.
 SSOT_TABLE_28_A_VALUES: dict[LinacConfig, HeatLoadAValues] = {
     "LINAC_24": HeatLoadAValues(
-        q1_cond_a_m=-2.93,      q1_rad_a_w_per_k4=1.82e-5,
-        q2_cond_a_m=-1.13,      q2_rad_a_w_per_k4=5.40e-7,
+        q1_cond_a_m=-2.93,
+        q1_rad_a_w_per_k4=1.82e-5,
+        q2_cond_a_m=-1.13,
+        q2_rad_a_w_per_k4=5.40e-7,
     ),
     "LINAC_30": HeatLoadAValues(
-        q1_cond_a_m=-3.60,      q1_rad_a_w_per_k4=2.24e-5,
-        q2_cond_a_m=-1.38,      q2_rad_a_w_per_k4=6.58e-7,
+        q1_cond_a_m=-3.60,
+        q1_rad_a_w_per_k4=2.24e-5,
+        q2_cond_a_m=-1.38,
+        q2_rad_a_w_per_k4=6.58e-7,
     ),
 }
 
 # SSOT Table 29 — specific enthalpy J/kg: (T_K, h_cold, h_ts)
 SSOT_TABLE_29_ENTHALPY_J_PER_KG: tuple[tuple[float, float, float], ...] = (
-    (1.0,   0.0,     0.0),
-    (2.0,   0.6,     0.1),
-    (3.0,   1.2,     0.2),
-    (4.0,   2.2,     0.4),
-    (6.0,   4.9,     0.9),
-    (8.0,   9.9,     2.7),
-    (10.0,  16.0,    4.9),
-    (15.0,  40.3,    17.6),
-    (20.0,  84.2,    46.5),
-    (25.0,  159.2,   107.9),
-    (30.0,  280.4,   218.5),
-    (35.0,  465.4,   401.0),
-    (40.0,  729.3,   670.7),
-    (50.0,  1534.9,  1518.9),
-    (60.0,  2685.0,  2810.3),
-    (70.0,  4173.2,  4547.0),
-    (77.0,  5409.5,  6017.7),
-    (80.0,  5982.0,  6710.4),
-    (90.0,  8073.3,  9248.1),
+    (1.0, 0.0, 0.0),
+    (2.0, 0.6, 0.1),
+    (3.0, 1.2, 0.2),
+    (4.0, 2.2, 0.4),
+    (6.0, 4.9, 0.9),
+    (8.0, 9.9, 2.7),
+    (10.0, 16.0, 4.9),
+    (15.0, 40.3, 17.6),
+    (20.0, 84.2, 46.5),
+    (25.0, 159.2, 107.9),
+    (30.0, 280.4, 218.5),
+    (35.0, 465.4, 401.0),
+    (40.0, 729.3, 670.7),
+    (50.0, 1534.9, 1518.9),
+    (60.0, 2685.0, 2810.3),
+    (70.0, 4173.2, 4547.0),
+    (77.0, 5409.5, 6017.7),
+    (80.0, 5982.0, 6710.4),
+    (90.0, 8073.3, 9248.1),
     (100.0, 10413.9, 12096.5),
     (120.0, 15695.1, 18566.3),
     (140.0, 21679.0, 25911.4),
@@ -103,20 +107,25 @@ SSOT_TABLE_29_ENTHALPY_J_PER_KG: tuple[tuple[float, float, float], ...] = (
 # NIST AISI 304 / UNS S30400 thermal conductivity.
 # log10(k [W/m/K]) = sum(c_i * x^i),  x = log10(T [K]),  valid 1–300 K.
 _NIST_304_COEFFS = (
-    -1.4087,  1.3982,  0.2543, -0.6260,
-     0.2334,  0.4256, -0.4658,  0.1650, -0.0199,
+    -1.4087,
+    1.3982,
+    0.2543,
+    -0.6260,
+    0.2334,
+    0.4256,
+    -0.4658,
+    0.1650,
+    -0.0199,
 )
 
 
 def k_aisi304_w_m_k(temperature_k: float) -> float:
     """AISI 304 stainless thermal conductivity [W/(m·K)], valid 1–300 K."""
     if not (1.0 <= temperature_k <= 300.0):
-        raise ValueError(
-            f"AISI 304 fit valid 1–300 K; got {temperature_k:g} K"
-        )
+        raise ValueError(f"AISI 304 fit valid 1–300 K; got {temperature_k:g} K")
     x = math.log10(temperature_k)
-    log10_k = sum(c * x ** i for i, c in enumerate(_NIST_304_COEFFS))
-    return 10.0 ** log10_k
+    log10_k = sum(c * x**i for i, c in enumerate(_NIST_304_COEFFS))
+    return 10.0**log10_k
 
 
 def integrate_k_signed_w_per_m(
@@ -157,13 +166,15 @@ def static_heat_loads_w(
     """
     a = SSOT_TABLE_28_A_VALUES[config]
     q1_cond = a.q1_cond_a_m * integrate_k_signed_w_per_m(t_ts_k, t_cold_k)
-    q1_rad  = a.q1_rad_a_w_per_k4 * (t_ts_k ** 4 - t_cold_k ** 4)
+    q1_rad = a.q1_rad_a_w_per_k4 * (t_ts_k**4 - t_cold_k**4)
     q2_cond = a.q2_cond_a_m * integrate_k_signed_w_per_m(t_ambient_k, t_ts_k)
-    q2_rad  = a.q2_rad_a_w_per_k4 * (t_ambient_k ** 4 - t_ts_k ** 4)
+    q2_rad = a.q2_rad_a_w_per_k4 * (t_ambient_k**4 - t_ts_k**4)
     return {
-        "q1_cond_w": q1_cond, "q1_rad_w": q1_rad,
+        "q1_cond_w": q1_cond,
+        "q1_rad_w": q1_rad,
         "q1_total_w": q1_cond + q1_rad,
-        "q2_cond_w": q2_cond, "q2_rad_w": q2_rad,
+        "q2_cond_w": q2_cond,
+        "q2_rad_w": q2_rad,
         "q2_total_w": q2_cond + q2_rad,
     }
 

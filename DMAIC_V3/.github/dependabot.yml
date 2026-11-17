@@ -22,7 +22,7 @@ updates:
       # Ignore major version updates for stable dependencies
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
-    
+
   # GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"

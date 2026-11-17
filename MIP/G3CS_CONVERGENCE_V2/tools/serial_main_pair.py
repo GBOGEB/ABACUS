@@ -156,7 +156,11 @@ def validate(payload):
             created = instant(job.get("created_at"))
             started = instant(job["started_at"]) if job.get("started_at") else None
             finished = instant(job["completed_at"]) if job.get("completed_at") else None
-            require(status not in {"queued", "pending", "waiting", "requested"} or started is None, "queued job has start clock")
+            require(
+                status not in {"queued", "pending", "waiting", "requested"}
+                or started is None,
+                "queued job has start clock",
+            )
             require(status != "in_progress" or started is not None,
                     "in-progress job missing start clock")
             require(started is None or created <= started, "negative queue clock")

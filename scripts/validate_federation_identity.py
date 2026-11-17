@@ -4,6 +4,7 @@ Compare GitHub repository identifiers case-insensitively, without allowing
 different owner/repo spellings, duplicate members or malformed values.
 This checks configuration only; it never activates a federation member.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -62,8 +63,7 @@ def main() -> int:
     )
     try:
         documents = [
-            yaml.safe_load((root / path).read_text(encoding="utf-8"))
-            for path in paths
+            yaml.safe_load((root / path).read_text(encoding="utf-8")) for path in paths
         ]
         validate(*documents)
     except (ValueError, KeyError, TypeError, OSError, yaml.YAMLError) as exc:

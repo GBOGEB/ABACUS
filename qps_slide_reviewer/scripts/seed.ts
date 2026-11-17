@@ -2,54 +2,43 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// Slide metadata extracted from QPS- 3D _DKO.pptx.pdf (SCK CEN/101648634)
-const SLIDE_META: { page: number; title: string; group: string }[] = [
-  { page: 1, title: 'QPS-LB Offers – Review (title)', group: 'Front matter' },
-  { page: 2, title: 'QPLANT-LB 3D Model (SUPPLIER_A-20260812)', group: 'SUPPLIER_A 3D model' },
-  { page: 3, title: 'QPLANT-LB (Building Integration) – overview', group: 'SUPPLIER_A 3D model' },
-  { page: 4, title: 'QPLANT-LB (Building Integration) – detail', group: 'SUPPLIER_A 3D model' },
-  { page: 5, title: 'Building Integration – QLM-LB wall / multiline interface', group: 'SUPPLIER_A 3D model' },
-  { page: 6, title: 'Building Integration – wall openings', group: 'SUPPLIER_A 3D model' },
-  { page: 7, title: 'Building Integration – CCB height discrepancy', group: 'SUPPLIER_A 3D model' },
-  { page: 8, title: 'Building Integration – structural interference', group: 'SUPPLIER_A 3D model' },
-  { page: 9, title: 'SUPPLIER_A Compliancy to Requirements (1/2)', group: 'Compliance tables' },
-  { page: 10, title: 'SUPPLIER_A Compliancy to Requirements (2/2)', group: 'Compliance tables' },
-  { page: 11, title: 'QPLANT-LB 2D Drawings (SUPPLIER_B-20260812)', group: 'SUPPLIER_B 2D drawings' },
-  { page: 12, title: 'QRB-LB & WCS-LB Rooms', group: 'SUPPLIER_B 2D drawings' },
-  { page: 13, title: 'SUPPLIER_B Compliancy to Requirements (1/2)', group: 'Compliance tables' },
-  { page: 14, title: 'SUPPLIER_B Compliancy to Requirements (2/2)', group: 'Compliance tables' },
-  { page: 15, title: 'Copyright / closure', group: 'Front matter' },
-];
+// Public, identity-neutral placeholders only. The actual slide titles, groups,
+// deck identity and offer content are controlled inputs and must not be checked
+// into this repository. The public README documents 15 slide image slots.
+// This seed provides a working database layout, not reviewed engineering data.
+const SLIDE_COUNT = 15;
+const GROUP_NAME = 'Unclassified placeholders';
 
-async function main() {
-  console.log('Seeding slides...');
-
-  for (const meta of SLIDE_META) {
-    const filename = `slide-${String(meta.page).padStart(2, '0')}.png`;
+async function main(): Promise<void> {
+  console.log('Seeding public slide placeholders (no controlled metadata)...');
+  for (let page = 1; page <= SLIDE_COUNT; page += 1) {
+    const displayNumber = String(page).padStart(2, '0');
+    const imageFilename = `slide-${displayNumber}.png`;
     await prisma.slide.upsert({
-      where: { pageNumber: meta.page },
-      update: { imageFilename: filename, title: meta.title, groupName: meta.group },
+      where: { pageNumber: page },
+      // A rerun may target a populated/shared review database. Only create
+      // missing slots; loaded metadata, custom image paths and votes belong
+      // to the existing records and must remain untouched.
+      update: {},
       create: {
-        pageNumber: meta.page,
-        imageFilename: filename,
-        title: meta.title,
-        groupName: meta.group,
+        pageNumber: page,
+        imageFilename,
+        title: `Slide ${displayNumber}`,
+        groupName: GROUP_NAME,
         starred: false,
         votesUp: 0,
         votesDown: 0,
         votesNeutral: 0,
       },
     });
-    console.log(`  Slide ${meta.page}: ${filename} [${meta.group}]`);
   }
-
-  console.log('Seeding complete.');
+  console.log(`Seed complete: ${SLIDE_COUNT} slots ensured; existing records preserved.`);
 }
 
 main()
-  .catch((e: any) => {
-    console.error('Seed failed:', e);
-    process.exit(1);
+  .catch((error: unknown) => {
+    console.error('Seed failed:', error);
+    process.exitCode = 1;
   })
   .finally(async () => {
     await prisma.$disconnect();

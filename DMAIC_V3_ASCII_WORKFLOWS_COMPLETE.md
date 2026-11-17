@@ -13,7 +13,7 @@
 
                               ITERATION FLOW
                               ═════════════
-                                    
+
                           ┌──────────────────┐
                           │   START Session  │
                           │   Load V2.3 Time │
@@ -574,7 +574,7 @@ env:
   ENABLE_RANKING: 'true'
 
 jobs:
-  
+
   # ══════════════════════════════════════════════════════════════════════
   # JOB 1: Phase 0 - Initialization & Change Detection
   # ══════════════════════════════════════════════════════════════════════
@@ -584,52 +584,52 @@ jobs:
     outputs:
       modified_phases: ${{ steps.changes.outputs.modified_phases }}
       run_full_cycle: ${{ steps.changes.outputs.run_full }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           fetch-depth: 2  # For git diff
-      
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install dependencies
         run: |
           pip install pyyaml
-      
+
       - name: Detect changes
         id: changes
         run: |
           CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
           echo "Changed files:"
           echo "$CHANGED_FILES"
-          
+
           MODIFIED_PHASES=""
           if echo "$CHANGED_FILES" | grep -q "DMAIC_V3/phases/phase"; then
             MODIFIED_PHASES=$(echo "$CHANGED_FILES" | grep "DMAIC_V3/phases/phase" | sed 's/.*phase\([0-9]\).*/\1/' | sort -u | tr '\n' ',')
           fi
-          
+
           echo "modified_phases=$MODIFIED_PHASES" >> $GITHUB_OUTPUT
-          
+
           if [ -z "$MODIFIED_PHASES" ]; then
             echo "run_full=false" >> $GITHUB_OUTPUT
           else
             echo "run_full=true" >> $GITHUB_OUTPUT
           fi
-      
+
       - name: Run Phase 0
         run: |
           python -m DMAIC_V3.dmaic_v3_engine --mode single --phase phase0_init --iteration 1
-      
+
       - name: Upload Phase 0 results
         uses: actions/upload-artifact@v3
         with:
           name: phase0-results
           path: DMAIC_V3_OUTPUT/iteration_1/phase0_init/
-  
+
   # ══════════════════════════════════════════════════════════════════════
   # JOB 2: Phase 1 - Define (with Ranking Bootstrap)
   # ══════════════════════════════════════════════════════════════════════
@@ -638,26 +638,26 @@ jobs:
     runs-on: ubuntu-latest
     needs: phase0_init
     if: needs.phase0_init.outputs.run_full_cycle == 'true' || contains(needs.phase0_init.outputs.modified_phases, '1')
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Download Phase 0 results
         uses: actions/download-artifact@v3
         with:
           name: phase0-results
           path: DMAIC_V3_OUTPUT/iteration_1/phase0_init/
-      
+
       - name: Run Phase 1
         run: |
           python -m DMAIC_V3.dmaic_v3_engine --mode single --phase phase1_define --iteration 1
-      
+
       - name: Verify ranking stubs created
         run: |
           if [ -f "DMAIC_V3_OUTPUT/iteration_1/phase1_define/ranking_stubs.json" ]; then
@@ -666,13 +666,13 @@ jobs:
             echo "✗ Ranking stubs missing"
             exit 1
           fi
-      
+
       - name: Upload Phase 1 results
         uses: actions/upload-artifact@v3
         with:
           name: phase1-results
           path: DMAIC_V3_OUTPUT/iteration_1/phase1_define/
-  
+
   # ══════════════════════════════════════════════════════════════════════
   # JOB 3: Phase 2 - Measure (with Ranking Calculation)
   # ══════════════════════════════════════════════════════════════════════
@@ -680,39 +680,39 @@ jobs:
     name: Phase 2 - Measure + Ranking
     runs-on: ubuntu-latest
     needs: phase1_define
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Download Phase 1 results
         uses: actions/download-artifact@v3
         with:
           name: phase1-results
           path: DMAIC_V3_OUTPUT/iteration_1/phase1_define/
-      
+
       - name: Run Phase 2
         run: |
           python -m DMAIC_V3.dmaic_v3_engine --mode single --phase phase2_measure --iteration 1
-      
+
       - name: Run Ranking Engine
         run: |
           python ranking_engine.py \
             --phase1 DMAIC_V3_OUTPUT/iteration_1/phase1_define/phase1_define.json \
             --phase2 DMAIC_V3_OUTPUT/iteration_1/phase2_measure/phase2_measure.json \
             --output DMAIC_V3_OUTPUT/iteration_1/ranking.json
-      
+
       - name: Run Self-Ranking System
         run: |
           python CRYO_LINAC_HANDOVER_v2.1.0_20251103_020746/recursive_self_ranking_system.py \
             --input DMAIC_V3_OUTPUT/iteration_1/ranking.json \
             --output DMAIC_V3_OUTPUT/iteration_1/self_ranking_results.json
-      
+
       - name: Verify ranking files
         run: |
           if [ -f "DMAIC_V3_OUTPUT/iteration_1/ranking.json" ]; then
@@ -721,14 +721,14 @@ jobs:
             echo "✗ ranking.json missing"
             exit 1
           fi
-          
+
           if [ -f "DMAIC_V3_OUTPUT/iteration_1/self_ranking_results.json" ]; then
             echo "✓ self_ranking_results.json created"
           else
             echo "✗ self_ranking_results.json missing"
             exit 1
           fi
-      
+
       - name: Upload Phase 2 + Ranking results
         uses: actions/upload-artifact@v3
         with:
@@ -737,7 +737,7 @@ jobs:
             DMAIC_V3_OUTPUT/iteration_1/phase2_measure/
             DMAIC_V3_OUTPUT/iteration_1/ranking.json
             DMAIC_V3_OUTPUT/iteration_1/self_ranking_results.json
-  
+
   # ══════════════════════════════════════════════════════════════════════
   # JOB 4: Remaining Phases (3-5) - Run if changed
   # ══════════════════════════════════════════════════════════════════════
@@ -745,43 +745,43 @@ jobs:
     name: Phases 3-5 (Changed Only)
     runs-on: ubuntu-latest
     needs: phase2_measure
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Download Phase 2 results
         uses: actions/download-artifact@v3
         with:
           name: phase2-rankings
           path: DMAIC_V3_OUTPUT/iteration_1/
-      
+
       - name: Run Phase 3 (if changed)
         if: contains(needs.phase0_init.outputs.modified_phases, '3')
         run: |
           python -m DMAIC_V3.dmaic_v3_engine --mode single --phase phase3_analyze --iteration 1
-      
+
       - name: Run Phase 4 (if changed)
         if: contains(needs.phase0_init.outputs.modified_phases, '4')
         run: |
           python -m DMAIC_V3.dmaic_v3_engine --mode single --phase phase4_improve --iteration 1
-      
+
       - name: Run Phase 5 (if changed)
         if: contains(needs.phase0_init.outputs.modified_phases, '5')
         run: |
           python -m DMAIC_V3.dmaic_v3_engine --mode single --phase phase5_control --iteration 1
-      
+
       - name: Upload remaining phase results
         uses: actions/upload-artifact@v3
         with:
           name: phases-3-5-results
           path: DMAIC_V3_OUTPUT/iteration_1/
-  
+
   # ══════════════════════════════════════════════════════════════════════
   # JOB 5: Final Report & Artifact Publication
   # ══════════════════════════════════════════════════════════════════════
@@ -789,27 +789,27 @@ jobs:
     name: Publish Results & Rankings
     runs-on: ubuntu-latest
     needs: [phase2_measure, phases_3_to_5]
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Download all results
         uses: actions/download-artifact@v3
-      
+
       - name: Generate final report
         run: |
           python scripts/generate_final_report.py \
             --input DMAIC_V3_OUTPUT/iteration_1/ \
             --output final_report.md
-      
+
       - name: Update GLOBAL_ARTIFACT_RANKING_SUMMARY.yaml
         run: |
           python scripts/update_global_ranking.py \
             --rankings DMAIC_V3_OUTPUT/iteration_1/ranking.json \
             --self-rankings DMAIC_V3_OUTPUT/iteration_1/self_ranking_results.json \
             --output GLOBAL_ARTIFACT_RANKING_SUMMARY.yaml
-      
+
       - name: Commit rankings (if changed)
         run: |
           git config user.name "DMAIC V3.3 Bot"
@@ -817,7 +817,7 @@ jobs:
           git add GLOBAL_ARTIFACT_RANKING_SUMMARY.yaml ranking.json
           git diff --quiet && git diff --staged --quiet || git commit -m "chore: Update artifact rankings [skip ci]"
           git push
-      
+
       - name: Upload final artifacts
         uses: actions/upload-artifact@v3
         with:

@@ -1,4 +1,5 @@
 """Adversarial regression controls for MIP2 evidence identity and confidential logs."""
+
 import json
 import pathlib
 import re
@@ -17,8 +18,13 @@ GOOD_SHA = "a" * 40
 
 
 def test_command_receipt_does_not_persist_stdout_or_stderr(monkeypatch):
-    monkeypatch.setattr(local.subprocess, "run", lambda *a, **k: SimpleNamespace(
-        returncode=1, stdout="PRIVATE_TEST_SECRET", stderr="PRIVATE_TEST_TOKEN"))
+    monkeypatch.setattr(
+        local.subprocess,
+        "run",
+        lambda *a, **k: SimpleNamespace(
+            returncode=1, stdout="PRIVATE_TEST_SECRET", stderr="PRIVATE_TEST_TOKEN"
+        ),
+    )
     result = local.command("pytest", ["python", "-m", "pytest"])
     assert result["status"] == "FAIL"
     assert "PRIVATE_TEST_SECRET" not in json.dumps(result)
@@ -27,33 +33,54 @@ def test_command_receipt_does_not_persist_stdout_or_stderr(monkeypatch):
 
 
 def test_git_sha_is_source_validated(monkeypatch):
-    monkeypatch.setattr(local.subprocess, "run", lambda *a, **k: SimpleNamespace(
-        returncode=0, stdout=GOOD_SHA + "\n", stderr=""))
+    monkeypatch.setattr(
+        local.subprocess,
+        "run",
+        lambda *a, **k: SimpleNamespace(
+            returncode=0, stdout=GOOD_SHA + "\n", stderr=""
+        ),
+    )
     result = local.command("git-head", ["git", "rev-parse", "HEAD"])
     assert result["status"] == "PASS"
     assert result["head_sha"] == GOOD_SHA
 
 
-@pytest.mark.parametrize("git_output", ["", "synthetic merge", "a" * 39, "z" * 40, "a" * 41])
+@pytest.mark.parametrize(
+    "git_output", ["", "synthetic merge", "a" * 39, "z" * 40, "a" * 41]
+)
 def test_invalid_git_identity_is_not_a_pass(monkeypatch, git_output):
-    monkeypatch.setattr(local.subprocess, "run", lambda *a, **k: SimpleNamespace(
-        returncode=0, stdout=git_output, stderr=""))
+    monkeypatch.setattr(
+        local.subprocess,
+        "run",
+        lambda *a, **k: SimpleNamespace(returncode=0, stdout=git_output, stderr=""),
+    )
     result = local.command("git-head", ["git", "rev-parse", "HEAD"])
     assert result["status"] != "PASS"
     assert "head_sha" not in result
 
 
-@pytest.mark.parametrize("observed,expected,want_success", [
-    (None, None, False), (GOOD_SHA, "b" * 40, False),
-    (GOOD_SHA, GOOD_SHA, True),
-])
-def test_local_flight_gates_identity_and_expected_head(monkeypatch, tmp_path, observed, expected, want_success):
+@pytest.mark.parametrize(
+    "observed,expected,want_success",
+    [
+        (None, None, False),
+        (GOOD_SHA, "b" * 40, False),
+        (GOOD_SHA, GOOD_SHA, True),
+    ],
+)
+def test_local_flight_gates_identity_and_expected_head(
+    monkeypatch, tmp_path, observed, expected, want_success
+):
     def fake_command(label, argv):
         if label == "git-head":
             if observed is None:
-                return {"name": label, "status": "ERROR", "error_type": "FileNotFoundError"}
+                return {
+                    "name": label,
+                    "status": "ERROR",
+                    "error_type": "FileNotFoundError",
+                }
             return {"name": label, "status": "PASS", "head_sha": observed}
         return {"name": label, "status": "PASS", "exit_code": 0}
+
     monkeypatch.setattr(local, "command", fake_command)
     output = tmp_path / "flight.json"
     argv = ["local_testflight.py", "--output", str(output)]
@@ -69,20 +96,26 @@ def test_local_flight_gates_identity_and_expected_head(monkeypatch, tmp_path, ob
 
 def test_junit_rejects_entity_expansion(tmp_path):
     path = tmp_path / "junit.xml"
-    path.write_text('<!DOCTYPE testsuite [<!ENTITY payload "forbidden">]>'
-                    '<testsuite tests="1" failures="0" errors="0" skipped="0">'
-                    '<testcase name="x">&payload;</testcase></testsuite>', encoding="utf-8")
+    path.write_text(
+        '<!DOCTYPE testsuite [<!ENTITY payload "forbidden">]>'
+        '<testsuite tests="1" failures="0" errors="0" skipped="0">'
+        '<testcase name="x">&payload;</testcase></testsuite>',
+        encoding="utf-8",
+    )
     with pytest.raises(DefusedXmlException):
         junit(path)
 
 
-@pytest.mark.parametrize("xml", [
-    "<testsuite tests='1' failures='0' errors='0'/>",
-    "<testsuites/>",
-    "<not-junit tests='1' failures='0' errors='0' skipped='0'/>",
-    "<testsuite tests='-1' failures='0' errors='0' skipped='0'/>",
-    "<testsuite tests='1' failures='1' errors='1' skipped='0'/>",
-])
+@pytest.mark.parametrize(
+    "xml",
+    [
+        "<testsuite tests='1' failures='0' errors='0'/>",
+        "<testsuites/>",
+        "<not-junit tests='1' failures='0' errors='0' skipped='0'/>",
+        "<testsuite tests='-1' failures='0' errors='0' skipped='0'/>",
+        "<testsuite tests='1' failures='1' errors='1' skipped='0'/>",
+    ],
+)
 def test_incomplete_or_inconsistent_junit_fails_closed(tmp_path, xml):
     path = tmp_path / "junit.xml"
     path.write_text(xml, encoding="utf-8")
@@ -92,13 +125,17 @@ def test_incomplete_or_inconsistent_junit_fails_closed(tmp_path, xml):
 
 def test_junit_input_size_limit(tmp_path, monkeypatch):
     path = tmp_path / "junit.xml"
-    path.write_text('<testsuite tests="1" failures="0" errors="0" skipped="0"/>', encoding="utf-8")
+    path.write_text(
+        '<testsuite tests="1" failures="0" errors="0" skipped="0"/>', encoding="utf-8"
+    )
     original = pathlib.Path.stat
+
     def oversized(self, *a, **k):
         v = original(self, *a, **k)
         if self == path:
             return SimpleNamespace(st_size=65 * 1024 * 1024)
         return v
+
     monkeypatch.setattr(pathlib.Path, "stat", oversized)
     with pytest.raises(ValueError, match="TOO_LARGE"):
         junit(path)
@@ -115,8 +152,7 @@ def test_native_checkout_and_credential_controls():
 def _hook_filter(configuration, hook_id):
     """Select exactly one named hook, not the first unrelated 'files:' rule."""
     blocks = re.split(r"(?m)^      - id: ", configuration)[1:]
-    owned = [block for block in blocks
-             if block.partition("\n")[0].strip() == hook_id]
+    owned = [block for block in blocks if block.partition("\n")[0].strip() == hook_id]
     if len(owned) != 1:
         raise ValueError("missing or duplicate pre-commit hook: " + hook_id)
     paths = re.findall(r"(?m)^        files: (\S+)$", owned[0])
@@ -166,8 +202,9 @@ def test_precommit_missing_or_duplicate_filter_fails_closed():
     with pytest.raises(ValueError, match="missing or duplicate hook file"):
         _hook_filter(name, "mip2-python-syntax")
     with pytest.raises(ValueError, match="missing or duplicate hook file"):
-        _hook_filter(name + "        files: ^a$\n        files: ^b$\n",
-                     "mip2-python-syntax")
+        _hook_filter(
+            name + "        files: ^a$\n        files: ^b$\n", "mip2-python-syntax"
+        )
 
 
 def test_precommit_malformed_hook_filter_fails_closed():

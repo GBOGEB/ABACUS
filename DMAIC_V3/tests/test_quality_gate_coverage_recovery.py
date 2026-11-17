@@ -2,13 +2,13 @@ import json
 
 import pytest
 
+from DMAIC_V3.core import state as state_module
 from DMAIC_V3.core.agent_manager import AgentManager
 from DMAIC_V3.core.canonical_index import CanonicalIndexSystem
 from DMAIC_V3.core.integrity import sha256_json
 from DMAIC_V3.core.mcp_execution_contract import MCPRequest, execute_mcp
 from DMAIC_V3.core.metrics import MetricsExporter
 from DMAIC_V3.core.models import Metric, MetricType, PhaseMetrics, PhaseStatus
-from DMAIC_V3.core import state as state_module
 from DMAIC_V3.core.state import PhaseStatus as StatePhaseStatus
 from DMAIC_V3.core.state import StateManager
 

@@ -11,10 +11,12 @@ Generates comprehensive handover documentation and artifacts
 """
 
 import json
-import yaml
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, List
+
+import yaml
+
 
 def generate_handover_summary() -> str:
     """Generate handover summary markdown"""
@@ -194,6 +196,7 @@ bridge.finish_run("success", results.get('statistics', {{}}))
 **Git SHA:** Run `git rev-parse --short HEAD` for current commit
 """
 
+
 def generate_handover_checklist() -> dict:
     """Generate handover checklist"""
     return {
@@ -204,76 +207,129 @@ def generate_handover_checklist() -> dict:
                 {
                     "section": "Code Deliverables",
                     "items": [
-                        {"task": "Enhanced Phase 4 with opportunities", "status": "COMPLETE", "file": "DMAIC_V3/phases/phase4_improve.py"},
-                        {"task": "Handover bridge module", "status": "COMPLETE", "file": "DMAIC_V3/core/handover_bridge.py"},
-                        {"task": "Code health check script", "status": "COMPLETE", "file": "scripts/code_health_check.py"},
-                        {"task": "Handover generator script", "status": "COMPLETE", "file": "scripts/handover_generator.py"},
-                        {"task": "Version manager fixes", "status": "COMPLETE", "file": "version_manager.py"}
-                    ]
+                        {
+                            "task": "Enhanced Phase 4 with opportunities",
+                            "status": "COMPLETE",
+                            "file": "DMAIC_V3/phases/phase4_improve.py",
+                        },
+                        {
+                            "task": "Handover bridge module",
+                            "status": "COMPLETE",
+                            "file": "DMAIC_V3/core/handover_bridge.py",
+                        },
+                        {
+                            "task": "Code health check script",
+                            "status": "COMPLETE",
+                            "file": "scripts/code_health_check.py",
+                        },
+                        {
+                            "task": "Handover generator script",
+                            "status": "COMPLETE",
+                            "file": "scripts/handover_generator.py",
+                        },
+                        {
+                            "task": "Version manager fixes",
+                            "status": "COMPLETE",
+                            "file": "version_manager.py",
+                        },
+                    ],
                 },
                 {
                     "section": "Documentation",
                     "items": [
-                        {"task": "Integration analysis", "status": "COMPLETE", "file": "artifacts/markdown/INTEGRATION_ANALYSIS.md"},
-                        {"task": "Integration summary", "status": "COMPLETE", "file": "artifacts/markdown/INTEGRATION_COMPLETE_SUMMARY.md"},
-                        {"task": "Phase 4 execution report", "status": "COMPLETE", "file": "artifacts/markdown/PHASE4_EXECUTION_REPORT.md"},
-                        {"task": "Handover package", "status": "COMPLETE", "file": "artifacts/markdown/HANDOVER_PACKAGE.md"}
-                    ]
+                        {
+                            "task": "Integration analysis",
+                            "status": "COMPLETE",
+                            "file": "artifacts/markdown/INTEGRATION_ANALYSIS.md",
+                        },
+                        {
+                            "task": "Integration summary",
+                            "status": "COMPLETE",
+                            "file": "artifacts/markdown/INTEGRATION_COMPLETE_SUMMARY.md",
+                        },
+                        {
+                            "task": "Phase 4 execution report",
+                            "status": "COMPLETE",
+                            "file": "artifacts/markdown/PHASE4_EXECUTION_REPORT.md",
+                        },
+                        {
+                            "task": "Handover package",
+                            "status": "COMPLETE",
+                            "file": "artifacts/markdown/HANDOVER_PACKAGE.md",
+                        },
+                    ],
                 },
                 {
                     "section": "Testing & Validation",
                     "items": [
-                        {"task": "Code health checks", "status": "PENDING", "command": "python scripts/code_health_check.py"},
-                        {"task": "Phase 4 execution test", "status": "PENDING", "command": "cd DMAIC_V3 && python dmaic_v3_engine.py --mode single-phase --phase phase4_improve"},
-                        {"task": "Integration tests", "status": "PENDING", "file": "tests/test_phase4_integration.py"}
-                    ]
+                        {
+                            "task": "Code health checks",
+                            "status": "PENDING",
+                            "command": "python scripts/code_health_check.py",
+                        },
+                        {
+                            "task": "Phase 4 execution test",
+                            "status": "PENDING",
+                            "command": "cd DMAIC_V3 && python dmaic_v3_engine.py --mode single-phase --phase phase4_improve",
+                        },
+                        {
+                            "task": "Integration tests",
+                            "status": "PENDING",
+                            "file": "tests/test_phase4_integration.py",
+                        },
+                    ],
                 },
                 {
                     "section": "Deployment",
                     "items": [
-                        {"task": "Version bumped to 3.3.0-enhanced", "status": "COMPLETE"},
+                        {
+                            "task": "Version bumped to 3.3.0-enhanced",
+                            "status": "COMPLETE",
+                        },
                         {"task": "Debug port configuration", "status": "PENDING"},
                         {"task": "Flask dashboard", "status": "PENDING"},
-                        {"task": "Production deployment", "status": "PENDING"}
-                    ]
-                }
-            ]
+                        {"task": "Production deployment", "status": "PENDING"},
+                    ],
+                },
+            ],
         }
     }
 
+
 def main():
-    print("="*80)
+    print("=" * 80)
     print("DMAIC V3.3 - Generating Handover Package")
-    print("="*80)
+    print("=" * 80)
     print()
 
     # Generate handover summary
     print("[1/3] Generating handover summary...")
     summary = generate_handover_summary()
-    handover_file = Path('artifacts/markdown/HANDOVER_PACKAGE.md')
+    handover_file = Path("artifacts/markdown/HANDOVER_PACKAGE.md")
     handover_file.parent.mkdir(parents=True, exist_ok=True)
-    handover_file.write_text(summary, encoding='utf-8')
+    handover_file.write_text(summary, encoding="utf-8")
     print(f"  ✅ Saved to: {handover_file}")
 
     # Generate checklist
     print("[2/3] Generating handover checklist...")
     checklist = generate_handover_checklist()
-    checklist_json = Path('artifacts/json/handover_checklist.json')
+    checklist_json = Path("artifacts/json/handover_checklist.json")
     checklist_json.parent.mkdir(parents=True, exist_ok=True)
-    with open(checklist_json, 'w', encoding='utf-8') as f:
+    with open(checklist_json, "w", encoding="utf-8") as f:
         json.dump(checklist, f, indent=2)
     print(f"  ✅ Saved to: {checklist_json}")
 
-    checklist_yaml = Path('artifacts/yaml/handover_checklist.yaml')
+    checklist_yaml = Path("artifacts/yaml/handover_checklist.yaml")
     checklist_yaml.parent.mkdir(parents=True, exist_ok=True)
-    with open(checklist_yaml, 'w', encoding='utf-8') as f:
+    with open(checklist_yaml, "w", encoding="utf-8") as f:
         yaml.dump(checklist, f, default_flow_style=False, sort_keys=False)
     print(f"  ✅ Saved to: {checklist_yaml}")
 
     # Generate execution script
     print("[3/3] Generating execution script...")
-    exec_script = Path('scripts/execute_phase4_enhanced.sh')
-    exec_script.write_text("""#!/bin/bash
+    exec_script = Path("scripts/execute_phase4_enhanced.sh")
+    exec_script.write_text(
+        """#!/bin/bash
 # DMAIC V3.3 - Execute Enhanced Phase 4
 
 echo "====================================================================="
@@ -319,13 +375,15 @@ echo "  - Phase 4 output: DMAIC_V3/output/iteration_1/phase4_improve/"
 echo "  - Code health: artifacts/json/code_health_report.json"
 echo "  - Execution report: artifacts/markdown/PHASE4_EXECUTION_RESULTS.md"
 echo ""
-""", encoding='utf-8')
+""",
+        encoding="utf-8",
+    )
     print(f"  ✅ Saved to: {exec_script}")
 
     print()
-    print("="*80)
+    print("=" * 80)
     print("✅ HANDOVER PACKAGE GENERATED")
-    print("="*80)
+    print("=" * 80)
     print()
     print("Generated Files:")
     print(f"  1. {handover_file}")
@@ -335,9 +393,12 @@ echo ""
     print()
     print("Next Steps:")
     print("  1. Run: python scripts/code_health_check.py")
-    print("  2. Run: cd DMAIC_V3 && python dmaic_v3_engine.py --mode single-phase --phase phase4_improve")
+    print(
+        "  2. Run: cd DMAIC_V3 && python dmaic_v3_engine.py --mode single-phase --phase phase4_improve"
+    )
     print("  3. Review: artifacts/markdown/HANDOVER_PACKAGE.md")
     print()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

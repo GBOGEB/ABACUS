@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-import os
-import sys
 import json
+import os
 import subprocess
-from pathlib import Path
+import sys
 from datetime import datetime
-from typing import Dict, List, Any
+from pathlib import Path
+from typing import Any, Dict, List
 
 
 class LocalDeploymentRunner:
@@ -95,7 +95,7 @@ class LocalDeploymentRunner:
             if result.returncode == 0:
                 self.log("ABACUS v2.1 executed successfully", "SUCCESS")
             else:
-                self.log(f"ABACUS execution completed with warnings", "WARNING")
+                self.log("ABACUS execution completed with warnings", "WARNING")
         except subprocess.TimeoutExpired:
             self.log("ABACUS execution timeout (expected for long-running processes)", "INFO")
         except Exception as e:

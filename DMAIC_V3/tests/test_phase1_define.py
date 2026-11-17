@@ -1,10 +1,12 @@
-import pytest
-from pathlib import Path
-import tempfile
 import shutil
-from DMAIC_V3.phases.phase1_define import Phase1Define
+import tempfile
+from pathlib import Path
+
+import pytest
+
 from DMAIC_V3.config import DMAICConfig
 from DMAIC_V3.core.state import StateManager
+from DMAIC_V3.phases.phase1_define import Phase1Define
 
 
 @pytest.fixture
@@ -44,24 +46,24 @@ class TestPhase1Define:
     def test_scan_empty_directory(self, phase1, temp_workspace):
         success, result = phase1.execute(iteration=1)
         assert success is True
-        assert result['phase'] == 'DEFINE'
-        assert result['iteration'] == 1
-        assert result['total_files'] >= 0
+        assert result["phase"] == "DEFINE"
+        assert result["iteration"] == 1
+        assert result["total_files"] >= 0
 
     def test_run_method_compatibility(self, phase1):
         success, result = phase1.run(iteration=1)
         assert success is True
-        assert result['phase'] == 'DEFINE'
-        assert result['iteration'] == 1
+        assert result["phase"] == "DEFINE"
+        assert result["iteration"] == 1
 
     def test_execute_delegates_to_run(self, phase1, monkeypatch):
-        expected = (True, {'phase': 'DEFINE', 'iteration': 7})
+        expected = (True, {"phase": "DEFINE", "iteration": 7})
 
         def fake_run(iteration):
             assert iteration == 7
             return expected
 
-        monkeypatch.setattr(phase1, 'run', fake_run)
+        monkeypatch.setattr(phase1, "run", fake_run)
 
         assert phase1.execute(iteration=7) == expected
 
@@ -71,8 +73,8 @@ class TestPhase1Define:
 
         success, result = phase1.execute(iteration=1)
         assert success is True
-        assert result['total_files'] >= 2
-        assert result['categorized']['code'] >= 2
+        assert result["total_files"] >= 2
+        assert result["categorized"]["code"] >= 2
 
     def test_scan_with_documentation(self, phase1, temp_workspace):
         (temp_workspace / "README.md").write_text("# Documentation")
@@ -80,7 +82,7 @@ class TestPhase1Define:
 
         success, result = phase1.execute(iteration=1)
         assert success is True
-        assert result['categorized']['docs'] >= 2
+        assert result["categorized"]["docs"] >= 2
 
     def test_scan_excludes_venv(self, phase1, temp_workspace):
         venv_dir = temp_workspace / "venv"
@@ -89,8 +91,8 @@ class TestPhase1Define:
 
         success, result = phase1.execute(iteration=1)
         assert success is True
-        files = result.get('files', [])
-        assert not any('venv' in str(f) for f in files)
+        files = result.get("files", [])
+        assert not any("venv" in str(f) for f in files)
 
     def test_scan_excludes_pycache(self, phase1, temp_workspace):
         cache_dir = temp_workspace / "__pycache__"
@@ -99,22 +101,22 @@ class TestPhase1Define:
 
         success, result = phase1.execute(iteration=1)
         assert success is True
-        files = result.get('files', [])
-        assert not any('__pycache__' in str(f) for f in files)
+        files = result.get("files", [])
+        assert not any("__pycache__" in str(f) for f in files)
 
     def test_output_structure(self, phase1):
         success, result = phase1.execute(iteration=1)
 
         assert success is True
-        assert 'phase' in result
-        assert 'iteration' in result
-        assert 'timestamp' in result
-        assert 'total_files' in result
-        assert 'categorized' in result
-        assert 'code_files' in result
-        assert 'documentation_files' in result
-        assert 'python_files' in result
-        assert 'markdown_files' in result
+        assert "phase" in result
+        assert "iteration" in result
+        assert "timestamp" in result
+        assert "total_files" in result
+        assert "categorized" in result
+        assert "code_files" in result
+        assert "documentation_files" in result
+        assert "python_files" in result
+        assert "markdown_files" in result
 
     def test_multiple_iterations(self, phase1):
         success1, result1 = phase1.execute(iteration=1)
@@ -122,9 +124,9 @@ class TestPhase1Define:
 
         assert success1 is True
         assert success2 is True
-        assert result1['iteration'] == 1
-        assert result2['iteration'] == 2
-        assert result1['timestamp'] != result2['timestamp']
+        assert result1["iteration"] == 1
+        assert result2["iteration"] == 2
+        assert result1["timestamp"] != result2["timestamp"]
 
     def test_file_categorization(self, phase1, temp_workspace):
         (temp_workspace / "code.py").write_text("# Python")
@@ -134,13 +136,15 @@ class TestPhase1Define:
 
         success, result = phase1.execute(iteration=1)
         assert success is True
-        assert result['total_files'] >= 4
-        assert result['categorized']['code'] >= 1
-        assert result['categorized']['docs'] >= 1
+        assert result["total_files"] >= 4
+        assert result["categorized"]["code"] >= 1
+        assert result["categorized"]["docs"] >= 1
 
     def test_normalize_execute_results_unwraps_legacy_tuple(self, phase1):
-        normalized = phase1._normalize_execute_results((True, {'files': ['a.py'], 'categorized': {'docs': 1, 'code': 1}}))
+        normalized = phase1._normalize_execute_results(
+            (True, {"files": ["a.py"], "categorized": {"docs": 1, "code": 1}})
+        )
         assert isinstance(normalized, dict)
-        assert normalized['files'] == ['a.py']
-        assert normalized['documentation_files'] == 1
-        assert normalized['code_files'] == 1
+        assert normalized["files"] == ["a.py"]
+        assert normalized["documentation_files"] == 1
+        assert normalized["code_files"] == 1

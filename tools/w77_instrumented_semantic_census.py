@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Instrument W72 exact-source semantic census without changing its semantics."""
+
 from __future__ import annotations
 
 import argparse
@@ -119,9 +120,7 @@ def build_instrumented(
             if ref in known:
                 edges.append(("semantic", ref))
 
-        nodes = set(known) | set(refs) | {
-            node for edge in edges for node in edge
-        }
+        nodes = set(known) | set(refs) | {node for edge in edges for node in edge}
         degree = {node: 0 for node in nodes}
         for left, right in edges:
             degree[left] = degree.get(left, 0) + 1
@@ -208,18 +207,10 @@ def build_instrumented(
             "consumer_penetration_rate": w72.finite_rate(
                 (consumer_total - consumer_open) / max(consumer_total, 1)
             ),
-            "graph_drop_rate": w72.finite_rate(
-                graph_open / max(graph_total, 1)
-            ),
-            "lineage_gap_rate": w72.finite_rate(
-                lineage_open / max(lineage_total, 1)
-            ),
-            "total_population": sum(
-                values[0] for values in lane_defs.values()
-            ),
-            "total_open_backlog": sum(
-                values[1] for values in lane_defs.values()
-            ),
+            "graph_drop_rate": w72.finite_rate(graph_open / max(graph_total, 1)),
+            "lineage_gap_rate": w72.finite_rate(lineage_open / max(lineage_total, 1)),
+            "total_population": sum(values[0] for values in lane_defs.values()),
+            "total_open_backlog": sum(values[1] for values in lane_defs.values()),
         }
         return receipts, feature_row
 
@@ -260,33 +251,19 @@ def normalized_features(telemetry: dict) -> dict[str, float]:
     edges = max(work["graph_edges"], 1)
     emitted = max(work["emitted_receipts"], 1)
     return {
-        "parse_cpu_seconds_per_entity": seconds(
-            timing["source_parse"]["cpu_ns"]
-        )
+        "parse_cpu_seconds_per_entity": seconds(timing["source_parse"]["cpu_ns"])
         / entities,
-        "scan_cpu_seconds_per_mib": seconds(
-            timing["consumer_scan"]["cpu_ns"]
-        )
-        / mib,
+        "scan_cpu_seconds_per_mib": seconds(timing["consumer_scan"]["cpu_ns"]) / mib,
         "scan_cpu_seconds_per_candidate_check": seconds(
             timing["consumer_scan"]["cpu_ns"]
         )
         / checks,
-        "graph_cpu_seconds_per_edge": seconds(
-            timing["graph_lineage"]["cpu_ns"]
-        )
+        "graph_cpu_seconds_per_edge": seconds(timing["graph_lineage"]["cpu_ns"])
         / edges,
-        "emit_cpu_seconds_per_receipt": seconds(
-            timing["receipt_emit"]["cpu_ns"]
-        )
+        "emit_cpu_seconds_per_receipt": seconds(timing["receipt_emit"]["cpu_ns"])
         / emitted,
-        "scan_wall_seconds_per_mib": seconds(
-            timing["consumer_scan"]["wall_ns"]
-        )
-        / mib,
-        "graph_wall_seconds_per_edge": seconds(
-            timing["graph_lineage"]["wall_ns"]
-        )
+        "scan_wall_seconds_per_mib": seconds(timing["consumer_scan"]["wall_ns"]) / mib,
+        "graph_wall_seconds_per_edge": seconds(timing["graph_lineage"]["wall_ns"])
         / edges,
     }
 
@@ -308,9 +285,7 @@ def write_outputs(
         json.dumps(feature_row, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-    probe["feature_row_sha256"] = hashlib.sha256(
-        feature_path.read_bytes()
-    ).hexdigest()
+    probe["feature_row_sha256"] = hashlib.sha256(feature_path.read_bytes()).hexdigest()
     (out / "W77_PROBE_RECEIPT.json").write_text(
         json.dumps(probe, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",

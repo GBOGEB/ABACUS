@@ -123,14 +123,14 @@ class LocalCIMonitor:
         print(f"Title: {self.pr.title}")
         print(f"Commit: {status['commit']}")
         print(f"Status: {self._format_status(status['status'])}")
-        print(f"\n📊 Summary:")
+        print("\n📊 Summary:")
         print(f"   Total Checks: {status['total']}")
         print(f"   ✅ Passed: {status['passed']}")
         print(f"   ❌ Failed: {status['failed']}")
         print(f"   ⏳ Pending: {status['pending']}")
 
         if status['checks']:
-            print(f"\n🔧 Check Details:")
+            print("\n🔧 Check Details:")
             for check in status['checks']:
                 icon = self._get_check_icon(check['conclusion'])
                 print(f"   {icon} {check['name']}: {check['conclusion'] or check['status']}")

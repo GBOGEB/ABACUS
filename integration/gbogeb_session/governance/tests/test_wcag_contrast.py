@@ -103,6 +103,7 @@ class TestThemeFile:
 
     def test_results_json_output(self, sample_theme_file):
         import json
+
         results = check_theme_file(sample_theme_file)
         output = results.to_json()
         data = json.loads(output)

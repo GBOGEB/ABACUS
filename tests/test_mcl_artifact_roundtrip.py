@@ -1,4 +1,5 @@
 """Real-byte ZIP / internal-path / replay controls; no acceptance credit."""
+
 import hashlib
 import json
 import tempfile
@@ -25,23 +26,44 @@ class RoundTripTests(unittest.TestCase):
         outputs = []
         for name in ("output.json", "coverage.json"):
             content = (folder / name).read_bytes()
-            outputs.append({"path": "evidence/" + name,
-                            "sha256": hashlib.sha256(content).hexdigest(),
-                            "bytes": len(content)})
-        rec = {"schema": "mcl.receipt.v1", "mission_id": "MCL",
-               "task_id": "test", "root_id": "root1", "source_sha": SHA,
-               "run_id": "42", "timestamp": "2026-10-18T20:00:00Z",
-               "artifacts": outputs}
+            outputs.append(
+                {
+                    "path": "evidence/" + name,
+                    "sha256": hashlib.sha256(content).hexdigest(),
+                    "bytes": len(content),
+                }
+            )
+        rec = {
+            "schema": "mcl.receipt.v1",
+            "mission_id": "MCL",
+            "task_id": "test",
+            "root_id": "root1",
+            "source_sha": SHA,
+            "run_id": "42",
+            "timestamp": "2026-10-18T20:00:00Z",
+            "artifacts": outputs,
+        }
         (folder / "receipt.json").write_text(json.dumps(rec))
-        (folder / "provenance.json").write_text(json.dumps({
-            "executed_sha": SHA, "pull_head_sha": SHA, "event_sha": EVENT,
-            "checkout_kind": "pull_head"}))
+        (folder / "provenance.json").write_text(
+            json.dumps(
+                {
+                    "executed_sha": SHA,
+                    "pull_head_sha": SHA,
+                    "event_sha": EVENT,
+                    "checkout_kind": "pull_head",
+                }
+            )
+        )
         (folder / "census.json").write_text('{"roots":[]}')
 
     def make_zip(self, flattened=False):
         bundle = self.base / "upload-root"
-        stage("evidence/receipt.json", self.root, bundle,
-              ["evidence/provenance.json", "evidence/census.json"])
+        stage(
+            "evidence/receipt.json",
+            self.root,
+            bundle,
+            ["evidence/provenance.json", "evidence/census.json"],
+        )
         path = self.base / "artifact.zip"
         with zipfile.ZipFile(path, "w") as z:
             for file in sorted(bundle.rglob("*")):

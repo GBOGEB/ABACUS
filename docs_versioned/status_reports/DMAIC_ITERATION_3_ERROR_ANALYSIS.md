@@ -174,16 +174,16 @@ def test_phase2_to_phase3_data_handoff():
     # Run Phase 2
     phase2 = Phase2Measure(config)
     success, metrics = phase2.execute(iteration=3)
-    
+
     # Verify Phase 2 output format
     sample_file = list(metrics['file_metrics'].values())[0]
     assert isinstance(sample_file['metrics']['functions'], int)
     assert isinstance(sample_file['metrics']['classes'], int)
-    
+
     # Run Phase 3 with Phase 2 output
     phase3 = Phase3Analyze(config)
     success, results = phase3.execute(iteration=3)
-    
+
     # Verify Phase 3 processed correctly
     assert success
     assert 'high_complexity_files' in results

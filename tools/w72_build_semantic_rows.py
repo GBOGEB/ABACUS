@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Build MC-2 semantic telemetry rows from same-schema W72 FEATURE_ROW files."""
+
 from __future__ import annotations
 
 import argparse
@@ -20,7 +21,11 @@ FEATURES = [
 
 
 def finite(value) -> bool:
-    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(float(value))
+    return (
+        isinstance(value, (int, float))
+        and not isinstance(value, bool)
+        and math.isfinite(float(value))
+    )
 
 
 def main() -> None:
@@ -58,8 +63,14 @@ def main() -> None:
         rows.append(row)
 
     rows.sort(key=lambda item: item["source_sha"])
-    Path(args.out).write_text(json.dumps(rows, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(json.dumps({"rows": len(rows), "distinct_source_shas": len(seen)}, sort_keys=True))
+    Path(args.out).write_text(
+        json.dumps(rows, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    print(
+        json.dumps(
+            {"rows": len(rows), "distinct_source_shas": len(seen)}, sort_keys=True
+        )
+    )
 
 
 if __name__ == "__main__":

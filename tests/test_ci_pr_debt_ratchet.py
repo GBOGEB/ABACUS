@@ -186,7 +186,9 @@ def test_replacing_a_finding_under_the_same_rule_still_fails(repo):
     report = ratchet_mod.ratchet(base, ("bandit",))
     [row] = report["added_debt"]
     assert row["base"] == row["head"] == 1
-    assert any("eval(env[cmd])" in key for key in row["new_findings"])
+    # Keys are token-normalised (#2712), so match through the same normaliser.
+    replaced = ratchet_mod.normalise_source("eval(env[cmd])")
+    assert any(replaced in key for key in row["new_findings"])
     assert report["status"] == "FAIL"
 
 
@@ -302,6 +304,32 @@ def test_changing_the_lint_job_requirements_requires_the_full_scan(repo):
     assert ratchet_mod.changed_config_files(base) == ["requirements-test.txt"]
     commit(repo, {"docs/requirements-test.txt": "x\n"})
     assert ratchet_mod.changed_config_files(base) == ["requirements-test.txt"]
+
+
+def test_export_tree_keeps_export_ignore_paths(repo, tmp_path_factory):
+    # DMAIC_V3/.gitattributes marks tests/ export-ignore; git archive dropped
+    # those files from the base snapshot, so their debt looked new (#2718).
+    rev = commit(
+        repo,
+        {
+            "sub/.gitattributes": "tests/ export-ignore\n",
+            "sub/tests/x.py": CLEAN,
+            "sub/a.py": CLEAN,
+        },
+    )
+    target = tmp_path_factory.mktemp("export")
+    ratchet_mod.export_tree(rev, target)
+    assert (target / "sub" / "tests" / "x.py").read_text(encoding="utf-8") == CLEAN
+    assert (target / "sub" / "a.py").is_file()
+    assert not (target / ".git").exists()
+    # The checkout's own index is untouched.
+    assert git(repo, "status", "--porcelain") == ""
+
+
+def test_export_tree_of_an_unknown_revision_fails_closed(repo, tmp_path_factory):
+    commit(repo, {"pkg/a.py": CLEAN})
+    with pytest.raises(ratchet_mod.ToolError):
+        ratchet_mod.export_tree("no-such-rev", tmp_path_factory.mktemp("export"))
 
 
 @needs_tools
@@ -422,6 +450,17 @@ def test_quality_workflow_ratchets_each_tool_independently():
     assert 'fallback="${!flag_name}"' in workflow
 
 
+def test_security_workflow_includes_governance_python_paths():
+    workflow = (
+        Path(__file__).resolve().parents[1]
+        / ".github"
+        / "workflows"
+        / "ci-cd-tests.yml"
+    ).read_text(encoding="utf-8")
+    assert workflow.count("- '**/*.py'") == 2
+    assert "'!ci/governance/**'" not in workflow
+
+
 @pytest.mark.parametrize(
     "job, step_id",
     [("lint-and-format", "quality_ratchet"), ("security-scan", "bandit_ratchet")],
@@ -450,6 +489,54 @@ def test_workflow_ratchets_against_the_merge_base_tip(job, step_id):
     assert '--base "$base"' in run
     assert '--base "$BASE_SHA"' not in run
     assert '"$BASE_SHA:' not in run
+
+    if step_id == "quality_ratchet":
+        assert step["env"]["FORCED"] == "${{ github.event.forced }}"
+        assert (
+            'if [[ "$FORCED" == "true" || "$BEFORE_SHA" =~ ^0+$ ]]; then'
+            in run
+        )
+        assert 'if [[ -z "$BEFORE_SHA" ]]; then' in run
+        assert (
+            'if ! git cat-file -e "$base^{commit}" 2>/dev/null; then'
+            in run
+        )
+        assert (
+            'git fetch --no-tags --depth=1 origin "$BEFORE_SHA"'
+            in run
+        )
+        assert (
+            'git fetch --no-tags --depth=1 origin "$BEFORE_SHA"; then'
+            not in run
+        )
+
+
+def test_security_push_baseline_fails_closed_for_unavailable_previous_tip():
+    workflow = (
+        Path(__file__).resolve().parents[1]
+        / ".github"
+        / "workflows"
+        / "ci-cd-tests.yml"
+    ).read_text(encoding="utf-8")
+    assert "FORCED_PUSH: ${{ github.event.forced }}" in workflow
+    assert "Could not fetch previous push tip" in workflow
+    assert '[[ "$FORCED_PUSH" != "true" && -n "$BEFORE_SHA" &&' in workflow
+
+
+def test_bandit_full_scan_is_pinned_and_report_errors_fail_closed():
+    workflow = (
+        Path(__file__).resolve().parents[1]
+        / ".github"
+        / "workflows"
+        / "ci-cd-tests.yml"
+    ).read_text(encoding="utf-8")
+    # The Python 3.14 security owner uses a compatible, pinned Bandit.
+    # The separate Python 3.12 DAB T2 compatibility fixture stays at 1.8.6.
+    assert 'python -m pip install "bandit==1.9.4" safety' in workflow
+    assert 'bandit==1.8.6' in workflow
+    assert 'python scripts/ci/bandit_report_guard.py bandit-report.json' in workflow
+    assert 'if [[ "$bandit_status" -gt 1 || "$report_valid" -ne 1 ]]; then' in workflow
+    assert "steps.bandit.outputs.scan_error" in workflow
 
 
 def test_per_tool_config_map_is_not_global_override(repo):
@@ -579,3 +666,48 @@ def test_root_points_a_copied_ratchet_at_the_checkout(repo, monkeypatch):
         == 1
     )
     assert ratchet_mod.ROOT == repo.resolve()
+
+
+def test_normalise_source_ignores_wrapping_and_trailing_comma():
+    one = "subprocess.run(cmd, check=True)"
+    three = "subprocess.run(\n    cmd,\n    check=True,\n)"
+    assert ratchet_mod.normalise_source(one) == ratchet_mod.normalise_source(three)
+    assert ratchet_mod.normalise_source(one) != ratchet_mod.normalise_source(
+        "subprocess.run(other, check=True)"
+    )
+
+
+WRAP_HEAD = "import subprocess  # nosec B404\n\n\ndef run(cmd):\n"
+ONE_LINE = "    return subprocess.run(cmd, check=True)\n"
+THREE_LINES = "    return subprocess.run(\n        cmd,\n        check=True,\n    )\n"
+
+
+@needs_tools
+def test_rewrapped_bandit_call_counts_equal(repo):
+    commit(
+        repo, {"pkg/a.py": WRAP_HEAD + ONE_LINE, "pkg/b.py": WRAP_HEAD + THREE_LINES}
+    )
+    one = ratchet_mod.bandit_debt(repo, "pkg/a.py")
+    assert one and one == ratchet_mod.bandit_debt(repo, "pkg/b.py")
+    base = commit(repo, {"pkg/c.py": WRAP_HEAD + ONE_LINE})
+    commit(repo, {"pkg/c.py": WRAP_HEAD + THREE_LINES})
+    assert ratchet_mod.ratchet(base, ("bandit",))["added_debt"] == []
+
+
+@needs_tools
+def test_new_b603_after_rewrap_is_still_flagged(repo):
+    base = commit(repo, {"pkg/a.py": WRAP_HEAD + ONE_LINE})
+    extra = "    subprocess.run(cmd + ['x'], check=True)\n"
+    commit(repo, {"pkg/a.py": WRAP_HEAD + extra + THREE_LINES})
+    report = ratchet_mod.ratchet(base, ("bandit",))
+    [row] = report["added_debt"]
+    assert any(key.startswith("B603:") for key in row["new_findings"])
+
+
+def test_normalise_source_keeps_string_and_singleton_tuple_contents():
+    norm = ratchet_mod.normalise_source
+    assert norm('eval("a b")') != norm('eval("ab")')
+    assert norm('eval(("x",))') != norm('eval(("x"))')
+    assert norm('eval(("x",))') == norm('eval(\n    ("x",),\n)')
+    assert norm("f(a, b,)") == norm("f(a, b)")
+    assert norm("x[a,]") != norm("x[a]")

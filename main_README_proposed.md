@@ -82,7 +82,7 @@ DOW (Governance) ──→ 12-Cluster Orchestrator ──→ DMAIC Phases (0-9)
 ## 📋 Version Lineage
 
 All versions are **active and valuable** — none should be deleted:
-- **v0.31** → Canonical foundation (indexes, DOW config) 
+- **v0.31** → Canonical foundation (indexes, DOW config)
 - **v0.32** → Production pipeline (full DMAIC 0-9)
 - **UNIFIED** → Merged knowledge (6 agents, 4 orchestrators, 19 knowledge packs)
 - **V2.3** → Active development (6/6 agents upgraded)

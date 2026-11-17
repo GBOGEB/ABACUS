@@ -1,12 +1,22 @@
 """Negative/reverse controls for source-bound W27 native TestPilot testflight."""
+
 from __future__ import annotations
 
-from pathlib import Path
+import json
 import re
+from pathlib import Path
 
 import yaml
 
-WORKFLOW = Path(__file__).resolve().parents[1] / ".github/workflows/w26-testpilot-matched-coverage.yml"
+WORKFLOW = (
+    Path(__file__).resolve().parents[1]
+    / ".github/workflows/w26-testpilot-matched-coverage.yml"
+)
+# The workflow pins numpy==2.2.6, so ssot/python_versions.yaml caps it to the
+# numpy-2.2-pin lane; cell versions are read from that lane, not literals.
+LANE = json.loads(
+    (Path(__file__).resolve().parents[1] / "ssot/python_versions.lanes.json").read_text(encoding="utf-8")
+)["lanes"]["numpy-2.2-pin"]
 
 
 def _job():
@@ -24,18 +34,23 @@ def test_positive_four_real_os_python_matrix_cells():
     cells = _job()["strategy"]["matrix"]["include"]
     assert len(cells) == 4
     assert {(c["os"], c["python"]) for c in cells} == {
-        ("ubuntu-latest", "3.10"),
-        ("ubuntu-latest", "3.11"),
-        ("ubuntu-latest", "3.12"),
-        ("windows-latest", "3.11"),
+        ("ubuntu-latest", LANE["oldest"]),
+        ("ubuntu-latest", LANE["midpoint"]),
+        ("ubuntu-latest", LANE["newest"]),
+        ("windows-latest", LANE["midpoint"]),
     }
 
 
 def test_force_trip_python_matrix_is_bound_to_setup_action():
     setup = _step("Set up matrix Python interpreter")
-    assert setup["uses"] == "actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0"
+    assert (
+        setup["uses"] == "actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0"
+    )
     assert setup["with"]["python-version"] == "${{ matrix.python }}"
-    assert "sys.version_info[:2] == expected" in _step("Verify selected Python minor version")["run"]
+    assert (
+        "sys.version_info[:2] == expected"
+        in _step("Verify selected Python minor version")["run"]
+    )
 
 
 def test_force_trip_pytest_conftest_numpy_dependency_is_pinned():
@@ -56,7 +71,7 @@ def test_force_trip_exact_checkout_and_revision_guard_retained():
     assert checkout["with"]["persist-credentials"] is False
     verify = _step("Verify exact head")
     assert verify["env"]["EXPECTED_SHA"] == expected
-    assert 'git rev-parse HEAD' in verify["run"]
+    assert "git rev-parse HEAD" in verify["run"]
     assert '"$EXPECTED_SHA"' in verify["run"]
 
 

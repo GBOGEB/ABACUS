@@ -58,7 +58,9 @@ class BranchRecord:
     delete_command: str
 
 
-def run(cmd: Sequence[str], cwd: Path, check: bool = True) -> subprocess.CompletedProcess[str]:
+def run(
+    cmd: Sequence[str], cwd: Path, check: bool = True
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         cmd,
         cwd=cwd,
@@ -81,7 +83,9 @@ def has_command(name: str) -> bool:
 def normalize_origin_repo(remote_url: str) -> str | None:
     if not remote_url:
         return None
-    match = re.search(r"github\.com[:/](?P<owner>[^/]+)/(?P<repo>[^/.]+)(?:\.git)?$", remote_url)
+    match = re.search(
+        r"github\.com[:/](?P<owner>[^/]+)/(?P<repo>[^/.]+)(?:\.git)?$", remote_url
+    )
     if not match:
         return None
     return f"{match.group('owner')}/{match.group('repo')}"
@@ -92,7 +96,9 @@ def default_base(repo: Path) -> str:
     if symbolic.startswith("origin/"):
         return symbolic.removeprefix("origin/")
     for candidate in ("main", "master"):
-        if optional_git(repo, "rev-parse", "--verify", f"refs/remotes/origin/{candidate}"):
+        if optional_git(
+            repo, "rev-parse", "--verify", f"refs/remotes/origin/{candidate}"
+        ):
             return candidate
     return "main"
 
@@ -178,20 +184,34 @@ def classify(
     if pr and pr.state.upper() == "OPEN":
         return "KEEP", f"open PR #{pr.number}"
 
-    merged = run(["git", "merge-base", "--is-ancestor", ref, base_ref], cwd=repo, check=False).returncode == 0
+    merged = (
+        run(
+            ["git", "merge-base", "--is-ancestor", ref, base_ref], cwd=repo, check=False
+        ).returncode
+        == 0
+    )
     if merged:
         return "DELETE", f"tip is already reachable from {base_ref}"
     if pr and pr.state.upper() == "MERGED":
         return "DELETE", f"PR #{pr.number} is merged"
     if pr and pr.state.upper() == "CLOSED":
-        return "CHERRY-PICK THEN DELETE", f"closed unmerged PR #{pr.number} has unique commits"
+        return (
+            "CHERRY-PICK THEN DELETE",
+            f"closed unmerged PR #{pr.number} has unique commits",
+        )
     if pr is None:
         if force_stale and age_days is not None and age_days >= stale_days:
             return "DELETE", f"stale ({age_days} days) and --force-stale was supplied"
         if age_days is not None and age_days >= stale_days:
-            return "CHERRY-PICK THEN DELETE", f"stale ({age_days} days) but no PR metadata was found"
+            return (
+                "CHERRY-PICK THEN DELETE",
+                f"stale ({age_days} days) but no PR metadata was found",
+            )
         return "KEEP", "no PR metadata was found; manual review required"
-    return "MERGE", f"PR #{pr.number} is {pr.state.lower()} and branch has unique commits"
+    return (
+        "MERGE",
+        f"PR #{pr.number} is {pr.state.lower()} and branch has unique commits",
+    )
 
 
 def build_delete_command(branch: str) -> str:
@@ -200,7 +220,12 @@ def build_delete_command(branch: str) -> str:
 
 
 def remote_branches(repo: Path) -> list[tuple[str, str]]:
-    refs = optional_git(repo, "for-each-ref", "--format=%(refname:short) %(objectname)", "refs/remotes/origin")
+    refs = optional_git(
+        repo,
+        "for-each-ref",
+        "--format=%(refname:short) %(objectname)",
+        "refs/remotes/origin",
+    )
     branches: list[tuple[str, str]] = []
     for line in refs.splitlines():
         if not line.strip():
@@ -212,7 +237,9 @@ def remote_branches(repo: Path) -> list[tuple[str, str]]:
     return branches
 
 
-def build_records(repo: Path, args: argparse.Namespace) -> tuple[list[BranchRecord], list[str]]:
+def build_records(
+    repo: Path, args: argparse.Namespace
+) -> tuple[list[BranchRecord], list[str]]:
     warnings: list[str] = []
     remote_url = optional_git(repo, "remote", "get-url", "origin")
     repo_slug = normalize_origin_repo(remote_url)
@@ -221,22 +248,30 @@ def build_records(repo: Path, args: argparse.Namespace) -> tuple[list[BranchReco
             "No origin remote is configured; remote branch export and PR mapping cannot be performed in this checkout."
         )
     elif not repo_slug:
-        warnings.append(f"Origin remote is not a GitHub URL understood by this tool: {remote_url}")
+        warnings.append(
+            f"Origin remote is not a GitHub URL understood by this tool: {remote_url}"
+        )
 
     if remote_url and not args.no_fetch:
         fetched = run(["git", "fetch", "--prune", "origin"], cwd=repo, check=False)
         if fetched.returncode != 0:
-            warnings.append(f"git fetch --prune origin failed: {fetched.stderr.strip() or fetched.stdout.strip()}")
+            warnings.append(
+                f"git fetch --prune origin failed: {fetched.stderr.strip() or fetched.stdout.strip()}"
+            )
 
     base = args.base or default_base(repo)
     base_ref = f"refs/remotes/origin/{base}"
     base_available = bool(optional_git(repo, "rev-parse", "--verify", base_ref))
     if not base_available:
-        warnings.append(f"Base ref {base_ref} is unavailable; ahead/behind and merge reachability may be incomplete.")
+        warnings.append(
+            f"Base ref {base_ref} is unavailable; ahead/behind and merge reachability may be incomplete."
+        )
 
     prs = fetch_prs(repo, repo_slug)
     if repo_slug and not prs:
-        warnings.append("PR metadata was not available from gh; classifications are intentionally conservative.")
+        warnings.append(
+            "PR metadata was not available from gh; classifications are intentionally conservative."
+        )
 
     now = datetime.now(timezone.utc)
     records: list[BranchRecord] = []
@@ -258,7 +293,9 @@ def build_records(repo: Path, args: argparse.Namespace) -> tuple[list[BranchReco
             age_days,
             args.force_stale,
         )
-        delete_command = build_delete_command(branch) if classification == "DELETE" else ""
+        delete_command = (
+            build_delete_command(branch) if classification == "DELETE" else ""
+        )
         records.append(
             BranchRecord(
                 branch,
@@ -314,11 +351,18 @@ def write_csv(records: Iterable[BranchRecord], path: Path) -> None:
 
 
 def write_markdown(
-    records: list[BranchRecord], warnings: list[str], path: Path, repo: Path, args: argparse.Namespace
+    records: list[BranchRecord],
+    warnings: list[str],
+    path: Path,
+    repo: Path,
+    args: argparse.Namespace,
 ) -> None:
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     classifications = ("KEEP", "MERGE", "CHERRY-PICK THEN DELETE", "DELETE")
-    counts = {name: sum(1 for record in records if record.classification == name) for name in classifications}
+    counts = {
+        name: sum(1 for record in records if record.classification == name)
+        for name in classifications
+    }
     lines = [
         "# Branch Retirement Report",
         "",
@@ -349,7 +393,11 @@ def write_markdown(
         ]
     )
     for record in sorted(records, key=lambda item: (item.classification, item.branch)):
-        pr_text = "" if record.pr is None else f"[#{record.pr.number}]({record.pr.url}) {record.pr.state}"
+        pr_text = (
+            ""
+            if record.pr is None
+            else f"[#{record.pr.number}]({record.pr.url}) {record.pr.state}"
+        )
         lines.append(
             f"| `{record.branch}` | {record.last_commit_iso} | "
             f"{record.age_days if record.age_days is not None else ''} | "
@@ -358,7 +406,9 @@ def write_markdown(
             f"{pr_text} | {record.classification} | {record.rationale} |"
         )
     if not records:
-        lines.append("| _(none)_ |  |  |  |  |  |  | No remote branches were available in this checkout. |")
+        lines.append(
+            "| _(none)_ |  |  |  |  |  |  | No remote branches were available in this checkout. |"
+        )
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -375,7 +425,12 @@ def write_deletion_script(records: Iterable[BranchRecord], path: Path) -> None:
 
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--repo", type=Path, default=Path.cwd(), help="Git repository path. Default: current directory.")
+    parser.add_argument(
+        "--repo",
+        type=Path,
+        default=Path.cwd(),
+        help="Git repository path. Default: current directory.",
+    )
     parser.add_argument(
         "--output-dir",
         type=Path,
@@ -386,7 +441,12 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         "--base",
         help="Base branch name. Default: origin/HEAD, then main/master. The selected base is always KEEP.",
     )
-    parser.add_argument("--stale-days", type=int, default=60, help="Age threshold for stale branch review. Default: 60.")
+    parser.add_argument(
+        "--stale-days",
+        type=int,
+        default=60,
+        help="Age threshold for stale branch review. Default: 60.",
+    )
     parser.add_argument(
         "--protect-pr",
         type=int,
@@ -399,7 +459,11 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         action="store_true",
         help="Classify stale branches without PR metadata as DELETE instead of CHERRY-PICK THEN DELETE.",
     )
-    parser.add_argument("--no-fetch", action="store_true", help="Skip git fetch --prune origin before inventory.")
+    parser.add_argument(
+        "--no-fetch",
+        action="store_true",
+        help="Skip git fetch --prune origin before inventory.",
+    )
     return parser.parse_args(argv)
 
 
@@ -411,9 +475,15 @@ def main(argv: Sequence[str]) -> int:
         return 2
 
     records, warnings = build_records(repo, args)
-    output_dir = (repo / args.output_dir).resolve() if not args.output_dir.is_absolute() else args.output_dir
+    output_dir = (
+        (repo / args.output_dir).resolve()
+        if not args.output_dir.is_absolute()
+        else args.output_dir
+    )
     output_dir.mkdir(parents=True, exist_ok=True)
-    write_markdown(records, warnings, output_dir / "branch-retirement-report.md", repo, args)
+    write_markdown(
+        records, warnings, output_dir / "branch-retirement-report.md", repo, args
+    )
     write_csv(records, output_dir / "branch-retirement-inventory.csv")
     write_deletion_script(records, output_dir / "branch-delete-commands.sh")
     print(f"Wrote {output_dir / 'branch-retirement-report.md'}")

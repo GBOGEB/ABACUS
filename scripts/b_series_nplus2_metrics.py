@@ -3,6 +3,7 @@
 Never turns a constant detection count into a Six Sigma, coverage, or
 engineering-root closure claim. It consumes the canonical B0 metric provider.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -52,8 +53,7 @@ def extend(observed, prior, fingerprint):
     rows = core.validate(observed)
     old_rows = core.validate(prior)
     if (
-        observed.get("extension")
-        != "N_PLUS_2_FINGERPRINT_STABILITY_SCOPE_DRIFT"
+        observed.get("extension") != "N_PLUS_2_FINGERPRINT_STABILITY_SCOPE_DRIFT"
         or observed.get("versioned_from")
         != "docs/ci/B_SERIES_NATIVE_NPLUS1_20261017.json"
         or observed.get("fingerprint_ledger_path")
@@ -67,9 +67,7 @@ def extend(observed, prior, fingerprint):
     for i, original in enumerate(old_rows):
         for field, value in original.items():
             if rows[i].get(field) != value:
-                raise core.EvidenceError(
-                    f"frozen prior pulse {i} changed: {field}"
-                )
+                raise core.EvidenceError(f"frozen prior pulse {i} changed: {field}")
     if not isinstance(fingerprint, dict) or fingerprint.get("schema") != LEDGER:
         raise core.EvidenceError("unqualified fingerprint ledger")
     if fingerprint.get("authority_transfer") is not False:
@@ -103,8 +101,7 @@ def extend(observed, prior, fingerprint):
             or not core.SHA.fullmatch(workflow)
             or type(ceiling) is not int
             or ceiling <= 0
-            or row.get("b1_source_config_identity")
-            != f"{scanner}:{workflow}:{ceiling}"
+            or row.get("b1_source_config_identity") != f"{scanner}:{workflow}:{ceiling}"
         ):
             raise core.EvidenceError("B1 source-config identity cannot bind")
         for a, b in (
@@ -123,8 +120,7 @@ def extend(observed, prior, fingerprint):
         if (
             type(row["b1_allowed_count"]) is not int
             or type(row["b1_finding_count"]) is not int
-            or row["b1_allowed_count"] + row["b1_unguarded"]
-            != row["b1_finding_count"]
+            or row["b1_allowed_count"] + row["b1_unguarded"] != row["b1_finding_count"]
         ):
             raise core.EvidenceError("B1 findings do not reconcile")
         intersect = row["b1_baseline_fingerprint_intersection"]
@@ -132,10 +128,7 @@ def extend(observed, prior, fingerprint):
         missing = row["b1_missing_fingerprints"]
         if any(type(x) is not int or x < 0 for x in (intersect, new, missing)):
             raise core.EvidenceError("invalid fingerprint intersection")
-        if (
-            intersect + missing != len(keys)
-            or intersect + new != row["b1_unguarded"]
-        ):
+        if intersect + missing != len(keys) or intersect + new != row["b1_unguarded"]:
             raise core.EvidenceError("B1 fingerprint population does not join")
         repeats.append(round(intersect / (len(keys) + new), 6))
         scan_files.append(scanned)
@@ -161,10 +154,7 @@ def extend(observed, prior, fingerprint):
     if any(not math.isfinite(x) or x <= 0 for x in intervals):
         raise core.EvidenceError("nonmonotonic B1 clocks")
     raw = [row["b1_unguarded"] for row in rows]
-    velocities = [
-        (raw[i] - raw[i - 1]) / intervals[i - 1]
-        for i in range(1, len(rows))
-    ]
+    velocities = [(raw[i] - raw[i - 1]) / intervals[i - 1] for i in range(1, len(rows))]
     scope_identical = len(set(scan_files)) == 1
     candidate["schema"] = SCHEMA
     candidate["legacy_engine_metrics"] = candidate.pop("three_pulse_metrics")
@@ -173,9 +163,7 @@ def extend(observed, prior, fingerprint):
         "duration_median_seconds": four["four_pulse_metrics"][
             "duration_median_seconds"
         ],
-        "duration_mad_seconds": four["four_pulse_metrics"][
-            "duration_mad_seconds"
-        ],
+        "duration_mad_seconds": four["four_pulse_metrics"]["duration_mad_seconds"],
     }
     candidate["five_pulse_metrics"] = {
         "native_run_pass_fraction": [
@@ -194,9 +182,7 @@ def extend(observed, prior, fingerprint):
         "b1_findings_per_scanned_file": densities,
         "b1_findings_per_scanned_file_unit": "findings/file, NOT coverage",
         "b1_finding_counts": raw,
-        "b1_raw_velocity_findings_per_hour": [
-            round(x, 6) for x in velocities
-        ],
+        "b1_raw_velocity_findings_per_hour": [round(x, 6) for x in velocities],
         "b1_scope_status": (
             "IDENTICAL_SCANNED_FILE_COUNTS_ONLY"
             if scope_identical
@@ -260,11 +246,15 @@ def main(argv=None):
         json.dumps(result, sort_keys=True, indent=2) + "\n",
         encoding="utf-8",
     )
-    print(json.dumps({
-        "status": result["five_pulse_metrics"]["b1_interpretation"],
-        "pulses": 5,
-        "admission": "HOLD",
-    }))
+    print(
+        json.dumps(
+            {
+                "status": result["five_pulse_metrics"]["b1_interpretation"],
+                "pulses": 5,
+                "admission": "HOLD",
+            }
+        )
+    )
     return 0
 
 

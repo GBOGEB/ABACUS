@@ -1,4 +1,5 @@
 """Native wave-pulse telemetry is read-only and fails closed."""
+
 from __future__ import annotations
 
 import copy
@@ -16,20 +17,26 @@ SHA = "a" * 40
 
 def fixture(run_id=100, durations=((0, 10), (5, 15))):
     run = {
-        "id": run_id, "head_sha": SHA, "status": "completed",
-        "conclusion": "success", "run_attempt": 1,
+        "id": run_id,
+        "head_sha": SHA,
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
         "repository": {"full_name": "GBOGEB/ABACUS"},
     }
     jobs = []
     for index, (start, end) in enumerate(durations, 1):
-        jobs.append({
-            "id": run_id * 100 + index,
-            "run_id": run_id,
-            "name": f"DAB proposal worker {index:03}",
-            "status": "completed", "conclusion": "success",
-            "started_at": f"2026-10-15T08:00:{start:02d}Z",
-            "completed_at": f"2026-10-15T08:00:{end:02d}Z",
-        })
+        jobs.append(
+            {
+                "id": run_id * 100 + index,
+                "run_id": run_id,
+                "name": f"DAB proposal worker {index:03}",
+                "status": "completed",
+                "conclusion": "success",
+                "started_at": f"2026-10-15T08:00:{start:02d}Z",
+                "completed_at": f"2026-10-15T08:00:{end:02d}Z",
+            }
+        )
     return run, {"total_count": len(jobs), "jobs": jobs}
 
 
@@ -117,10 +124,8 @@ class NativeFanoutTests(unittest.TestCase):
         output = fanout.render_html(report)
         self.assertIn("&lt;script&gt;", output)
         self.assertNotIn("<script>", output)
-        self.assertIn("offline", fanout.render_markdown(report).lower()
-                      + " offline")
+        self.assertIn("offline", fanout.render_markdown(report).lower() + " offline")
         self.assertIn("UNKNOWN", fanout.render_markdown(report))
-
 
     def test_completed_runs_require_real_attempt_and_conclusion(self):
         for value in (None, True, "1", 0, -1, 1.5):
@@ -277,17 +282,24 @@ class NativeFanoutTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             folder = Path(directory)
             for name, item in (
-                ("a-run.json", a), ("a-jobs.json", aj),
-                ("b-run.json", b), ("b-jobs.json", bj),
+                ("a-run.json", a),
+                ("a-jobs.json", aj),
+                ("b-run.json", b),
+                ("b-jobs.json", bj),
             ):
                 (folder / name).write_text(json.dumps(item))
             args = [
                 "mip_native_fanout.py",
-                "--previous-run", str(folder / "a-run.json"),
-                "--previous-jobs", str(folder / "a-jobs.json"),
-                "--current-run", str(folder / "b-run.json"),
-                "--current-jobs", str(folder / "b-jobs.json"),
-                "--output-dir", str(folder / "out"),
+                "--previous-run",
+                str(folder / "a-run.json"),
+                "--previous-jobs",
+                str(folder / "a-jobs.json"),
+                "--current-run",
+                str(folder / "b-run.json"),
+                "--current-jobs",
+                str(folder / "b-jobs.json"),
+                "--output-dir",
+                str(folder / "out"),
             ]
             with patch.object(sys, "argv", args):
                 fanout.main()
@@ -295,15 +307,15 @@ class NativeFanoutTests(unittest.TestCase):
                 self.assertTrue(
                     (folder / "out" / f"mip_native_fanout.{suffix}").is_file()
                 )
-            report = json.loads(
-                (folder / "out" / "mip_native_fanout.json").read_text()
-            )
+            report = json.loads((folder / "out" / "mip_native_fanout.json").read_text())
             self.assertEqual(report["delta"]["idle_gap_seconds"], 10)
             self.assertEqual(len(report["api_input_sha256"]), 4)
-            self.assertTrue(all(len(digest) == 64 for digest in
-                                report["api_input_sha256"].values()))
-            self.assertEqual(report["api_input_integrity"],
-                             "HASHED_LOCAL_INPUT_NOT_SIGNED_AUTHORITY")
+            self.assertTrue(
+                all(len(digest) == 64 for digest in report["api_input_sha256"].values())
+            )
+            self.assertEqual(
+                report["api_input_integrity"], "HASHED_LOCAL_INPUT_NOT_SIGNED_AUTHORITY"
+            )
 
 
 if __name__ == "__main__":

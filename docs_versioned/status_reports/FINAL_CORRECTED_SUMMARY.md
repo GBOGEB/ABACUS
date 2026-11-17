@@ -84,7 +84,7 @@ V2.1 → V2.2 → V2.3 (PRODUCTION) ✅
   ├─ dmaic_v23_enhanced_engine.py (ALL 7 PHASES)
   ├─ recursive_dmaic_engine_v2.py (PHASES 1-5)
   └─ Standalone runners (PHASES 2-5)
-  
+
 V3.0 → V3.1 (DEVELOPMENT) ⏳
   ├─ DMAIC_V3/ (MODULAR REFACTOR)
   └─ Only Phase 0+1 implemented

@@ -15,6 +15,7 @@ repos share one implementation instead of three divergent ones.
 Pure read-only: it inspects files on disk, never writes governed SSOT and never
 performs network I/O.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -25,8 +26,18 @@ from .schema import load_and_validate_metrics
 
 # Managed-step trace vocabulary shared with CODEX src/bridge_adapter.py.
 GREEK_TRACE_SEQUENCE: tuple[str, ...] = (
-    "alpha", "beta", "gamma", "delta", "epsilon", "zeta",
-    "eta", "theta", "iota", "kappa", "lambda", "mu",
+    "alpha",
+    "beta",
+    "gamma",
+    "delta",
+    "epsilon",
+    "zeta",
+    "eta",
+    "theta",
+    "iota",
+    "kappa",
+    "lambda",
+    "mu",
 )
 
 
@@ -34,10 +45,10 @@ GREEK_TRACE_SEQUENCE: tuple[str, ...] = (
 class RepoDescriptor:
     """Static description of a federation member repo."""
 
-    repo: str                    # e.g. "GBOGEB/CODEX"
-    plane: str                   # governance | runtime | auxiliary
-    role: str                    # short human description
-    metrics_relpaths: tuple[str, ...]   # candidate metrics JSON locations
+    repo: str  # e.g. "GBOGEB/CODEX"
+    plane: str  # governance | runtime | auxiliary
+    role: str  # short human description
+    metrics_relpaths: tuple[str, ...]  # candidate metrics JSON locations
     manifest_relpaths: tuple[str, ...]  # candidate federation manifest/spec locations
     marker_relpaths: tuple[str, ...] = ()  # files that identify this repo on disk
 
@@ -50,8 +61,11 @@ KNOWN_REPOS: tuple[RepoDescriptor, ...] = (
         plane="governance",
         role="Governance plane + KEB semantic-provenance runtime",
         metrics_relpaths=("docs/api/metrics.json",),
-        manifest_relpaths=(".mesh/MESH_DOCK.yaml", "federation/manifest.yaml",
-                           "src/bridge_adapter.py"),
+        manifest_relpaths=(
+            ".mesh/MESH_DOCK.yaml",
+            "federation/manifest.yaml",
+            "src/bridge_adapter.py",
+        ),
         marker_relpaths=("src/bridge_adapter.py", "KEB/governance/GLOSSARY.yml"),
     ),
     RepoDescriptor(
@@ -59,8 +73,10 @@ KNOWN_REPOS: tuple[RepoDescriptor, ...] = (
         plane="runtime",
         role="DOW analytical runtime (12-Cluster DMAIC)",
         metrics_relpaths=("docs/api/dmaic_metrics.json", "docs/api/metrics.json"),
-        manifest_relpaths=("federation/manifest.yaml",
-                           "runtime/federation/codex-abacus-federation.yaml"),
+        manifest_relpaths=(
+            "federation/manifest.yaml",
+            "runtime/federation/codex-abacus-federation.yaml",
+        ),
         marker_relpaths=("DMAIC_V3", "12CLUSTER_ARCHITECTURE_BOOK.md"),
     ),
     RepoDescriptor(
@@ -68,8 +84,10 @@ KNOWN_REPOS: tuple[RepoDescriptor, ...] = (
         plane="auxiliary",
         role="QPS engineering SSOT (OCD/ADR authority)",
         metrics_relpaths=("docs/api/metrics.json", "docs/api/dmaic_metrics.json"),
-        manifest_relpaths=("federation/manifest.yaml",
-                           "runtime/federation/cryoplant-federation.yaml"),
+        manifest_relpaths=(
+            "federation/manifest.yaml",
+            "runtime/federation/cryoplant-federation.yaml",
+        ),
         marker_relpaths=("src/federation.py", "ocd-adr"),
     ),
 )
@@ -94,8 +112,9 @@ def detect_repo(repo_root: str | Path) -> RepoDescriptor | None:
     return best[1] if best else None
 
 
-def federation_status(repo_root: str | Path = ".",
-                      descriptor: RepoDescriptor | None = None) -> dict[str, Any]:
+def federation_status(
+    repo_root: str | Path = ".", descriptor: RepoDescriptor | None = None
+) -> dict[str, Any]:
     """Return a uniform federation status dict for the repo at ``repo_root``.
 
     Keys: status (ok|degraded|error|unknown), repo, plane, role,
@@ -125,11 +144,18 @@ def federation_status(repo_root: str | Path = ".",
         if metrics["valid"]:
             details.append(f"metrics OK: {metrics_path.relative_to(root)}")
         else:
-            details.append(f"metrics INVALID: {metrics_path.relative_to(root)} "
-                           f"({len(metrics['issues'])} issue(s))")
+            details.append(
+                f"metrics INVALID: {metrics_path.relative_to(root)} "
+                f"({len(metrics['issues'])} issue(s))"
+            )
     else:
-        metrics = {"path": None, "found": False, "valid": False,
-                   "issues": ["no metrics JSON found"], "data": None}
+        metrics = {
+            "path": None,
+            "found": False,
+            "valid": False,
+            "issues": ["no metrics JSON found"],
+            "data": None,
+        }
         details.append("metrics MISSING")
 
     # Federation manifest/spec presence.
@@ -155,13 +181,16 @@ def federation_status(repo_root: str | Path = ".",
         "role": desc.role,
         "metrics": metrics,
         "manifest_found": manifest_found,
-        "manifest_path": str(manifest_path.relative_to(root)) if manifest_found else None,
+        "manifest_path": (
+            str(manifest_path.relative_to(root)) if manifest_found else None
+        ),
         "details": details,
     }
 
 
-def assimilate(context: dict[str, Any] | None = None,
-               repo_root: str | Path = ".") -> dict[str, Any]:
+def assimilate(
+    context: dict[str, Any] | None = None, repo_root: str | Path = "."
+) -> dict[str, Any]:
     """Compatibility entry point matching cryoplant-project's assimilate().
 
     Returns the same ``federation_status`` payload augmented with the caller

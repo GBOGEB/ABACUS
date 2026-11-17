@@ -26,8 +26,18 @@ def test_open_gates_supports_current_blocker_structure():
         "blockers": [
             {"id": "ASSUM-VEFF", "gate": True, "status": "UNRESOLVED"},
             {"id": "ASSUM-PLIMIT", "gate": True, "status": "OPEN_RFI"},
-            {"id": "ASSUM-RECOV-PWR", "gate": True, "status": "BLOCKER", "severity": "high"},
-            {"id": "ASSUM-ENERGY-MODEL", "gate": True, "status": "OPEN", "severity": "medium"},
+            {
+                "id": "ASSUM-RECOV-PWR",
+                "gate": True,
+                "status": "BLOCKER",
+                "severity": "high",
+            },
+            {
+                "id": "ASSUM-ENERGY-MODEL",
+                "gate": True,
+                "status": "OPEN",
+                "severity": "medium",
+            },
             {"id": "DONE", "gate": True, "status": "RESOLVED"},
         ]
     }
@@ -76,7 +86,12 @@ def test_runtime_enforce_exits_when_gates_open(monkeypatch, tmp_path):
 def test_rfi_package_filters_open_gates():
     data = {
         "blockers": [
-            {"id": "ASSUM-VEFF", "gate": True, "status": "UNRESOLVED", "why_it_matters": "volume matters"},
+            {
+                "id": "ASSUM-VEFF",
+                "gate": True,
+                "status": "UNRESOLVED",
+                "why_it_matters": "volume matters",
+            },
             {"id": "ASSUM-PLIMIT", "gate": True, "status": "ACCEPTED"},
             {
                 "id": "ASSUM-ENERGY-MODEL",
@@ -134,9 +149,7 @@ def _mode_by_id(data, mode_id):
 
 
 def _valve_by_id(mode, valve_id):
-    return next(
-        valve for valve in mode["valves"] if valve["valve_id"] == valve_id
-    )
+    return next(valve for valve in mode["valves"] if valve["valve_id"] == valve_id)
 
 
 def _visual_legend_audit_for(data, *, verified):
@@ -150,9 +163,9 @@ def _visual_legend_audit_for(data, *, verified):
     if verified:
         audit["status"] = "VERIFIED"
         audit["review"]["visual_legend_verified"] = True
-        audit["review"]["legend_evidence_locator"] = (
-            "authoritative Appendix 8.4 visual legend fixture"
-        )
+        audit["review"][
+            "legend_evidence_locator"
+        ] = "authoritative Appendix 8.4 visual legend fixture"
         audit["review"]["legend_sha256"] = "1" * 64
     return audit
 
@@ -174,15 +187,9 @@ def test_line_s_closure_contract_matches_current_ssot(monkeypatch):
     assert summary["appendix_8_4_status"] == "PARTIAL_EXTRACTED"
     assert summary["appendix_8_4_source_available"] is True
     assert summary["appendix_8_4_source_available_in_repo"] is False
-    assert summary["appendix_8_4_source_location"] == (
-        "USER_LIBRARY_LOCKED_SOURCE"
-    )
-    assert summary["appendix_8_4_receipt_status"] == (
-        "SOURCE_BOUND_PARTIAL_EXTRACTION"
-    )
-    assert summary["appendix_8_4_visual_legend_status"] == (
-        "SOURCE_EVIDENCE_REQUIRED"
-    )
+    assert summary["appendix_8_4_source_location"] == ("USER_LIBRARY_LOCKED_SOURCE")
+    assert summary["appendix_8_4_receipt_status"] == ("SOURCE_BOUND_PARTIAL_EXTRACTION")
+    assert summary["appendix_8_4_visual_legend_status"] == ("SOURCE_EVIDENCE_REQUIRED")
     assert summary["appendix_8_4_visual_legend_verified"] is False
     assert summary["authority_transfer"] is False
     assert summary["formal_credit_delta"] == 0
@@ -211,9 +218,7 @@ def test_appendix_8_4_allows_source_bound_unknown_states():
     assert len(result["modes"]) == 23
     unknown = _mode_by_id(result, "A84-03")
     assert unknown["extraction_state"] == "MODE_IDENTIFIED"
-    assert {
-        valve["commanded_state"] for valve in unknown["valves"]
-    } == {"UNKNOWN"}
+    assert {valve["commanded_state"] for valve in unknown["valves"]} == {"UNKNOWN"}
 
 
 def test_appendix_8_4_rejects_extracted_empty_modes_when_source_available():
@@ -225,9 +230,7 @@ def test_appendix_8_4_rejects_extracted_empty_modes_when_source_available():
 
 
 def test_appendix_8_4_inventory_is_exact_and_partial():
-    data = closure_contract.validate_extraction(
-        closure_contract.load_extraction()
-    )
+    data = closure_contract.validate_extraction(closure_contract.load_extraction())
     assert data["status"] == "PARTIAL_EXTRACTED"
     assert data["coverage"]["mode_inventory_expected"] == 23
     assert data["coverage"]["mode_rows_present"] == 23
@@ -235,10 +238,7 @@ def test_appendix_8_4_inventory_is_exact_and_partial():
     assert data["coverage"]["state_partial_modes"] == 8
     assert data["coverage"]["mode_identified_only"] == 15
     assert data["coverage"]["extraction_complete"] is False
-    assert (
-        data["policy"]["figure_state_promotion_requires_verified_legend"]
-        is True
-    )
+    assert data["policy"]["figure_state_promotion_requires_verified_legend"] is True
     assert {mode["status"] for mode in data["modes"]} == {"SOURCE_BOUND"}
     assert all(len(mode["figure_sha256"]) == 64 for mode in data["modes"])
     ids = [mode["mode_id"] for mode in data["modes"]]
@@ -253,9 +253,7 @@ def test_appendix_8_4_rejects_invalid_figure_digest():
 
 
 def test_appendix_8_4_abnormal_fallback_states_are_source_bound():
-    data = closure_contract.validate_extraction(
-        closure_contract.load_extraction()
-    )
+    data = closure_contract.validate_extraction(closure_contract.load_extraction())
 
     minor = _mode_by_id(data, "A84-05")
     minor_supply = _valve_by_id(minor, "QVB_SUPPLY_INTERFACE")
@@ -500,9 +498,7 @@ def test_appendix_8_4_extracted_rejects_missing_completion_blocker_record():
         resolve_blockers=True,
     )
     data["unresolved"] = [
-        row
-        for row in data["unresolved"]
-        if row.get("id") != "MODE_DEPENDENT_VEFF"
+        row for row in data["unresolved"] if row.get("id") != "MODE_DEPENDENT_VEFF"
     ]
     audit = _verified_visual_legend_audit(data)
     with pytest.raises(

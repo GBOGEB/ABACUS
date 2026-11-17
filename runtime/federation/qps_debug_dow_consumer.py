@@ -5,6 +5,7 @@ The original QPS_REPO_LOCAL mode remains unchanged. A separate
 FEDERATED_EXACT_PAYLOAD mode is accepted only when CODEX/KEB has already bound
 exact source SHA, exact payload hash, real debugger steps, and adapter readiness.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -58,11 +59,7 @@ def main() -> int:
     exact_sha = binding.get("producer_exact_head_sha") if binding else None
     mode, evidence_ok, source_checks = evidence_ok_for_mode(binding)
     accept = bool(
-        owner_ok
-        and status_ok
-        and exact_sha
-        and exact_sha != "UNKNOWN"
-        and evidence_ok
+        owner_ok and status_ok and exact_sha and exact_sha != "UNKNOWN" and evidence_ok
     )
 
     dow = {
@@ -89,7 +86,9 @@ def main() -> int:
             "recursive_audit_pass": source_checks.get("recursive_audit_pass"),
             "source_payload_hash_match": source_checks.get("source_payload_hash_match"),
             "adapter_surface_ready": source_checks.get("adapter_surface_ready"),
-            "repo_local_runner_recovered": source_checks.get("repo_local_runner_recovered"),
+            "repo_local_runner_recovered": source_checks.get(
+                "repo_local_runner_recovered"
+            ),
         },
         "emit_for_child_disposition": accept,
         "authority_guards": {

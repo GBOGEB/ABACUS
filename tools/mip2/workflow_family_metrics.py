@@ -4,14 +4,23 @@ This module never equates workflow executions with tests, coverage, repairs,
 independent evidence or governed merges. API census completeness is a separate
 upstream obligation; these calculations apply only to the supplied run rows.
 """
+
 from __future__ import annotations
 
 from collections import Counter, defaultdict
 
-TERMINAL = frozenset({
-    "success", "failure", "cancelled", "skipped", "neutral",
-    "timed_out", "action_required", "startup_failure",
-})
+TERMINAL = frozenset(
+    {
+        "success",
+        "failure",
+        "cancelled",
+        "skipped",
+        "neutral",
+        "timed_out",
+        "action_required",
+        "startup_failure",
+    }
+)
 OPEN = frozenset({"queued", "pending", "in_progress", "requested", "waiting"})
 FAILURES = frozenset({"failure", "timed_out", "action_required", "startup_failure"})
 
@@ -36,8 +45,11 @@ def summarize_families(runs):
     for row in runs:
         if not isinstance(row, dict):
             raise ValueError("every run must be an object")
-        rid, wf, attempt = (row.get("id"), row.get("workflow_id"),
-                            row.get("run_attempt"))
+        rid, wf, attempt = (
+            row.get("id"),
+            row.get("workflow_id"),
+            row.get("run_attempt"),
+        )
         if not all(_positive_integer(v) for v in (rid, wf, attempt)):
             raise ValueError("run, workflow and attempt IDs must be positive integers")
         if rid in seen:
@@ -77,18 +89,20 @@ def summarize_families(runs):
             family_with_nonterminal += 1
         repeated_executions += count - 1
         repeat_success_excess += max(c["success"] - 1, 0)
-        manifest.append({
-            "workflow_id": wf,
-            "run_count": count,
-            "success": c["success"],
-            "failure": sum(c[x] for x in FAILURES),
-            "cancelled": c["cancelled"],
-            "nonterminal": c["nonterminal"],
-            "other_terminal": c["skipped"] + c["neutral"],
-            "run_ids": sorted(rid for rid, _, _ in members),
-            "attempts_observed": sorted({attempt for _, attempt, _ in members}),
-            "clean_success": c["success"] == count,
-        })
+        manifest.append(
+            {
+                "workflow_id": wf,
+                "run_count": count,
+                "success": c["success"],
+                "failure": sum(c[x] for x in FAILURES),
+                "cancelled": c["cancelled"],
+                "nonterminal": c["nonterminal"],
+                "other_terminal": c["skipped"] + c["neutral"],
+                "run_ids": sorted(rid for rid, _, _ in members),
+                "attempts_observed": sorted({attempt for _, attempt, _ in members}),
+                "clean_success": c["success"] == count,
+            }
+        )
 
     count = len(runs)
     distinct = len(families)

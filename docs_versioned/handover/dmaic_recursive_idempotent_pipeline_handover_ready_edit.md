@@ -159,7 +159,7 @@ def hash_json(obj) -> str:
 def idempotent(run_key_fn):
     """Decorator to skip a function if an identical run_key exists in ledger."""
     from .provenance import ledger_has_key, ledger_attach_key
-    
+
     def decorator(fn):
         @functools.wraps(fn)
         def wrapper(*args, **kwargs):
@@ -567,4 +567,3 @@ python -m src.app.dashboard  # Flask
 ---
 
 **End of handover-ready edit.**
-

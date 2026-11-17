@@ -24,13 +24,13 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            python: '3.10'
-          - os: ubuntu-latest
             python: '3.11'
           - os: ubuntu-latest
             python: '3.12'
+          - os: ubuntu-latest
+            python: '3.13'
           - os: windows-latest
-            python: '3.11'
+            python: '3.12'
     steps:
       - name: Checkout source-owned exact head
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1

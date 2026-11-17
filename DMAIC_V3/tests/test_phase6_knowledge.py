@@ -2,15 +2,16 @@
 DMAIC V3 Test Suite - Phase 6: Knowledge Management Tests
 """
 
-import pytest
 import json
-import tempfile
 import shutil
+import tempfile
 from pathlib import Path
 
-from DMAIC_V3.phases.phase6_knowledge import Phase6Knowledge
+import pytest
+
 from DMAIC_V3.config import DMAICConfig
 from DMAIC_V3.core.state import StateManager
+from DMAIC_V3.phases.phase6_knowledge import Phase6Knowledge
 
 
 @pytest.fixture
@@ -63,36 +64,36 @@ class TestPhase6Knowledge:
 
     def test_result_contains_iteration(self, phase6):
         success, result = phase6.execute(iteration=2)
-        assert result.get('iteration') == 2
+        assert result.get("iteration") == 2
 
     def test_result_has_maturity_score(self, phase6):
         success, result = phase6.execute(iteration=1)
-        assert 'maturity_score' in result
-        score = result['maturity_score']
+        assert "maturity_score" in result
+        score = result["maturity_score"]
         assert isinstance(score, (int, float))
         assert 0 <= score <= 100
 
     def test_result_has_canonical_books_count(self, phase6):
         success, result = phase6.execute(iteration=1)
-        assert 'canonical_books_count' in result
-        assert isinstance(result['canonical_books_count'], int)
-        assert result['canonical_books_count'] >= 0
+        assert "canonical_books_count" in result
+        assert isinstance(result["canonical_books_count"], int)
+        assert result["canonical_books_count"] >= 0
 
     def test_result_has_timestamp(self, phase6):
         success, result = phase6.execute(iteration=1)
-        assert 'start_time' in result
-        assert 'end_time' in result
+        assert "start_time" in result
+        assert "end_time" in result
 
     def test_result_has_hooks_registered(self, phase6):
         success, result = phase6.execute(iteration=1)
-        assert 'recursive_hooks_registered' in result
-        assert isinstance(result['recursive_hooks_registered'], int)
+        assert "recursive_hooks_registered" in result
+        assert isinstance(result["recursive_hooks_registered"], int)
 
     def test_multiple_iterations(self, phase6):
         for iteration in [1, 2, 3]:
             success, result = phase6.execute(iteration=iteration)
             assert isinstance(success, bool)
-            assert result.get('iteration') == iteration
+            assert result.get("iteration") == iteration
 
     def test_knowledge_with_canonical_dir(self, phase6, temp_workspace):
         # Create a mock canonical knowledge dir with a book

@@ -6,6 +6,7 @@ an actionable Global_ID record from QPS_SUPPLIER_B_NEGO_RFI_COMPLIANCE_SSOT_v1.0
 
 This builder is presentation-only. It does not calculate or promote compliance.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -18,33 +19,86 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
 
-VISIBLE_SHEETS = ["START_HERE", "MASTER_REVIEW", "NEG_RFI_RETURNS", "EVIDENCE_LINEAGE", "DASHBOARD"]
+VISIBLE_SHEETS = [
+    "START_HERE",
+    "MASTER_REVIEW",
+    "NEG_RFI_RETURNS",
+    "EVIDENCE_LINEAGE",
+    "DASHBOARD",
+]
 HIDDEN_SHEETS = ["LISTS_CONTROLS", "RAW_RELATIONS", "SOURCE_HASHES"]
 IDENTITY = ["Global_ID", "Agenda_ID", "Priority", "Short_Topic", "OFFER_IDs", "RTM_IDs"]
 MASTER = IDENTITY + [
-    "Evidence_Class", "Evidence_Maturity", "Source_Type", "Compliance_State",
-    "Reviewer_Assessment", "RFI_ID", "NEG_ID", "Disposition", "SCK_Position",
-    "Requested_Return", "Owner", "Due_Date", "Reentry_State",
+    "Evidence_Class",
+    "Evidence_Maturity",
+    "Source_Type",
+    "Compliance_State",
+    "Reviewer_Assessment",
+    "RFI_ID",
+    "NEG_ID",
+    "Disposition",
+    "SCK_Position",
+    "Requested_Return",
+    "Owner",
+    "Due_Date",
+    "Reentry_State",
 ]
 RETURNS = [
-    "Global_ID", "Agenda_ID", "Short_Topic", "RFI_ID", "NEG_ID", "Meeting_Question",
-    "Requested_Return", "Bidder_Return", "Minute_Reference", "Minute_Disposition",
-    "BAFO_Evidence_Location", "Post_Award_Proof", "Canonical_Reentry_Test",
-    "Reentry_State", "Owner", "Due_Date",
+    "Global_ID",
+    "Agenda_ID",
+    "Short_Topic",
+    "RFI_ID",
+    "NEG_ID",
+    "Meeting_Question",
+    "Requested_Return",
+    "Bidder_Return",
+    "Minute_Reference",
+    "Minute_Disposition",
+    "BAFO_Evidence_Location",
+    "Post_Award_Proof",
+    "Canonical_Reentry_Test",
+    "Reentry_State",
+    "Owner",
+    "Due_Date",
 ]
 LINEAGE = [
-    "Global_ID", "Short_Topic", "Source_File", "Source_Page_Table_Section", "Exact_Finding",
-    "OFFER_IDs", "RTM_IDs", "COM_IDs", "GEN_IDs", "HSE_IDs", "TODO_IDs", "ADR_IDs",
-    "OCD_IDs", "ICD_IDs", "Card_IDs", "BOM_IDs", "Utility_Building_IDs", "Source_SHA256",
+    "Global_ID",
+    "Short_Topic",
+    "Source_File",
+    "Source_Page_Table_Section",
+    "Exact_Finding",
+    "OFFER_IDs",
+    "RTM_IDs",
+    "COM_IDs",
+    "GEN_IDs",
+    "HSE_IDs",
+    "TODO_IDs",
+    "ADR_IDs",
+    "OCD_IDs",
+    "ICD_IDs",
+    "Card_IDs",
+    "BOM_IDs",
+    "Utility_Building_IDs",
+    "Source_SHA256",
 ]
-LONG_TEXT = {"Exact_Finding", "Bidder_Position", "SCK_Position", "Meeting_Question", "Requested_Return", "Bidder_Return", "Canonical_Reentry_Test"}
+LONG_TEXT = {
+    "Exact_Finding",
+    "Bidder_Position",
+    "SCK_Position",
+    "Meeting_Question",
+    "Requested_Return",
+    "Bidder_Return",
+    "Canonical_Reentry_Test",
+}
 
 
 def load_rows(path: Path) -> list[dict[str, Any]]:
     data = json.loads(path.read_text(encoding="utf-8"))
     rows = data.get("rows", []) if isinstance(data, dict) else data
     if not isinstance(rows, list):
-        raise ValueError("Input must be a JSON list or an object containing a rows list")
+        raise ValueError(
+            "Input must be a JSON list or an object containing a rows list"
+        )
     out: list[dict[str, Any]] = []
     seen: set[str] = set()
     for i, row in enumerate(rows, 1):
@@ -72,7 +126,16 @@ def scalar(v: Any) -> str:
 
 def load_style(path: Path | None) -> dict[str, Any]:
     fallback = {
-        "palette": {"tokens": {"define": "#562873", "warning": "#B5622A", "ok": "#1D7A5F", "critical": "#B42318", "surface": "#FFFFFF", "text": "#1F1F29"}},
+        "palette": {
+            "tokens": {
+                "define": "#562873",
+                "warning": "#B5622A",
+                "ok": "#1D7A5F",
+                "critical": "#B42318",
+                "surface": "#FFFFFF",
+                "text": "#1F1F29",
+            }
+        },
         "typography": {"body": "Aptos", "fallback_body": "Arial"},
     }
     if path and path.exists():
@@ -88,7 +151,9 @@ def hex6(value: str, fallback: str) -> str:
     return value if len(value) == 6 else fallback.replace("#", "")
 
 
-def apply_sheet(ws, columns: list[str], rows: list[dict[str, Any]], style: dict[str, Any]) -> None:
+def apply_sheet(
+    ws, columns: list[str], rows: list[dict[str, Any]], style: dict[str, Any]
+) -> None:
     tokens = style.get("palette", {}).get("tokens", {})
     purple = hex6(tokens.get("define", "#562873"), "562873")
     surface = hex6(tokens.get("surface", "#FFFFFF"), "FFFFFF")
@@ -108,23 +173,45 @@ def apply_sheet(ws, columns: list[str], rows: list[dict[str, Any]], style: dict[
             cell = ws.cell(r, c)
             cell.font = Font(name=font_name, size=10)
             cell.alignment = Alignment(vertical="top", wrap_text=name in LONG_TEXT)
-        ws.row_dimensions[r].height = 30 if any(scalar(rows[r-2].get(x)) for x in LONG_TEXT if x in columns) else 18
+        ws.row_dimensions[r].height = (
+            30
+            if any(scalar(rows[r - 2].get(x)) for x in LONG_TEXT if x in columns)
+            else 18
+        )
     for c, name in enumerate(columns, 1):
         letter = get_column_letter(c)
         width = 14
-        if name in {"Global_ID", "Agenda_ID", "Priority", "RFI_ID", "NEG_ID", "Owner", "Due_Date"}:
+        if name in {
+            "Global_ID",
+            "Agenda_ID",
+            "Priority",
+            "RFI_ID",
+            "NEG_ID",
+            "Owner",
+            "Due_Date",
+        }:
             width = 13
         elif name in LONG_TEXT:
             width = 44
-        elif name in {"Short_Topic", "OFFER_IDs", "RTM_IDs", "Compliance_State", "Reviewer_Assessment"}:
+        elif name in {
+            "Short_Topic",
+            "OFFER_IDs",
+            "RTM_IDs",
+            "Compliance_State",
+            "Reviewer_Assessment",
+        }:
             width = 24
         ws.column_dimensions[letter].width = width
     # Group columns after the reader-facing core columns.
     if len(columns) > 10:
-        ws.column_dimensions.group(get_column_letter(11), get_column_letter(len(columns)), hidden=True)
+        ws.column_dimensions.group(
+            get_column_letter(11), get_column_letter(len(columns)), hidden=True
+        )
 
 
-def build_xlsx(rows: list[dict[str, Any]], out: Path, source_hash: str, style: dict[str, Any]) -> None:
+def build_xlsx(
+    rows: list[dict[str, Any]], out: Path, source_hash: str, style: dict[str, Any]
+) -> None:
     wb = Workbook()
     wb.remove(wb.active)
     for name in VISIBLE_SHEETS + HIDDEN_SHEETS:
@@ -132,7 +219,9 @@ def build_xlsx(rows: list[dict[str, Any]], out: Path, source_hash: str, style: d
     start = wb["START_HERE"]
     start["A1"] = "QPS SUPPLIER_B NEG / RFI / COMPLIANCE — canonical review view"
     start["A2"] = "Authority"
-    start["B2"] = "Derived working view; engineering/compliance authority remains cryoplant-project"
+    start["B2"] = (
+        "Derived working view; engineering/compliance authority remains cryoplant-project"
+    )
     start["A3"] = "Source row SHA256"
     start["B3"] = source_hash
     start["A4"] = "Formal completion"
@@ -140,7 +229,9 @@ def build_xlsx(rows: list[dict[str, Any]], out: Path, source_hash: str, style: d
     start["A5"] = "Negotiation resolution"
     start["B5"] = "0/20 unless accepted bidder/minute re-entry changes it"
     start["A7"] = "Semantic rule"
-    start["B7"] = "Deviation != NOK; PARTIAL retains both supported and residual conditions"
+    start["B7"] = (
+        "Deviation != NOK; PARTIAL retains both supported and residual conditions"
+    )
     start["A9"] = "Visible sheets"
     start["B9"] = ", ".join(VISIBLE_SHEETS)
     start.column_dimensions["A"].width = 24
@@ -162,8 +253,13 @@ def build_xlsx(rows: list[dict[str, Any]], out: Path, source_hash: str, style: d
         "Canonical actionable rows": len(rows),
         "Rows with NEG": sum(bool(scalar(r.get("NEG_ID"))) for r in rows),
         "Rows with RFI": sum(bool(scalar(r.get("RFI_ID"))) for r in rows),
-        "Rows unresolved": sum(scalar(r.get("Reentry_State")).upper() not in {"CLOSED", "VERIFIED"} for r in rows),
-        "Rows with source locator": sum(bool(scalar(r.get("Source_Page_Table_Section"))) for r in rows),
+        "Rows unresolved": sum(
+            scalar(r.get("Reentry_State")).upper() not in {"CLOSED", "VERIFIED"}
+            for r in rows
+        ),
+        "Rows with source locator": sum(
+            bool(scalar(r.get("Source_Page_Table_Section"))) for r in rows
+        ),
     }
     for k, v in metrics.items():
         dash.append([k, v])
@@ -173,11 +269,15 @@ def build_xlsx(rows: list[dict[str, Any]], out: Path, source_hash: str, style: d
     raw = wb["RAW_RELATIONS"]
     raw.append(["Global_ID", "Row_JSON"])
     for r in rows:
-        raw.append([r.get("Global_ID"), json.dumps(r, ensure_ascii=False, sort_keys=True)])
+        raw.append(
+            [r.get("Global_ID"), json.dumps(r, ensure_ascii=False, sort_keys=True)]
+        )
     src = wb["SOURCE_HASHES"]
     src.append(["source_row_sha256", source_hash])
     lists = wb["LISTS_CONTROLS"]
-    lists.append(["source_type", "reviewer_assessment", "action_route", "evidence_maturity"])
+    lists.append(
+        ["source_type", "reviewer_assessment", "action_route", "evidence_maturity"]
+    )
     lists.append(["DEVIATION", "PARTIAL", "NEG", "PHASE_BOUND"])
     for name in HIDDEN_SHEETS:
         wb[name].sheet_state = "hidden"
@@ -185,7 +285,9 @@ def build_xlsx(rows: list[dict[str, Any]], out: Path, source_hash: str, style: d
     wb.save(out)
 
 
-def build_html(rows: list[dict[str, Any]], out: Path, source_hash: str, style: dict[str, Any]) -> None:
+def build_html(
+    rows: list[dict[str, Any]], out: Path, source_hash: str, style: dict[str, Any]
+) -> None:
     tokens = style.get("palette", {}).get("tokens", {})
     purple = tokens.get("define", "#562873")
     warning = tokens.get("warning", "#B5622A")
@@ -195,7 +297,7 @@ def build_html(rows: list[dict[str, Any]], out: Path, source_hash: str, style: d
     font = style.get("typography", {}).get("body", "Aptos")
     data = json.dumps(rows, ensure_ascii=False).replace("</", "<\\/")
     columns = MASTER + [c for c in RETURNS + LINEAGE if c not in MASTER]
-    doc = f'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    doc = f"""<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>QPS SUPPLIER_B NEG/RFI/Compliance SSOT</title><style>
 :root{{--purple:{purple};--warn:{warning};--ok:{ok};--critical:{critical};--text:{text};}}
 *{{box-sizing:border-box}}body{{font-family:{font},Arial,sans-serif;color:var(--text);margin:0;background:#fff;font-size:14px}}
@@ -225,7 +327,7 @@ if($('#unresolved').checked&&['CLOSED','VERIFIED'].includes(val(r,'Reentry_State
 function render(){{let rows=ROWS.filter(filt);let tr=$('#tbl thead tr');tr.innerHTML=COLS.map((c,i)=>`<th class="${{CORE.has(c)?'':'advanced'}}">${{esc(c)}}</th>`).join('');
 $('#tbl tbody').innerHTML=rows.map(r=>'<tr id="row-'+encodeURIComponent(val(r,'Global_ID'))+'">'+COLS.map((c,i)=>{{let x=val(r,c), cls=(CORE.has(c)?'':'advanced')+(i===0?' identity':''); if(c==='Compliance_State')return `<td class="${{cls}}"><span class="status ${{esc(x)}}">${{esc(x)}}</span></td>`;if(['Exact_Finding','SCK_Position','Requested_Return','Bidder_Return'].includes(c)&&x.length>100)return `<td class="${{cls}}"><details><summary>${{esc(x.slice(0,95))}}…</summary>${{esc(x)}}</details></td>`;return `<td class="${{cls}}">${{esc(x)}}</td>`}}).join('')+'</tr>').join('');
 $('#count').textContent=`${{rows.length}} / ${{ROWS.length}} rows`; let id=location.hash.slice(1);if(id){{try{{id=decodeURIComponent(id)}}catch(e){{}}document.getElementById('row-'+encodeURIComponent(id))?.scrollIntoView();}}}}
-for(const id of ['q','status','agenda','offer','rtm','rfi','neg','unresolved'])$('#'+id).addEventListener('input',render);$('#advanced').onclick=()=>{{document.body.classList.toggle('show-advanced');$('#advanced').classList.toggle('active')}};$('#dense').onclick=()=>{{document.body.classList.toggle('dense');$('#dense').classList.toggle('active')}};render();</script></body></html>'''
+for(const id of ['q','status','agenda','offer','rtm','rfi','neg','unresolved'])$('#'+id).addEventListener('input',render);$('#advanced').onclick=()=>{{document.body.classList.toggle('show-advanced');$('#advanced').classList.toggle('active')}};$('#dense').onclick=()=>{{document.body.classList.toggle('dense');$('#dense').classList.toggle('active')}};render();</script></body></html>"""
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(doc, encoding="utf-8")
 
@@ -243,9 +345,18 @@ def main() -> None:
     stem = "QPS_SUPPLIER_B_NEGO_RFI_COMPLIANCE_SSOT_v1.0"
     build_xlsx(rows, args.out_dir / f"{stem}.xlsx", source_hash, style)
     build_html(rows, args.out_dir / f"{stem}.html", source_hash, style)
-    manifest = {"document_id": "QPS_SSOT_VIEW_BUILD_RECEIPT", "source_sha256": source_hash, "row_count": len(rows), "outputs": [f"{stem}.xlsx", f"{stem}.html"], "formal_credit": 0}
-    (args.out_dir / f"{stem}.build.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    manifest = {
+        "document_id": "QPS_SSOT_VIEW_BUILD_RECEIPT",
+        "source_sha256": source_hash,
+        "row_count": len(rows),
+        "outputs": [f"{stem}.xlsx", f"{stem}.html"],
+        "formal_credit": 0,
+    }
+    (args.out_dir / f"{stem}.build.json").write_text(
+        json.dumps(manifest, indent=2), encoding="utf-8"
+    )
     print(json.dumps(manifest, indent=2))
+
 
 if __name__ == "__main__":
     main()

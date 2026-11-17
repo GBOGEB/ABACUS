@@ -12,8 +12,8 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import json
 import hashlib
+import json
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -22,22 +22,67 @@ from typing import Any, Dict, List, Optional, Tuple
 # ── Test page registry ───────────────────────────────────────────────
 
 TEST_PAGES: List[Dict[str, str]] = [
-    {"url": "file:///home/ubuntu/recursive_review_dashboard.html", "name": "recursive_dashboard"},
+    {
+        "url": "file:///home/ubuntu/recursive_review_dashboard.html",
+        "name": "recursive_dashboard",
+    },
     {"url": "file:///home/ubuntu/project_dashboard.html", "name": "project_dashboard"},
-    {"url": "file:///home/ubuntu/monitoring_dashboard/index.html", "name": "monitoring_dashboard"},
-    {"url": "file:///home/ubuntu/handover_dashboard/docs/index.html", "name": "docs_index"},
-    {"url": "file:///home/ubuntu/handover_dashboard/docs/index_v4_0.html", "name": "docs_v4"},
-    {"url": "file:///home/ubuntu/handover_dashboard/docs/index_v3_1.html", "name": "docs_v3_1"},
-    {"url": "file:///home/ubuntu/handover_dashboard/docs/dashboard.html", "name": "triage_dashboard"},
-    {"url": "file:///home/ubuntu/handover_dashboard/docs/calculations.html", "name": "calculations"},
-    {"url": "file:///home/ubuntu/handover_dashboard/docs/executive_summary.html", "name": "exec_summary"},
-    {"url": "file:///home/ubuntu/handover_dashboard/docs/handover.html", "name": "handover"},
-    {"url": "file:///home/ubuntu/handover_dashboard/docs/rtm_traceability.html", "name": "rtm_traceability"},
-    {"url": "file:///home/ubuntu/handover_dashboard/docs/triage_compliance.html", "name": "compliance"},
-    {"url": "file:///home/ubuntu/handover_dashboard/docs/STAKEHOLDER_PRESENTATION.html", "name": "stakeholder"},
-    {"url": "file:///home/ubuntu/handover_dashboard/docs/compressors/HP_Redundancy_Analysis.html", "name": "hp_redundancy"},
-    {"url": "file:///home/ubuntu/handover_dashboard/docs/compressors/WCS_HP_Protection.html", "name": "wcs_protection"},
-    {"url": "file:///home/ubuntu/handover_dashboard/docs/liquid_he/Liquid_Operations_Guide.html", "name": "liquid_ops"},
+    {
+        "url": "file:///home/ubuntu/monitoring_dashboard/index.html",
+        "name": "monitoring_dashboard",
+    },
+    {
+        "url": "file:///home/ubuntu/handover_dashboard/docs/index.html",
+        "name": "docs_index",
+    },
+    {
+        "url": "file:///home/ubuntu/handover_dashboard/docs/index_v4_0.html",
+        "name": "docs_v4",
+    },
+    {
+        "url": "file:///home/ubuntu/handover_dashboard/docs/index_v3_1.html",
+        "name": "docs_v3_1",
+    },
+    {
+        "url": "file:///home/ubuntu/handover_dashboard/docs/dashboard.html",
+        "name": "triage_dashboard",
+    },
+    {
+        "url": "file:///home/ubuntu/handover_dashboard/docs/calculations.html",
+        "name": "calculations",
+    },
+    {
+        "url": "file:///home/ubuntu/handover_dashboard/docs/executive_summary.html",
+        "name": "exec_summary",
+    },
+    {
+        "url": "file:///home/ubuntu/handover_dashboard/docs/handover.html",
+        "name": "handover",
+    },
+    {
+        "url": "file:///home/ubuntu/handover_dashboard/docs/rtm_traceability.html",
+        "name": "rtm_traceability",
+    },
+    {
+        "url": "file:///home/ubuntu/handover_dashboard/docs/triage_compliance.html",
+        "name": "compliance",
+    },
+    {
+        "url": "file:///home/ubuntu/handover_dashboard/docs/STAKEHOLDER_PRESENTATION.html",
+        "name": "stakeholder",
+    },
+    {
+        "url": "file:///home/ubuntu/handover_dashboard/docs/compressors/HP_Redundancy_Analysis.html",
+        "name": "hp_redundancy",
+    },
+    {
+        "url": "file:///home/ubuntu/handover_dashboard/docs/compressors/WCS_HP_Protection.html",
+        "name": "wcs_protection",
+    },
+    {
+        "url": "file:///home/ubuntu/handover_dashboard/docs/liquid_he/Liquid_Operations_Guide.html",
+        "name": "liquid_ops",
+    },
 ]
 
 
@@ -63,6 +108,7 @@ class VisualRegressionTester:
         """Lazily launch Playwright browser."""
         if self._browser is None:
             from playwright.sync_api import sync_playwright
+
             self._playwright = sync_playwright().start()
             self._browser = self._playwright.chromium.launch(headless=True)
 
@@ -110,13 +156,23 @@ class VisualRegressionTester:
 
         Returns dict with diff_percentage, passed status, and diff image path.
         """
-        from PIL import Image
         import numpy as np
+        from PIL import Image
 
         if not baseline_path.exists():
-            return {"name": name, "passed": False, "reason": "no_baseline", "diff_pct": 100.0}
+            return {
+                "name": name,
+                "passed": False,
+                "reason": "no_baseline",
+                "diff_pct": 100.0,
+            }
         if not current_path.exists():
-            return {"name": name, "passed": False, "reason": "capture_failed", "diff_pct": 100.0}
+            return {
+                "name": name,
+                "passed": False,
+                "reason": "capture_failed",
+                "diff_pct": 100.0,
+            }
 
         baseline = Image.open(baseline_path).convert("RGB")
         current = Image.open(current_path).convert("RGB")
@@ -150,7 +206,9 @@ class VisualRegressionTester:
             "current": str(current_path),
         }
 
-    def create_baselines(self, pages: Optional[List[Dict[str, str]]] = None) -> List[str]:
+    def create_baselines(
+        self, pages: Optional[List[Dict[str, str]]] = None
+    ) -> List[str]:
         """Capture baseline screenshots for all test pages."""
         pages = pages or TEST_PAGES
         captured = []
@@ -183,7 +241,9 @@ class VisualRegressionTester:
             print(f"  🔍 Testing: {page['name']}")
             current = self.capture_screenshot(page["url"], page["name"])
             baseline = self.baseline_dir / f"{page['name']}.png"
-            result = self.compare_screenshots(baseline, current, page["name"], threshold)
+            result = self.compare_screenshots(
+                baseline, current, page["name"], threshold
+            )
             results.append(result)
             status = "✅" if result["passed"] else "❌"
             print(f"     {status} diff={result['diff_pct']:.4f}%")
@@ -201,7 +261,9 @@ class VisualRegressionTester:
         }
 
 
-def generate_report_html(test_results: Dict[str, Any], output: str = "visual_regression_report.html") -> None:
+def generate_report_html(
+    test_results: Dict[str, Any], output: str = "visual_regression_report.html"
+) -> None:
     """Generate interactive HTML report from test results."""
     passed = test_results["passed"]
     failed = test_results["failed"]
@@ -276,7 +338,9 @@ def generate_report_html(test_results: Dict[str, Any], output: str = "visual_reg
 def main() -> None:
     parser = argparse.ArgumentParser(description="QPLANT Visual Regression Testing")
     parser.add_argument("--mode", choices=["create-baseline", "test"], required=True)
-    parser.add_argument("--threshold", type=float, default=0.1, help="Max diff %% to pass")
+    parser.add_argument(
+        "--threshold", type=float, default=0.1, help="Max diff %% to pass"
+    )
     parser.add_argument("--page", help="Test single page by name")
     parser.add_argument("--all", action="store_true", help="Process all pages")
     parser.add_argument("--report", default="html", choices=["html", "json"])

@@ -21,7 +21,6 @@ from typing import Any
 
 import yaml
 
-
 # ── Slide ID Pattern ──
 SLIDE_ID_PATTERN = re.compile(r"^[a-zA-Z0-9]+-[a-zA-Z0-9]+-[0-9]+$")
 
@@ -138,38 +137,46 @@ def check_markdown_file(filepath: str) -> list[EnforcerFinding]:
                 slide_id = front_matter.get("slide_id")
                 if slide_id:
                     valid, msg = validate_slide_id(str(slide_id))
-                    findings.append(EnforcerFinding(
-                        file=filepath,
-                        slide_id=str(slide_id),
-                        valid=valid,
-                        message=msg,
-                        line=1,
-                    ))
+                    findings.append(
+                        EnforcerFinding(
+                            file=filepath,
+                            slide_id=str(slide_id),
+                            valid=valid,
+                            message=msg,
+                            line=1,
+                        )
+                    )
                 else:
-                    findings.append(EnforcerFinding(
-                        file=filepath,
-                        slide_id=None,
-                        valid=False,
-                        message="No slide_id found in YAML front matter (RULE-110)",
-                        line=1,
-                    ))
+                    findings.append(
+                        EnforcerFinding(
+                            file=filepath,
+                            slide_id=None,
+                            valid=False,
+                            message="No slide_id found in YAML front matter (RULE-110)",
+                            line=1,
+                        )
+                    )
         except yaml.YAMLError as e:
-            findings.append(EnforcerFinding(
-                file=filepath,
-                slide_id=None,
-                valid=False,
-                message=f"Invalid YAML front matter: {e}",
-                line=1,
-            ))
+            findings.append(
+                EnforcerFinding(
+                    file=filepath,
+                    slide_id=None,
+                    valid=False,
+                    message=f"Invalid YAML front matter: {e}",
+                    line=1,
+                )
+            )
     else:
         # Only flag slide-like content files
         if "slide" in filepath.lower():
-            findings.append(EnforcerFinding(
-                file=filepath,
-                slide_id=None,
-                valid=False,
-                message="No YAML front matter found — cannot verify slide_id (RULE-110)",
-            ))
+            findings.append(
+                EnforcerFinding(
+                    file=filepath,
+                    slide_id=None,
+                    valid=False,
+                    message="No YAML front matter found — cannot verify slide_id (RULE-110)",
+                )
+            )
 
     return findings
 
@@ -189,31 +196,37 @@ def check_yaml_file(filepath: str) -> list[EnforcerFinding]:
         if "slide_id" in d:
             slide_id = str(d["slide_id"])
             valid, msg = validate_slide_id(slide_id)
-            findings.append(EnforcerFinding(
-                file=file_path,
-                slide_id=slide_id,
-                valid=valid,
-                message=msg,
-            ))
+            findings.append(
+                EnforcerFinding(
+                    file=file_path,
+                    slide_id=slide_id,
+                    valid=valid,
+                    message=msg,
+                )
+            )
         if "slides" in d and isinstance(d["slides"], list):
             for i, slide in enumerate(d["slides"]):
                 if isinstance(slide, dict):
                     if "slide_id" in slide:
                         slide_id = str(slide["slide_id"])
                         valid, msg = validate_slide_id(slide_id)
-                        findings.append(EnforcerFinding(
-                            file=file_path,
-                            slide_id=slide_id,
-                            valid=valid,
-                            message=msg,
-                        ))
+                        findings.append(
+                            EnforcerFinding(
+                                file=file_path,
+                                slide_id=slide_id,
+                                valid=valid,
+                                message=msg,
+                            )
+                        )
                     else:
-                        findings.append(EnforcerFinding(
-                            file=file_path,
-                            slide_id=None,
-                            valid=False,
-                            message=f"Slide at index {i} missing slide_id (RULE-110)",
-                        ))
+                        findings.append(
+                            EnforcerFinding(
+                                file=file_path,
+                                slide_id=None,
+                                valid=False,
+                                message=f"Slide at index {i} missing slide_id (RULE-110)",
+                            )
+                        )
 
     if isinstance(data, dict):
         search_dict(data, filepath)
@@ -241,12 +254,14 @@ def check_lineage_manifest(manifest_path: str) -> list[EnforcerFinding]:
         slide_id = record.get("slide_id")
         if slide_id:
             valid, msg = validate_slide_id(slide_id)
-            findings.append(EnforcerFinding(
-                file=manifest_path,
-                slide_id=slide_id,
-                valid=valid,
-                message=msg,
-            ))
+            findings.append(
+                EnforcerFinding(
+                    file=manifest_path,
+                    slide_id=slide_id,
+                    valid=valid,
+                    message=msg,
+                )
+            )
 
     return findings
 
@@ -260,8 +275,10 @@ def enforce_directory(directory: str) -> EnforcerResults:
         if not path.is_file():
             continue
         # Skip hidden dirs and build artifacts
-        if any(part.startswith(".") or part in ("_site", "__pycache__", "node_modules")
-               for part in path.parts):
+        if any(
+            part.startswith(".") or part in ("_site", "__pycache__", "node_modules")
+            for part in path.parts
+        ):
             continue
 
         rel = str(path.relative_to(root))
@@ -281,15 +298,17 @@ def enforce_directory(directory: str) -> EnforcerResults:
     for finding in results.findings:
         if finding.slide_id and finding.valid:
             if finding.slide_id in seen:
-                results.add(EnforcerFinding(
-                    file=finding.file,
-                    slide_id=finding.slide_id,
-                    valid=False,
-                    message=(
-                        f"Duplicate slide_id '{finding.slide_id}' — "
-                        f"also found in {seen[finding.slide_id]} (RULE-111)"
-                    ),
-                ))
+                results.add(
+                    EnforcerFinding(
+                        file=finding.file,
+                        slide_id=finding.slide_id,
+                        valid=False,
+                        message=(
+                            f"Duplicate slide_id '{finding.slide_id}' — "
+                            f"also found in {seen[finding.slide_id]} (RULE-111)"
+                        ),
+                    )
+                )
             else:
                 seen[finding.slide_id] = finding.file
 
@@ -344,7 +363,12 @@ Examples:
     if args.validate:
         valid, msg = validate_slide_id(args.validate)
         if args.format == "json":
-            print(json.dumps({"slide_id": args.validate, "valid": valid, "message": msg}, indent=2))
+            print(
+                json.dumps(
+                    {"slide_id": args.validate, "valid": valid, "message": msg},
+                    indent=2,
+                )
+            )
         else:
             print(f"{'VALID' if valid else 'INVALID'}: {msg}")
         return 0 if valid else 1

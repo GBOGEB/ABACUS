@@ -1,4 +1,5 @@
 """Negative controls for feedback fan-in queue telemetry."""
+
 from __future__ import annotations
 
 import copy
@@ -17,28 +18,33 @@ SHA = "a" * 40
 
 def item(number, name, event="workflow_run", head=SHA):
     return {
-        "id": number, "name": name, "event": event, "status": "queued",
-        "head_sha": head, "head_branch": "main",
+        "id": number,
+        "name": name,
+        "event": event,
+        "status": "queued",
+        "head_sha": head,
+        "head_branch": "main",
         "created_at": "2026-10-15T08:17:01Z",
     }
 
 
 def payload():
     return {
-        "schema": mod.SCHEMA, "repository": mod.REPO,
-        "main_sha": SHA, "observed_at": "2026-10-15T08:18:00Z",
+        "schema": mod.SCHEMA,
+        "repository": mod.REPO,
+        "main_sha": SHA,
+        "observed_at": "2026-10-15T08:18:00Z",
         "repository_queued": {
             "total_count": 3,
             "workflow_runs": [
-                item(100, mod.FEEDBACK), item(101, mod.FEEDBACK),
-                item(102, "CI/CD Test Suite", "pull_request")
+                item(100, mod.FEEDBACK),
+                item(101, mod.FEEDBACK),
+                item(102, "CI/CD Test Suite", "pull_request"),
             ],
         },
         "main_queued": {
             "total_count": 2,
-            "workflow_runs": [
-                item(100, mod.FEEDBACK), item(101, mod.FEEDBACK)
-            ],
+            "workflow_runs": [item(100, mod.FEEDBACK), item(101, mod.FEEDBACK)],
         },
     }
 
@@ -49,7 +55,9 @@ class QueuePressureTests(unittest.TestCase):
         self.assertEqual(x["main_feedback_queued_total"], 2)
         self.assertEqual(x["feedback_fraction_of_main_queued_pct"], 100.0)
         self.assertEqual(x["repo_queued_total"], 3)
-        self.assertEqual(x["skip_eligibility"], "UNKNOWN_UNTIL_EXACT_OPEN_PR_LINKAGE_PROVEN")
+        self.assertEqual(
+            x["skip_eligibility"], "UNKNOWN_UNTIL_EXACT_OPEN_PR_LINKAGE_PROVEN"
+        )
         self.assertEqual(x["root_closures"], 0)
         self.assertEqual(x["admission"], "HOLD")
 
@@ -114,6 +122,7 @@ class QueuePressureTests(unittest.TestCase):
             x = mod.emit(p, output)
             m = json.loads((output / "manifest.json").read_text())
             import hashlib
+
             self.assertEqual(
                 hashlib.sha256((output / "pressure.json").read_bytes()).hexdigest(),
                 m["sha256"]["pressure.json"],
@@ -130,7 +139,7 @@ class QueuePressureTests(unittest.TestCase):
             mod.emit(q, Path(b))
             self.assertEqual(
                 (Path(a) / "pressure.json").read_bytes(),
-                (Path(b) / "pressure.json").read_bytes()
+                (Path(b) / "pressure.json").read_bytes(),
             )
 
 

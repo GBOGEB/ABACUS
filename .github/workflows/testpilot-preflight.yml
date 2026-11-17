@@ -36,7 +36,7 @@ jobs:
           fetch-depth: 2
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.11'
+          python-version: '3.14'
           cache: pip
       - name: Install developer dependencies
         run: python -m pip install -r requirements-dev.txt
@@ -130,4 +130,7 @@ jobs:
         with:
           name: testpilot-receipt-${{ github.sha }}
           path: .testpilot/
+          # .testpilot/ is a dot-directory; upload-artifact >=4.4 drops hidden
+          # files unless told otherwise, which made a written receipt invisible.
+          include-hidden-files: true
           if-no-files-found: error

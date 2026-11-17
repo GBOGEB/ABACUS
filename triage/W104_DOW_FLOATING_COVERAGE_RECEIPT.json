@@ -163,7 +163,7 @@
     ".github/workflows/qps-dow-w43-triage.yml",
     ".github/workflows/qps-dow-wave01-warmup.yml",
     ".github/workflows/qps-w04-dow-receipt.yml",
-    ".github/workflows/qps-w05-bidder-eval-dow.yml",
+    ".github/workflows/qps-w05-supplier-eval-dow.yml",
     ".github/workflows/w66-abacus-id-burndown-split.yml",
     "ABACUS-UNIFIED/AGENT_DOW_INTERACTIONS.md",
     "ABACUS-v031/dow_engine_config.yaml",

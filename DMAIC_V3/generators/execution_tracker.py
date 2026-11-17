@@ -33,7 +33,7 @@ import json
 import yaml
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-from DMAIC_V3.core.metrics import MetricsTracker, MetricType
+from DMAIC_V3.core.metrics import MetricsTracker  # noqa: E402
 
 
 class ErrorType(Enum):
@@ -484,8 +484,8 @@ class ExecutionTracker:
 
         with open(output_file, 'w', encoding='utf-8') as f:
             f.write("# DMAIC V3 - Execution Report\n\n")
-            f.write(f"**Version**: 3.1.0  \n")
-            f.write(f"**DMAIC Version**: V3  \n")
+            f.write("**Version**: 3.1.0  \n")
+            f.write("**DMAIC Version**: V3  \n")
             f.write(f"**Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}  \n")
             f.write(f"**Execution Duration**: {(datetime.now() - self.start_time).total_seconds():.2f} seconds  \n\n")
 

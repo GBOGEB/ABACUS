@@ -94,8 +94,7 @@ def evaluate(manifest: dict, artifact_root: Path) -> dict:
             receipt = json.loads(raw)
             require(isinstance(receipt, dict), "invalid artifact object")
             require(
-                receipt.get("repository") == repo
-                and receipt.get("head_sha") == sha,
+                receipt.get("repository") == repo and receipt.get("head_sha") == sha,
                 "artifact provenance mismatch",
             )
             source_slots[domain] = source_slots.get(domain, 0) + 1
@@ -184,15 +183,29 @@ def render_html(data: dict) -> str:
             measured = type(count) is int and count > 0
             state = "locally verified" if measured else "unknown"
             cards.append(
-                "<div class='slot " + ("observed" if measured else "unknown") + "'>"
-                + "<div class='domain'>" + html.escape(row["domain"]) + "</div>"
-                + "<strong>" + html.escape(str(count)) + "</strong>"
-                + "<small>" + state + "</small></div>"
+                "<div class='slot "
+                + ("observed" if measured else "unknown")
+                + "'>"
+                + "<div class='domain'>"
+                + html.escape(row["domain"])
+                + "</div>"
+                + "<strong>"
+                + html.escape(str(count))
+                + "</strong>"
+                + "<small>"
+                + state
+                + "</small></div>"
             )
         parts.append(
-            "<section class='repository'><h2>" + html.escape(repo) + "</h2>"
-            + "<p>Observed head: <code>" + html.escape(str(sha)) + "</code></p>"
-            + "<div class='slots'>" + "".join(cards) + "</div></section>"
+            "<section class='repository'><h2>"
+            + html.escape(repo)
+            + "</h2>"
+            + "<p>Observed head: <code>"
+            + html.escape(str(sha))
+            + "</code></p>"
+            + "<div class='slots'>"
+            + "".join(cards)
+            + "</div></section>"
         )
     return (
         "<!doctype html><html lang='en'><meta charset='utf-8'>"
@@ -214,8 +227,7 @@ def render_html(data: dict) -> str:
         "<p>Three repositories × eight control domains = 24 configured cells."
         " UNKNOWN means missing evidence, not zero. Counts indicate"
         " locally hashed receipts only; no REX authentication, root closure,"
-        " security waiver or merge authority.</p>"
-        + "".join(parts) + "</html>"
+        " security waiver or merge authority.</p>" + "".join(parts) + "</html>"
     )
 
 

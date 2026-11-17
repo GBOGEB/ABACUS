@@ -4,6 +4,7 @@ The input directory contains native GitHub API response snapshots collected by C
 Absence, pagination gaps, skipped jobs and unmatched SHA are never zero/PASS.
 Existing EVERRED, LDAB, coverage, REX and BD producers remain authoritative.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -19,7 +20,10 @@ import yaml
 SHA = re.compile(r"^[0-9a-f]{40}$")
 DOW_NAME = "DOW + Recursive DMAIC - Unified CD Pipeline"
 REQUIRED_SECURITY = (
-    "Security Scan — Ruff", "Semgrep", "OSV-Scanner", "DELTA_1 CodeQL",
+    "Security Scan — Ruff",
+    "Semgrep",
+    "OSV-Scanner",
+    "DELTA_1 CodeQL",
 )
 GATE_WORKFLOWS = {
     "full_ci": ("CI/CD Test Suite",),
@@ -38,6 +42,17 @@ STATUS = {
     "queued": "QUEUED",
     "waiting": "QUEUED",
     "requested": "QUEUED",
+    "pending": "QUEUED",
+    "in_progress": "RUNNING",
+}
+# Deployment environments whose latest native deployment status is joined.
+DEPLOY_ENVIRONMENTS = ("staging", "production", "cryoplant-federation")
+DEPLOY_STATUS = {
+    "success": "PASS",
+    "failure": "FAIL",
+    "error": "FAIL",
+    "inactive": "INACTIVE",
+    "queued": "QUEUED",
     "pending": "QUEUED",
     "in_progress": "RUNNING",
 }
@@ -75,7 +90,9 @@ def run_state(run: dict[str, Any]) -> str:
     return STATUS.get(state, "UNKNOWN")
 
 
-def select_runs(payload: dict[str, Any] | None, sha: str) -> tuple[dict[str, dict], bool]:
+def select_runs(
+    payload: dict[str, Any] | None, sha: str
+) -> tuple[dict[str, dict], bool]:
     """Choose newest native run by identity; missing pages cannot prove absence."""
     if payload is None:
         return {}, False
@@ -101,14 +118,17 @@ def select_runs(payload: dict[str, Any] | None, sha: str) -> tuple[dict[str, dic
         old = good.get(name)
         rank = (row.get("created_at", ""), row["id"], row.get("run_attempt", 1))
         if old is None or rank > (
-            old.get("created_at", ""), old["id"], old.get("run_attempt", 1)
+            old.get("created_at", ""),
+            old["id"],
+            old.get("run_attempt", 1),
         ):
             good[name] = row
     return good, payload.get("source_complete") is not False and len(rows) == total
 
 
-def workflow_gate(runs: dict[str, dict], names: tuple[str, ...],
-                  complete: bool) -> dict[str, Any]:
+def workflow_gate(
+    runs: dict[str, dict], names: tuple[str, ...], complete: bool
+) -> dict[str, Any]:
     selected = [runs.get(name) for name in names]
     found = [row for row in selected if row is not None]
     states = [run_state(row) for row in found]
@@ -127,14 +147,21 @@ def workflow_gate(runs: dict[str, dict], names: tuple[str, ...],
     else:
         status = "UNKNOWN"
     return {
-        "status": status, "required": list(names), "observed_count": len(found),
+        "status": status,
+        "required": list(names),
+        "observed_count": len(found),
         "required_count": len(names),
-        "native_runs": [{
-            "name": row["name"], "run_id": row["id"],
-            "run_attempt": row.get("run_attempt", 1),
-            "status": run_state(row), "url": row["html_url"],
-            "sha": row["head_sha"],
-        } for row in found],
+        "native_runs": [
+            {
+                "name": row["name"],
+                "run_id": row["id"],
+                "run_attempt": row.get("run_attempt", 1),
+                "status": run_state(row),
+                "url": row["html_url"],
+                "sha": row["head_sha"],
+            }
+            for row in found
+        ],
     }
 
 
@@ -181,14 +208,24 @@ def affected(dag: dict[str, dict], source: str) -> list[str]:
     return sorted(result)
 
 
-def job_census(payload: dict[str, Any] | None, run: dict | None,
-               dag: dict[str, dict]) -> dict[str, Any]:
+def job_census(
+    payload: dict[str, Any] | None, run: dict | None, dag: dict[str, dict]
+) -> dict[str, Any]:
     if run is None or payload is None:
-        return {"jobs": {name: {"status": "UNKNOWN", "job_id": None,
-                 "url": None, "needs": spec["needs"],
-                 "downstream_count": len(affected(dag, name)),
-                 "downstream": affected(dag, name)}
-                 for name, spec in dag.items()}, "completeness": "UNKNOWN"}
+        return {
+            "jobs": {
+                name: {
+                    "status": "UNKNOWN",
+                    "job_id": None,
+                    "url": None,
+                    "needs": spec["needs"],
+                    "downstream_count": len(affected(dag, name)),
+                    "downstream": affected(dag, name),
+                }
+                for name, spec in dag.items()
+            },
+            "completeness": "UNKNOWN",
+        }
     rows = payload.get("jobs")
     total = payload.get("total_count")
     if not isinstance(rows, list) or type(total) is not int or total < 0:
@@ -215,8 +252,10 @@ def job_census(payload: dict[str, Any] | None, run: dict | None,
     for key, spec in dag.items():
         row = chosen.get(spec["name"])
         result[key] = {
-            "status": run_state(row) if row else (
-                "NOT_OBSERVED" if complete and terminal_run else "UNKNOWN"
+            "status": (
+                run_state(row)
+                if row
+                else ("NOT_OBSERVED" if complete and terminal_run else "UNKNOWN")
             ),
             "job_id": row["id"] if row else None,
             "url": row.get("html_url") if row else None,
@@ -227,8 +266,9 @@ def job_census(payload: dict[str, Any] | None, run: dict | None,
     return {"jobs": result, "completeness": "COMPLETE" if complete else "PARTIAL"}
 
 
-def coverage(data: dict[str, Any] | None, sha: str, kind: str,
-             base_sha: str | None = None) -> dict[str, Any]:
+def coverage(
+    data: dict[str, Any] | None, sha: str, kind: str, base_sha: str | None = None
+) -> dict[str, Any]:
     if data is None:
         return {"status": "UNKNOWN", "numerator": None, "denominator": None}
     rows = data.get("receipts")
@@ -241,22 +281,89 @@ def coverage(data: dict[str, Any] | None, sha: str, kind: str,
         return {"status": "UNKNOWN", "numerator": None, "denominator": None}
     receipt = matches[0]
     num, den = receipt.get("covered"), receipt.get("eligible")
-    if (type(num) is not int or type(den) is not int
-            or den <= 0 or not 0 <= num <= den
-            or not all(receipt.get(k) for k in ("scope_id", "config_sha256",
-                                                "run_id", "artifact_id"))):
+    if (
+        type(num) is not int
+        or type(den) is not int
+        or den <= 0
+        or not 0 <= num <= den
+        or not all(
+            receipt.get(k)
+            for k in ("scope_id", "config_sha256", "run_id", "artifact_id")
+        )
+    ):
         raise ValueError("Coverage receipt has invalid units or provenance")
-    return {"status": "MEASURED", "numerator": num, "denominator": den,
-            "percent": round(100 * num / den, 6),
-            "scope_id": receipt["scope_id"],
-            "config_sha256": receipt["config_sha256"],
-            "run_id": receipt["run_id"], "artifact_id": receipt["artifact_id"]}
+    return {
+        "status": "MEASURED",
+        "numerator": num,
+        "denominator": den,
+        "percent": round(100 * num / den, 6),
+        "scope_id": receipt["scope_id"],
+        "config_sha256": receipt["config_sha256"],
+        "run_id": receipt["run_id"],
+        "artifact_id": receipt["artifact_id"],
+    }
 
 
-def build(*, main_sha: str, head_sha: str, main_branch: dict | None,
-          main_runs: dict | None, head_runs: dict | None,
-          dow_jobs: dict | None, workflow: str,
-          coverage_data: dict | None = None) -> dict[str, Any]:
+def deployment_gate(data: dict[str, Any] | None, environment: str) -> dict[str, Any]:
+    """Latest native deployment and its newest status; absence is never PASS."""
+    gate: dict[str, Any] = {
+        "status": "UNKNOWN",
+        "environment": environment,
+        "deployment_id": None,
+        "sha": None,
+        "ref": None,
+        "created_at": None,
+        "state": None,
+        "status_url": None,
+    }
+    if data is None:
+        return gate
+    envs = data.get("environments")
+    if not isinstance(envs, dict):
+        raise ValueError("Deployment snapshot environments must be an object")
+    entry = envs.get(environment)
+    if entry is None:
+        return gate
+    deployments = entry.get("deployments") if isinstance(entry, dict) else None
+    statuses = entry.get("statuses") if isinstance(entry, dict) else None
+    if not isinstance(deployments, list) or not isinstance(statuses, list):
+        raise ValueError("Deployment snapshot for " + environment + " is malformed")
+    if not deployments:
+        gate["status"] = "NOT_OBSERVED"
+        return gate
+    latest = max(deployments, key=lambda d: (d.get("created_at", ""), d.get("id", 0)))
+    if type(latest.get("id")) is not int or latest.get("environment") != environment:
+        raise ValueError("Deployment identity absent or foreign environment")
+    gate.update(
+        deployment_id=latest["id"],
+        sha=latest.get("sha"),
+        ref=latest.get("ref"),
+        created_at=latest.get("created_at"),
+    )
+    if not statuses:
+        return gate
+    newest = max(statuses, key=lambda r: (r.get("created_at", ""), r.get("id", 0)))
+    state = newest.get("state")
+    gate.update(
+        status=DEPLOY_STATUS.get(state, "UNKNOWN"),
+        state=state,
+        status_url=newest.get("log_url") or newest.get("target_url") or None,
+    )
+    return gate
+
+
+def build(
+    *,
+    main_sha: str,
+    head_sha: str,
+    main_branch: dict | None,
+    main_runs: dict | None,
+    head_runs: dict | None,
+    dow_jobs: dict | None,
+    workflow: str,
+    coverage_data: dict | None = None,
+    deployments: dict | None = None,
+) -> dict[str, Any]:
     require_sha(main_sha)
     require_sha(head_sha)
     if main_branch is not None and main_branch.get("commit", {}).get("sha") != main_sha:
@@ -266,8 +373,10 @@ def build(*, main_sha: str, head_sha: str, main_branch: dict | None,
     head_index, head_complete = select_runs(head_runs, head_sha)
     dow_run = main_index.get(DOW_NAME)
     jobs = job_census(dow_jobs, dow_run, dag)
-    gates = {key: workflow_gate(head_index, names, head_complete)
-             for key, names in GATE_WORKFLOWS.items()}
+    gates = {
+        key: workflow_gate(head_index, names, head_complete)
+        for key, names in GATE_WORKFLOWS.items()
+    }
     for key in dag:
         gates[key] = jobs["jobs"][key]
     for gate, sha, kind, base in (
@@ -275,76 +384,138 @@ def build(*, main_sha: str, head_sha: str, main_branch: dict | None,
         ("changed_line_coverage", head_sha, "diff", main_sha),
     ):
         gates[gate] = coverage(coverage_data, sha, kind, base)
-    gates["bd_distinct_roots"] = {"status": "UNKNOWN", "opened": None,
-                                  "closed": None, "reopened": None,
-                                  "reason": "Needs exact-source native BD/LDAB/REX root receipts"}
-    gates["crew_ldb_rex"] = {"status": "UNKNOWN", "authenticated_launches": None,
-                             "accepted_returns": None, "debug_sessions": None,
-                             "reason": "No authenticated joined execution input"}
+    for environment in DEPLOY_ENVIRONMENTS:
+        gates["deployment_" + environment] = deployment_gate(deployments, environment)
+    gates["bd_distinct_roots"] = {
+        "status": "UNKNOWN",
+        "opened": None,
+        "closed": None,
+        "reopened": None,
+        "reason": "Needs exact-source native BD/LDAB/REX root receipts",
+    }
+    gates["crew_ldb_rex"] = {
+        "status": "UNKNOWN",
+        "authenticated_launches": None,
+        "accepted_returns": None,
+        "debug_sessions": None,
+        "reason": "No authenticated joined execution input",
+    }
     gates["governance_owner"] = {
         "status": "DEFERRED_OWNER_ACTION",
         "protected_observed": main_branch.get("protected") if main_branch else None,
-        "independent_review": None, "rule_change": False,
+        "independent_review": None,
+        "rule_change": False,
     }
     leverage = sorted(
-        ({"job_id": key, "name": DOW_JOB_LABELS.get(key, key),
-          "status": jobs["jobs"][key]["status"],
-          "potential_descendants": jobs["jobs"][key]["downstream_count"]}
-         for key in dag if jobs["jobs"][key]["downstream_count"] > 0),
+        (
+            {
+                "job_id": key,
+                "name": DOW_JOB_LABELS.get(key, key),
+                "status": jobs["jobs"][key]["status"],
+                "potential_descendants": jobs["jobs"][key]["downstream_count"],
+            }
+            for key in dag
+            if jobs["jobs"][key]["downstream_count"] > 0
+        ),
         key=lambda r: (-r["potential_descendants"], r["job_id"]),
     )
-    measured = sum(1 for x in gates.values()
-                   if x["status"] not in ("UNKNOWN", "NOT_OBSERVED"))
+    measured = sum(
+        1 for x in gates.values() if x["status"] not in ("UNKNOWN", "NOT_OBSERVED")
+    )
     return {
         "schema": "abacus.dow.remaining-gates.v1",
         "authority": "READ_ONLY_DIAGNOSTIC_NO_MERGE_CREDIT",
-        "source": {"repo": "GBOGEB/ABACUS", "main_sha": main_sha,
-                   "head_sha": head_sha, "main_branch_verified": main_branch is not None,
-                   "main_run_census_complete": main_complete,
-                   "head_run_census_complete": head_complete,
-                   "dow_job_census": jobs["completeness"],
-                   "dow_run_id": dow_run["id"] if dow_run else None,
-                   "dow_run_url": dow_run["html_url"] if dow_run else None},
-        "gates": gates, "critical_nodes": leverage,
+        "source": {
+            "repo": "GBOGEB/ABACUS",
+            "main_sha": main_sha,
+            "head_sha": head_sha,
+            "main_branch_verified": main_branch is not None,
+            "main_run_census_complete": main_complete,
+            "head_run_census_complete": head_complete,
+            "dow_job_census": jobs["completeness"],
+            "dow_run_id": dow_run["id"] if dow_run else None,
+            "dow_run_url": dow_run["html_url"] if dow_run else None,
+        },
+        "gates": gates,
+        "critical_nodes": leverage,
         "observation_completeness": {
-            "observed_gate_count": measured, "total_gate_count": len(gates),
+            "observed_gate_count": measured,
+            "total_gate_count": len(gates),
             "ratio": round(measured / len(gates), 4),
             "unknown_gate_count": len(gates) - measured,
             "meaning": "Evidence classification only; not a pass rate",
         },
-        "admission": {"merge_authorized": False, "release_authorized": False,
-                      "review_satisfied": None},
+        "admission": {
+            "merge_authorized": False,
+            "release_authorized": False,
+            "review_satisfied": None,
+        },
     }
 
 
 def markdown(report: dict[str, Any]) -> str:
-    lines = ["# DOW remaining-gates telemetry", "",
-             "READ ONLY. No admission, merge, worker or security approval.",
-             "", "Main: " + report["source"]["main_sha"],
-             "PR head: " + report["source"]["head_sha"], "",
-             "| Gate | Status | Measured detail |",
-             "| --- | --- | --- |"]
+    lines = [
+        "# DOW remaining-gates telemetry",
+        "",
+        "READ ONLY. No admission, merge, worker or security approval.",
+        "",
+        "Main: " + report["source"]["main_sha"],
+        "PR head: " + report["source"]["head_sha"],
+        "",
+        "| Gate | Status | Measured detail |",
+        "| --- | --- | --- |",
+    ]
     for key, gate in report["gates"].items():
         details = []
         if gate.get("job_id") is not None:
             details.append("job " + str(gate["job_id"]))
         if gate.get("denominator") is not None:
             details.append(str(gate["numerator"]) + "/" + str(gate["denominator"]))
+        if gate.get("deployment_id") is not None:
+            details.append(
+                "deployment "
+                + str(gate["deployment_id"])
+                + " @ "
+                + str(gate.get("sha") or "?")[:12]
+            )
         if gate.get("closed") is not None:
             details.append("closed roots " + str(gate["closed"]))
         if gate.get("downstream_count"):
             details.append("potential descendants " + str(gate["downstream_count"]))
-        lines.append("| " + key + " | " + gate["status"] + " | " + ", ".join(details) + " |")
-    lines.extend(["", "## Highest dependency fan-out", "",
-                  "| Node | Native status | Potential descendants |",
-                  "| --- | --- | ---: |"])
+        lines.append(
+            "| " + key + " | " + gate["status"] + " | " + ", ".join(details) + " |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Highest dependency fan-out",
+            "",
+            "| Node | Native status | Potential descendants |",
+            "| --- | --- | ---: |",
+        ]
+    )
     for node in report["critical_nodes"]:
-        lines.append("| " + node["job_id"] + " | " + node["status"]
-                     + " | " + str(node["potential_descendants"]) + " |")
+        lines.append(
+            "| "
+            + node["job_id"]
+            + " | "
+            + node["status"]
+            + " | "
+            + str(node["potential_descendants"])
+            + " |"
+        )
     n = report["observation_completeness"]
-    lines.extend(["", "Evidence classified: " + str(n["observed_gate_count"])
-                  + "/" + str(n["total_gate_count"])
-                  + " gates; missing/unknown are not zero.", ""])
+    lines.extend(
+        [
+            "",
+            "Evidence classified: "
+            + str(n["observed_gate_count"])
+            + "/"
+            + str(n["total_gate_count"])
+            + " gates; missing/unknown are not zero.",
+            "",
+        ]
+    )
     return "\n".join(lines)
 
 
@@ -355,7 +526,7 @@ def mermaid(report: dict[str, Any]) -> str:
     lines = ["flowchart LR"]
     for key, node in ids.items():
         title = DOW_JOB_LABELS[key].replace('"', "'")
-        lines.append('    ' + node + '["' + title + ' / ' + status[key] + '"]')
+        lines.append("    " + node + '["' + title + " / " + status[key] + '"]')
     for key in ids:
         for dependency in mapping[key]["needs"]:
             if dependency in ids:
@@ -371,20 +542,23 @@ def main() -> int:
     parser.add_argument("--head-sha", required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args()
-    r = build(main_sha=args.main_sha, head_sha=args.head_sha,
-              main_branch=load(args.snapshot_dir, "branch.json"),
-              main_runs=load(args.snapshot_dir, "main-runs.json"),
-              head_runs=load(args.snapshot_dir, "head-runs.json"),
-              dow_jobs=load(args.snapshot_dir, "dow-jobs.json"),
-              workflow=args.workflow.read_text(encoding="utf-8"),
-              coverage_data=load(args.snapshot_dir, "coverage.json"))
+    r = build(
+        main_sha=args.main_sha,
+        head_sha=args.head_sha,
+        main_branch=load(args.snapshot_dir, "branch.json"),
+        main_runs=load(args.snapshot_dir, "main-runs.json"),
+        head_runs=load(args.snapshot_dir, "head-runs.json"),
+        dow_jobs=load(args.snapshot_dir, "dow-jobs.json"),
+        workflow=args.workflow.read_text(encoding="utf-8"),
+        coverage_data=load(args.snapshot_dir, "coverage.json"),
+        deployments=load(args.snapshot_dir, "deployments.json"),
+    )
     args.output_dir.mkdir(parents=True, exist_ok=True)
     (args.output_dir / "remaining-gates.json").write_text(
-        json.dumps(r, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    (args.output_dir / "remaining-gates.md").write_text(
-        markdown(r), encoding="utf-8")
-    (args.output_dir / "remaining-gates.mmd").write_text(
-        mermaid(r), encoding="utf-8")
+        json.dumps(r, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    (args.output_dir / "remaining-gates.md").write_text(markdown(r), encoding="utf-8")
+    (args.output_dir / "remaining-gates.mmd").write_text(mermaid(r), encoding="utf-8")
     print(json.dumps(r["observation_completeness"], sort_keys=True))
     return 0
 

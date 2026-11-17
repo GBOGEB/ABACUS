@@ -3,6 +3,7 @@
 Consumes one exact GitHub Actions step log and workflow YAML. This is an
 observation/census producer, not a repair, waiver, review or merge authority.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -48,12 +49,15 @@ def downstream_jobs(jobs: dict[str, Any], source: str) -> list[dict[str, str]]:
             if target not in visited:
                 visited.add(target)
                 frontier.append(target)
-    return [{"job_id": name, "job_name": str(jobs[name].get("name", name))}
-            for name in sorted(visited)]
+    return [
+        {"job_id": name, "job_name": str(jobs[name].get("name", name))}
+        for name in sorted(visited)
+    ]
 
 
-def census(log: str, workflow: str, *, source_sha: str, run_id: str,
-           run_attempt: str) -> dict[str, Any]:
+def census(
+    log: str, workflow: str, *, source_sha: str, run_id: str, run_attempt: str
+) -> dict[str, Any]:
     if not SHA.fullmatch(source_sha):
         raise ValueError("Expected a full 40-character source SHA")
     document = yaml.safe_load(workflow)
@@ -68,9 +72,12 @@ def census(log: str, workflow: str, *, source_sha: str, run_id: str,
             hooks_seen += 1
             if current is not None and current["result"] == "Failed":
                 observations.append(current)
-            current = {"label": status.group("label").strip(),
-                       "result": status.group("result"), "hook_id": None,
-                       "modified_files": []}
+            current = {
+                "label": status.group("label").strip(),
+                "result": status.group("result"),
+                "hook_id": None,
+                "modified_files": [],
+            }
             continue
         if current is None:
             continue
@@ -89,8 +96,7 @@ def census(log: str, workflow: str, *, source_sha: str, run_id: str,
     descendants = downstream_jobs(jobs, "lint-and-validate")
     return {
         "schema": "abacus.dow.precommit.census.v1",
-        "source": {"sha": source_sha, "run_id": run_id,
-                   "run_attempt": run_attempt},
+        "source": {"sha": source_sha, "run_id": run_id, "run_attempt": run_attempt},
         "producer": "scripts/dow_first_red_census.py",
         "observation": {
             "status": "PARSED" if complete else "UNKNOWN_INCOMPLETE_LOG",
@@ -98,15 +104,24 @@ def census(log: str, workflow: str, *, source_sha: str, run_id: str,
             "failed_hook_signatures": len(observations) if complete else None,
             "first_red": observations[0]["hook_id"] if observations else None,
             "failed_hooks": observations,
-            "unique_modified_files": len({p for o in observations
-                                          for p in o["modified_files"]}) if complete else None,
+            "unique_modified_files": (
+                len({p for o in observations for p in o["modified_files"]})
+                if complete
+                else None
+            ),
         },
-        "graph": {"upstream_job": "lint-and-validate",
-                  "potentially_downstream": descendants,
-                  "potential_downstream_count": len(descendants),
-                  "observed_downstream_skipped": None},
-        "admission": {"merge_authorized": False, "waiver": False,
-                      "crew_launch_verified": None, "root_cause_closed_count": None},
+        "graph": {
+            "upstream_job": "lint-and-validate",
+            "potentially_downstream": descendants,
+            "potential_downstream_count": len(descendants),
+            "observed_downstream_skipped": None,
+        },
+        "admission": {
+            "merge_authorized": False,
+            "waiver": False,
+            "crew_launch_verified": None,
+            "root_cause_closed_count": None,
+        },
     }
 
 
@@ -116,18 +131,29 @@ def main() -> None:
     parser.add_argument("--workflow", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    report = census(args.log.read_text(encoding="utf-8", errors="replace"),
-                    args.workflow.read_text(encoding="utf-8"),
-                    source_sha=os.environ["DOW_SOURCE_SHA"],
-                    run_id=os.environ["DOW_RUN_ID"],
-                    run_attempt=os.environ["DOW_RUN_ATTEMPT"])
+    report = census(
+        args.log.read_text(encoding="utf-8", errors="replace"),
+        args.workflow.read_text(encoding="utf-8"),
+        source_sha=os.environ["DOW_SOURCE_SHA"],
+        run_id=os.environ["DOW_RUN_ID"],
+        run_attempt=os.environ["DOW_RUN_ATTEMPT"],
+    )
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n",
-                           encoding="utf-8")
-    print(json.dumps({"status": report["observation"]["status"],
-                      "failed_hooks": report["observation"]["failed_hook_signatures"],
-                      "potential_downstream_count": report["graph"]["potential_downstream_count"]},
-                     sort_keys=True))
+    args.output.write_text(
+        json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    print(
+        json.dumps(
+            {
+                "status": report["observation"]["status"],
+                "failed_hooks": report["observation"]["failed_hook_signatures"],
+                "potential_downstream_count": report["graph"][
+                    "potential_downstream_count"
+                ],
+            },
+            sort_keys=True,
+        )
+    )
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@
 
 Exercise existing command-line contracts instead of just checking code style.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -75,8 +76,12 @@ def test_recursive_build_json_metrics_preserve_source_scope(tmp_path):
     artifact.write_text("ok", encoding="utf-8")
     index = tmp_path / "index.json"
     output = tmp_path / "metrics.json"
-    index.write_text(json.dumps({"artefacts": [{"path": str(artifact)}]}), encoding="utf-8")
-    result = invoke(RECURSIVE, "--index", str(index), "--out", str(output), cwd=tmp_path)
+    index.write_text(
+        json.dumps({"artefacts": [{"path": str(artifact)}]}), encoding="utf-8"
+    )
+    result = invoke(
+        RECURSIVE, "--index", str(index), "--out", str(output), cwd=tmp_path
+    )
     assert result.returncode == 0, result.stderr
     data = json.loads(output.read_text(encoding="utf-8"))
     assert data["counts"] == {"artefacts": 1, "missing": 0}

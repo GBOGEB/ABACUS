@@ -5,8 +5,10 @@ from DMAIC_V3.debug_pipeline import PipelineDebugger
 
 def _make_required_structure(root):
     for relative in (
-        "DMAIC_V3/phases", "DMAIC_V3/core",
-        "DMAIC_V3/convergence", "DMAIC_V3_OUTPUT",
+        "DMAIC_V3/phases",
+        "DMAIC_V3/core",
+        "DMAIC_V3/convergence",
+        "DMAIC_V3_OUTPUT",
     ):
         (root / relative).mkdir(parents=True, exist_ok=True)
 

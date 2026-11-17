@@ -11,7 +11,9 @@ Methods are intentionally independent:
 Outputs are derived discovery evidence only and never promote authority.
 """
 from __future__ import annotations
-import argparse, json, subprocess
+import argparse
+import json
+import subprocess
 from collections import Counter, defaultdict, deque
 from pathlib import Path
 

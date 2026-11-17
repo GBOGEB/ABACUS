@@ -3,6 +3,7 @@
 Independent of repository-wide security/merge admission. A runner replay cannot
 prove that a developer's earlier local Git hook actually executed.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -43,7 +44,10 @@ def command(args, cwd, *, timeout=MAX_SECONDS):
     start = time.monotonic_ns()
     try:
         done = subprocess.run(
-            list(args), cwd=str(cwd), capture_output=True, timeout=timeout,
+            list(args),
+            cwd=str(cwd),
+            capture_output=True,
+            timeout=timeout,
             check=False,
         )
         rc, stdout, stderr = done.returncode, done.stdout, done.stderr
@@ -69,8 +73,12 @@ def command(args, cwd, *, timeout=MAX_SECONDS):
 def git_value(repo, *args):
     try:
         result = subprocess.run(
-            ["git", *args], cwd=str(repo), capture_output=True,
-            text=True, check=False, timeout=15,
+            ["git", *args],
+            cwd=str(repo),
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=15,
         )
     except (OSError, subprocess.TimeoutExpired):
         return None
@@ -86,10 +94,16 @@ def fingerprint(repo):
     return {
         "head_sha": sha if sha and SHA.fullmatch(sha) else None,
         "head_tree_sha": tree if tree and SHA.fullmatch(tree) else None,
-        "staged_diff_sha256": sha256_bytes(staged.encode()) if staged is not None else None,
-        "unstaged_diff_sha256": sha256_bytes(unstaged.encode()) if unstaged is not None else None,
+        "staged_diff_sha256": (
+            sha256_bytes(staged.encode()) if staged is not None else None
+        ),
+        "unstaged_diff_sha256": (
+            sha256_bytes(unstaged.encode()) if unstaged is not None else None
+        ),
         "tracked_changes_present": (
-            bool(staged or unstaged) if staged is not None and unstaged is not None else None
+            bool(staged or unstaged)
+            if staged is not None and unstaged is not None
+            else None
         ),
     }
 
@@ -113,10 +127,14 @@ def project_check(result, name):
 
 def tools_for_stage(repo, stage):
     py = [name for name in OWNED if (repo / name).is_file()]
-    tests = [name for name in OWNED + PARENT_TESTS
-             if name.startswith("tests/") and (repo / name).is_file()]
-    owned_tests = [name for name in OWNED if name.startswith("tests/") and
-                   (repo / name).is_file()]
+    tests = [
+        name
+        for name in OWNED + PARENT_TESTS
+        if name.startswith("tests/") and (repo / name).is_file()
+    ]
+    owned_tests = [
+        name for name in OWNED if name.startswith("tests/") and (repo / name).is_file()
+    ]
     if len(py) != len(OWNED) or not owned_tests:
         return None
     suite = owned_tests if stage == "pre-commit" else tests
@@ -124,7 +142,10 @@ def tools_for_stage(repo, stage):
         ("compile", [sys.executable, "-m", "compileall", "-q", *py]),
         ("black", [sys.executable, "-m", "black", "--check", *py]),
         ("isort", [sys.executable, "-m", "isort", "--check-only", *py]),
-        ("pytest", [sys.executable, "-m", "pytest", "-q", *suite, "--disable-warnings"]),
+        (
+            "pytest",
+            [sys.executable, "-m", "pytest", "-q", *suite, "--disable-warnings"],
+        ),
     ]
     return checks
 
@@ -140,20 +161,28 @@ def run_stage(repo, stage, expected_sha=None):
         for name, argv in required:
             checks.append(project_check(command(argv, repo), name))
     has_tests = any(
-        c["name"] == "pytest" and type(c.get("tests_passed")) is int
-        and c["tests_passed"] > 0 for c in checks
+        c["name"] == "pytest"
+        and type(c.get("tests_passed")) is int
+        and c["tests_passed"] > 0
+        for c in checks
     )
-    exact = (
-        expected_sha is None
-        or (isinstance(expected_sha, str)
-            and SHA.fullmatch(expected_sha) is not None
-            and source["head_sha"] == expected_sha)
+    exact = expected_sha is None or (
+        isinstance(expected_sha, str)
+        and SHA.fullmatch(expected_sha) is not None
+        and source["head_sha"] == expected_sha
     )
-    clean = stage not in ("checkout", "pre-push") or source["tracked_changes_present"] is False
+    clean = (
+        stage not in ("checkout", "pre-push")
+        or source["tracked_changes_present"] is False
+    )
     passed = (
-        required is not None and len(checks) == len(required)
+        required is not None
+        and len(checks) == len(required)
         and all(c["status"] == "PASS" for c in checks)
-        and has_tests and exact and clean and source["head_sha"] is not None
+        and has_tests
+        and exact
+        and clean
+        and source["head_sha"] is not None
     )
     return {
         "schema": "abacus.cbd.e2e.stage.v1",
@@ -175,8 +204,9 @@ def run_stage(repo, stage, expected_sha=None):
             "github_event": os.environ.get("GITHUB_EVENT_NAME"),
         },
         "checks": checks,
-        "tests_executed": next((c.get("tests_passed") for c in checks
-                                if c["name"] == "pytest"), None),
+        "tests_executed": next(
+            (c.get("tests_passed") for c in checks if c["name"] == "pytest"), None
+        ),
         "source_exact": exact,
         "clean_tracked": clean,
         "local_developer_hook_verified": None,
@@ -188,6 +218,7 @@ def run_stage(repo, stage, expected_sha=None):
 
 def compare(before, after):
     """Exact-source and test-count parity; wall-clock/runtime not conflated."""
+
     def valid(r):
         return (
             isinstance(r, dict)
@@ -195,6 +226,7 @@ def compare(before, after):
             and r.get("status") == "PASS"
             and isinstance(r.get("source"), dict)
         )
+
     if not valid(before) or not valid(after):
         status, reasons = "HOLD", ["missing or failed source-bound stage"]
     else:
@@ -202,9 +234,11 @@ def compare(before, after):
         for key in ("head_sha", "head_tree_sha"):
             if before["source"].get(key) != after["source"].get(key):
                 reasons.append("source mismatch: " + key)
-        if (before.get("tests_executed") is None or
-                after.get("tests_executed") is None or
-                before["tests_executed"] != after["tests_executed"]):
+        if (
+            before.get("tests_executed") is None
+            or after.get("tests_executed") is None
+            or before["tests_executed"] != after["tests_executed"]
+        ):
             reasons.append("test denominator mismatch")
         for name in ("black", "isort", "pytest"):
             b = next((c for c in before["checks"] if c["name"] == name), None)
@@ -218,8 +252,16 @@ def compare(before, after):
         "after_stage": after.get("stage") if isinstance(after, dict) else None,
         "status": status,
         "differences": reasons,
-        "before_process_ms": before.get("clock", {}).get("elapsed_process_ms") if isinstance(before, dict) else None,
-        "after_process_ms": after.get("clock", {}).get("elapsed_process_ms") if isinstance(after, dict) else None,
+        "before_process_ms": (
+            before.get("clock", {}).get("elapsed_process_ms")
+            if isinstance(before, dict)
+            else None
+        ),
+        "after_process_ms": (
+            after.get("clock", {}).get("elapsed_process_ms")
+            if isinstance(after, dict)
+            else None
+        ),
         "cross_host_elapsed_delta_ms": None,
         "developer_pre_push_vs_ci": None,
         "independent_security_admission": None,
@@ -233,14 +275,33 @@ def replay(repo, expected):
     with tempfile.TemporaryDirectory(prefix="cbd-fresh-clone-") as temp:
         target = Path(temp) / "fresh"
         init = command(["git", "init", "-q", str(target)], repo)
-        fetch = command(
-            ["git", "-C", str(target), "fetch", "--no-tags", "--depth", "1",
-             str(repo), str(expected)], repo, timeout=90,
-        ) if init["status"] == "PASS" else None
-        checkout = command(
-            ["git", "-C", str(target), "checkout", "-q", "--detach", "FETCH_HEAD"],
-            repo,
-        ) if fetch and fetch["status"] == "PASS" else None
+        fetch = (
+            command(
+                [
+                    "git",
+                    "-C",
+                    str(target),
+                    "fetch",
+                    "--no-tags",
+                    "--depth",
+                    "1",
+                    str(repo),
+                    str(expected),
+                ],
+                repo,
+                timeout=90,
+            )
+            if init["status"] == "PASS"
+            else None
+        )
+        checkout = (
+            command(
+                ["git", "-C", str(target), "checkout", "-q", "--detach", "FETCH_HEAD"],
+                repo,
+            )
+            if fetch and fetch["status"] == "PASS"
+            else None
+        )
         if checkout and checkout["status"] == "PASS":
             result = run_stage(target, "checkout", expected)
         else:
@@ -253,7 +314,9 @@ def replay(repo, expected):
                 "tests_executed": None,
             }
     result["stage"] = "replay"
-    result["clone_mechanism"] = "git init + local git fetch exact sha + detached checkout"
+    result["clone_mechanism"] = (
+        "git init + local git fetch exact sha + detached checkout"
+    )
     result["clone_steps"] = [
         {"name": name, "status": data["status"], "returncode": data["returncode"]}
         for name, data in (("init", init), ("fetch", fetch), ("checkout", checkout))
@@ -269,8 +332,9 @@ def replay(repo, expected):
 def write_receipt(path, data):
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(json.dumps(data, sort_keys=True, indent=2) + "\n",
-                      encoding="utf-8")
+    target.write_text(
+        json.dumps(data, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+    )
     return target
 
 
@@ -278,17 +342,22 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--stage", choices=STAGES, required=True)
     parser.add_argument("--expected-sha")
-    parser.add_argument("--repo", type=Path, default=Path(__file__).resolve().parents[1])
+    parser.add_argument(
+        "--repo", type=Path, default=Path(__file__).resolve().parents[1]
+    )
     parser.add_argument("--before", type=Path)
     parser.add_argument("--after", type=Path)
-    parser.add_argument("--receipt", type=Path, default=Path(".testpilot/e2e/receipt.json"))
+    parser.add_argument(
+        "--receipt", type=Path, default=Path(".testpilot/e2e/receipt.json")
+    )
     args = parser.parse_args()
     repo = args.repo.resolve()
     if args.stage == "compare":
         if not args.before or not args.after:
             parser.error("compare needs --before and --after")
-        data = compare(json.loads(args.before.read_text()),
-                       json.loads(args.after.read_text()))
+        data = compare(
+            json.loads(args.before.read_text()), json.loads(args.after.read_text())
+        )
     elif args.stage == "replay":
         if not args.expected_sha or SHA.fullmatch(args.expected_sha) is None:
             parser.error("replay needs exact 40-character --expected-sha")
@@ -297,11 +366,18 @@ def main():
         data = run_stage(repo, args.stage, args.expected_sha)
     target = args.receipt if args.receipt.is_absolute() else repo / args.receipt
     write_receipt(target, data)
-    print(json.dumps({
-        "stage": args.stage, "status": data["status"],
-        "receipt": str(target), "sha": data.get("source", {}).get("head_sha"),
-        "tests_executed": data.get("tests_executed"),
-    }, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                "stage": args.stage,
+                "status": data["status"],
+                "receipt": str(target),
+                "sha": data.get("source", {}).get("head_sha"),
+                "tests_executed": data.get("tests_executed"),
+            },
+            sort_keys=True,
+        )
+    )
     return 0 if data["status"] == "PASS" else 1
 
 

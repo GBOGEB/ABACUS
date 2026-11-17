@@ -90,7 +90,11 @@ def annotate_join(report: dict, code_by_root: dict) -> dict:
 def canonical_bytes(obj: dict) -> bytes:
     return (
         json.dumps(
-            obj, sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False
+            obj,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=True,
+            allow_nan=False,
         )
         + "\n"
     ).encode()

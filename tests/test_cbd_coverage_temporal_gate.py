@@ -1,9 +1,11 @@
 """Adversarial tests for source-bound coverage freshness and counters."""
+
 import json
 
 import pytest
 
 from scripts import cbd_coverage_temporal_gate as gate
+
 SHA = "a" * 40
 
 
@@ -119,8 +121,13 @@ def test_missing_branch_instrumentation_and_fake_head_rejected():
     with pytest.raises(ValueError, match="branch coverage"):
         evaluate(c=c)
     with pytest.raises(ValueError, match="invalid exact source head"):
-        gate.measure(coverage(), junit(), {"exact_sha": SHA},
-                     {"exact_sha": SHA}, expected_sha="deadbeef")
+        gate.measure(
+            coverage(),
+            junit(),
+            {"exact_sha": SHA},
+            {"exact_sha": SHA},
+            expected_sha="deadbeef",
+        )
 
 
 def test_cli_stale_receipt_exits_nonzero(tmp_path, capsys):
@@ -134,11 +141,18 @@ def test_cli_stale_receipt_exits_nonzero(tmp_path, capsys):
     (tmp_path / "junit.xml").write_text(junit())
     output = tmp_path / "receipt.json"
     args = [
-        "--coverage", str(tmp_path / "coverage.json"),
-        "--coverage-binding", str(tmp_path / "coverage_binding.json"),
-        "--test-binding", str(tmp_path / "test_binding.json"),
-        "--junit", str(tmp_path / "junit.xml"),
-        "--head", SHA, "--out", str(output),
+        "--coverage",
+        str(tmp_path / "coverage.json"),
+        "--coverage-binding",
+        str(tmp_path / "coverage_binding.json"),
+        "--test-binding",
+        str(tmp_path / "test_binding.json"),
+        "--junit",
+        str(tmp_path / "junit.xml"),
+        "--head",
+        SHA,
+        "--out",
+        str(output),
     ]
     assert gate.main(args) == 2
     assert json.loads(output.read_text())["status"] == "HOLD"

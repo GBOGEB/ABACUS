@@ -21,7 +21,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - run: python -m pip install --disable-pip-version-check openpyxl PyYAML
       - run: python qps/scripts/validate_mip_3p3.py
       - run: python qps/scripts/qps_w85_materialize_supplier_a_surfaces.py --out-dir out/pass1 --expected-head "$QPS_SHA"

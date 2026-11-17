@@ -89,8 +89,16 @@ class WorkflowAnalyzer:
             "failure_rate": (total_failures / len(runs) * 100) if runs else 0,
             "failures_by_workflow": dict(failures_by_workflow),
             "failures_by_branch": dict(failures_by_branch),
-            "most_failing_workflow": max(failures_by_workflow.items(), key=lambda x: x[1])[0] if failures_by_workflow else None,
-            "most_failing_branch": max(failures_by_branch.items(), key=lambda x: x[1])[0] if failures_by_branch else None
+            "most_failing_workflow": (
+                max(failures_by_workflow.items(), key=lambda x: x[1])[0]
+                if failures_by_workflow
+                else None
+            ),
+            "most_failing_branch": (
+                max(failures_by_branch.items(), key=lambda x: x[1])[0]
+                if failures_by_branch
+                else None
+            )
         }
 
         return analysis

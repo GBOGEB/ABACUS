@@ -93,7 +93,7 @@ from runtime_dependency_tracker import get_tracker
 def execute_file_with_tracking(file_path):
     tracker = get_tracker()
     tracker.start_tracking()
-    
+
     try:
         result = execute_file(file_path)
         result['runtime_dependencies'] = tracker.get_dependencies()

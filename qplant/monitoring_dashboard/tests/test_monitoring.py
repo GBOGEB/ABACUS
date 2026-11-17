@@ -18,8 +18,8 @@ from monitoring_dashboard.predictive import (
     TimeSeriesStore,
 )
 
-
 # ── SPC Tests ────────────────────────────────────────────────────────────────
+
 
 class TestSPC:
     def test_add_observation(self):
@@ -70,6 +70,7 @@ class TestSPC:
 
 # ── Alert Tests ──────────────────────────────────────────────────────────────
 
+
 class TestAlerts:
     def test_fire_alert(self):
         mgr = AlertManager()
@@ -86,35 +87,85 @@ class TestAlerts:
     def test_alert_aggregation(self):
         mgr = AlertManager(aggregation_window_s=300)
         alert = Alert(
-            level=AlertLevel.WARNING, source="test",
-            message="Test", metric="m", value=100, threshold=90
+            level=AlertLevel.WARNING,
+            source="test",
+            message="Test",
+            metric="m",
+            value=100,
+            threshold=90,
         )
         assert mgr.fire(alert) is True
         assert mgr.fire(alert) is False  # Suppressed
 
     def test_get_active(self):
         mgr = AlertManager()
-        mgr.fire(Alert(level=AlertLevel.INFO, source="t", message="i", metric="m", value=1, threshold=0))
-        mgr.fire(Alert(level=AlertLevel.CRITICAL, source="t", message="c", metric="m2", value=2, threshold=1))
+        mgr.fire(
+            Alert(
+                level=AlertLevel.INFO,
+                source="t",
+                message="i",
+                metric="m",
+                value=1,
+                threshold=0,
+            )
+        )
+        mgr.fire(
+            Alert(
+                level=AlertLevel.CRITICAL,
+                source="t",
+                message="c",
+                metric="m2",
+                value=2,
+                threshold=1,
+            )
+        )
         active = mgr.get_active()
         assert len(active) == 2
 
     def test_acknowledge(self):
         mgr = AlertManager()
-        mgr.fire(Alert(level=AlertLevel.INFO, source="t", message="i", metric="m", value=1, threshold=0))
+        mgr.fire(
+            Alert(
+                level=AlertLevel.INFO,
+                source="t",
+                message="i",
+                metric="m",
+                value=1,
+                threshold=0,
+            )
+        )
         assert mgr.acknowledge(0) is True
         assert len(mgr.get_active()) == 0
 
     def test_summary(self):
         mgr = AlertManager()
-        mgr.fire(Alert(level=AlertLevel.INFO, source="t", message="1", metric="m1", value=1, threshold=0))
-        mgr.fire(Alert(level=AlertLevel.WARNING, source="t", message="2", metric="m2", value=2, threshold=1))
+        mgr.fire(
+            Alert(
+                level=AlertLevel.INFO,
+                source="t",
+                message="1",
+                metric="m1",
+                value=1,
+                threshold=0,
+            )
+        )
+        mgr.fire(
+            Alert(
+                level=AlertLevel.WARNING,
+                source="t",
+                message="2",
+                metric="m2",
+                value=2,
+                threshold=1,
+            )
+        )
         summary = mgr.get_summary()
         assert summary["INFO"] == 1
         assert summary["WARNING"] == 1
 
 
 # ── Performance Tests ────────────────────────────────────────────────────────
+
 
 class TestPerformance:
     def test_record_latency(self):
@@ -134,6 +185,7 @@ class TestPerformance:
 
 
 # ── Time Series Tests ────────────────────────────────────────────────────────
+
 
 class TestTimeSeries:
     def test_append_and_query(self):
@@ -165,6 +217,7 @@ class TestTimeSeries:
 
 
 # ── Integrated Monitor Tests ────────────────────────────────────────────────
+
 
 class TestAdvancedMonitor:
     def test_observe(self):

@@ -236,7 +236,7 @@ def validate_workspace_expectations(self):
     """Compare actual vs documented workspace size"""
     expected_files = 130000  # From canonical docs
     actual_files = self.count_workspace_files()
-    
+
     if actual_files < expected_files * 0.5:
         print(f"[WARNING] Workspace size mismatch:")
         print(f"  Expected: ~{expected_files:,} files")

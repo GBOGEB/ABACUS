@@ -75,7 +75,7 @@ SCOPES_RESPONSE=$(curl -s -I -H "Authorization: token $GITHUB_TOKEN" \
 if [ -n "$SCOPES_RESPONSE" ]; then
     SCOPES=$(echo "$SCOPES_RESPONSE" | cut -d: -f2- | tr -d ' \r\n')
     echo "✅ Token scopes: $SCOPES"
-    
+
     # Check for required scopes
     if echo "$SCOPES" | grep -q "repo"; then
         echo "✅ 'repo' scope detected - full repository access available"
@@ -83,7 +83,7 @@ if [ -n "$SCOPES_RESPONSE" ]; then
         echo "❌ Missing 'repo' scope - this will cause push failures"
         echo "   Regenerate your token with 'repo' scope enabled"
     fi
-    
+
     if echo "$SCOPES" | grep -q "workflow"; then
         echo "✅ 'workflow' scope detected - GitHub Actions access available"
     else
@@ -101,7 +101,7 @@ echo "📍 Git remote URL: $GIT_REMOTE"
 
 if [[ "$GIT_REMOTE" == *"github.com"* ]]; then
     echo "✅ GitHub remote configured correctly"
-    
+
     # Check git credential configuration
     GIT_HELPER=$(git config credential.helper 2>/dev/null || echo "not configured")
     if [[ "$GIT_HELPER" == *"GITHUB_TOKEN"* ]]; then

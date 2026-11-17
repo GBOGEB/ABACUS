@@ -8,7 +8,7 @@
 
 ### **V1.0 - Initial DMAIC Implementation**
 - **Status:** Legacy/Deprecated
-- **Key Artifacts:** 
+- **Key Artifacts:**
   - `recursive_dmaic_engine.py` (Original engine)
   - Early test files and validation scripts
 

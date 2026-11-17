@@ -1,4 +1,5 @@
 """Regression contracts for exact-head BD/LDAB observational join."""
+
 import importlib.util
 import json
 from pathlib import Path
@@ -23,39 +24,59 @@ def census(sha=HEAD, rows=None):
     for name in module.LANES:
         items = rows if name == "B3-subprocess" else []
         lanes[name] = {
-            "items": items, "findings": len(items),
+            "items": items,
+            "findings": len(items),
             "files": len({x["path"] for x in items}),
         }
-    return {"schema": "bandit.disjoint.census.v1", "exact_sha": sha,
-            "total_unique": len(rows), "lanes": lanes}
+    return {
+        "schema": "bandit.disjoint.census.v1",
+        "exact_sha": sha,
+        "total_unique": len(rows),
+        "lanes": lanes,
+    }
 
 
 def bundle():
     return {
         "schema": "bd.ldab.input.v1",
-        "scope": {"repository": REPO, "head_sha": HEAD,
-                  "scan_configuration": "full-default-v1",
-                  "run_id": 38531518523, "job_id": 115744267733,
-                  "evidence_url": URL},
+        "scope": {
+            "repository": REPO,
+            "head_sha": HEAD,
+            "scan_configuration": "full-default-v1",
+            "run_id": 38531518523,
+            "job_id": 115744267733,
+            "evidence_url": URL,
+        },
         "bandit_disjoint": census(),
     }
 
 
 def ci(**kwargs):
-    row = {"repository": REPO, "source_sha": HEAD,
-           "run_id": 38531518668, "job_id": 115744268133,
-           "evidence_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38531518668",
-           "source_path": "docs/ci/a.md",
-           "signature": "MD013 over length", "rule_or_error_code": "MD013"}
+    row = {
+        "repository": REPO,
+        "source_sha": HEAD,
+        "run_id": 38531518668,
+        "job_id": 115744268133,
+        "evidence_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38531518668",
+        "source_path": "docs/ci/a.md",
+        "signature": "MD013 over length",
+        "rule_or_error_code": "MD013",
+    }
     row.update(kwargs)
     return row
 
 
 def debug(**kwargs):
-    row = {"repository": REPO, "source_sha": HEAD,
-           "run_id": 456, "job_id": 789,
-           "evidence_url": URL, "session_id": "s-1",
-           "runner_id": "runner-1", "real_probe_steps": 10}
+    row = {
+        "repository": REPO,
+        "source_sha": HEAD,
+        "run_id": 456,
+        "job_id": 789,
+        "evidence_url": URL,
+        "session_id": "s-1",
+        "runner_id": "runner-1",
+        "real_probe_steps": 10,
+    }
     row.update(kwargs)
     return row
 
@@ -112,11 +133,18 @@ def test_repeat_ci_signature_deduplicates_root_but_not_occurrences():
 
 def test_codex_runtime_stays_unlinked_without_cross_repo_authority():
     b = bundle()
-    b["debug_receipts"] = [debug(repository="GBOGEB/CODEX",
-        source_sha="d" * 40, run_id=38523894832, job_id=115719629787,
-        evidence_url="https://github.com/GBOGEB/CODEX/actions/runs/38523894832",
-        host_binding="127.0.0.1:32768", container_id="container-1",
-        image_digest="sha256:" + "e" * 64)]
+    b["debug_receipts"] = [
+        debug(
+            repository="GBOGEB/CODEX",
+            source_sha="d" * 40,
+            run_id=38523894832,
+            job_id=115719629787,
+            evidence_url="https://github.com/GBOGEB/CODEX/actions/runs/38523894832",
+            host_binding="127.0.0.1:32768",
+            container_id="container-1",
+            image_digest="sha256:" + "e" * 64,
+        )
+    ]
     out = module.join(b)
     assert len(out["unlinked_debug_receipts"]) == 1
     assert out["unlinked_debug_receipts"][0]["proof_level"] == "REPORTED_UNVERIFIED"
@@ -131,12 +159,23 @@ def test_partial_debug_is_not_counted_as_real_session():
     assert out["unlinked_debug_receipts"][0]["proof_level"] == "PARTIAL"
 
 
-@pytest.mark.parametrize("unsafe", ["", ".", "././", "../outside", "/etc/passwd",
-                                     "src/../../outside", r"C:\Windows\system32"])
+@pytest.mark.parametrize(
+    "unsafe",
+    [
+        "",
+        ".",
+        "././",
+        "../outside",
+        "/etc/passwd",
+        "src/../../outside",
+        r"C:\Windows\system32",
+    ],
+)
 def test_unsafe_bandit_paths_rejected(unsafe):
     b = bundle()
-    b["bandit_disjoint"] = census(rows=[
-        {"path": unsafe, "rule": "B603", "line": 1, "fingerprint": FP}])
+    b["bandit_disjoint"] = census(
+        rows=[{"path": unsafe, "rule": "B603", "line": 1, "fingerprint": FP}]
+    )
     with pytest.raises(ValueError):
         module.join(b)
 
@@ -144,8 +183,12 @@ def test_unsafe_bandit_paths_rejected(unsafe):
 def test_multiple_owner_for_same_file_fails_closed():
     b = bundle()
     b["bandit_disjoint"]["lanes"]["B2-source"] = {
-        "items": [{"path": "scripts/a.py", "rule": "B105", "line": 8,
-                   "fingerprint": "d" * 64}], "findings": 1, "files": 1}
+        "items": [
+            {"path": "scripts/a.py", "rule": "B105", "line": 8, "fingerprint": "d" * 64}
+        ],
+        "findings": 1,
+        "files": 1,
+    }
     b["bandit_disjoint"]["total_unique"] = 2
     with pytest.raises(ValueError, match="multiple disjoint owners"):
         module.join(b)
@@ -171,8 +214,9 @@ def test_exact_head_mismatch_or_invalid_sha_rejected(wrong):
 
 def test_cross_repo_debug_cannot_claim_bandit_fingerprint():
     b = bundle()
-    b["debug_receipts"] = [debug(repository="GBOGEB/CODEX",
-                                 related_bandit_fingerprint=FP)]
+    b["debug_receipts"] = [
+        debug(repository="GBOGEB/CODEX", related_bandit_fingerprint=FP)
+    ]
     with pytest.raises(ValueError, match="same-head"):
         module.join(b)
 
@@ -186,9 +230,12 @@ def test_unbacked_ci_fingerprint_fails_closed():
 
 def test_comparable_burndown_same_config():
     b = bundle()
-    b["previous"] = {"repository": REPO, "head_sha": OLD,
-                     "scan_configuration": "full-default-v1",
-                     "bandit_disjoint": census(sha=OLD, rows=[])}
+    b["previous"] = {
+        "repository": REPO,
+        "head_sha": OLD,
+        "scan_configuration": "full-default-v1",
+        "bandit_disjoint": census(sha=OLD, rows=[]),
+    }
     delta = module.join(b)["metrics"]["comparable_delta"]
     assert delta["new"] == 1
     assert delta["resolved"] == 0
@@ -198,9 +245,12 @@ def test_comparable_burndown_same_config():
 
 def test_config_mismatch_fails_closed_without_artificial_reduction():
     b = bundle()
-    b["previous"] = {"repository": REPO, "head_sha": OLD,
-                     "scan_configuration": "configured-with-exclusions",
-                     "bandit_disjoint": census(sha=OLD, rows=[])}
+    b["previous"] = {
+        "repository": REPO,
+        "head_sha": OLD,
+        "scan_configuration": "configured-with-exclusions",
+        "bandit_disjoint": census(sha=OLD, rows=[]),
+    }
     with pytest.raises(ValueError, match="configuration/repository mismatch"):
         module.join(b)
 
@@ -218,8 +268,10 @@ def test_cli_two_pass_byte_identity(tmp_path, monkeypatch):
     target = tmp_path / "out" / "joined.json"
     source.write_text(json.dumps(bundle()), encoding="utf-8")
     import sys
-    monkeypatch.setattr(sys, "argv", ["join", "--input", str(source),
-                                      "--out", str(target)])
+
+    monkeypatch.setattr(
+        sys, "argv", ["join", "--input", str(source), "--out", str(target)]
+    )
     module.main()
     first = target.read_bytes()
     module.main()

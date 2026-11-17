@@ -5,8 +5,8 @@ The retired rich_padding parallel_execution YAML must remain absent. Parallel
 execution authority is the canonical TwelveClusterOrchestrator contract.
 """
 
-from datetime import datetime
 import json
+from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -97,9 +97,7 @@ class TestCanonicalParallelContract:
 
     def test_knowledge_dow_cluster_is_phase6(self, orchestrator):
         row = next(
-            row
-            for row in orchestrator.get_cluster_contract()
-            if row["cluster_id"] == 8
+            row for row in orchestrator.get_cluster_contract() if row["cluster_id"] == 8
         )
         assert row == {
             "cluster_id": 8,

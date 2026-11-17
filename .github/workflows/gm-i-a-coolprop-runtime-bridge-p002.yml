@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: Consume exact P002 CoolProp federation attestation
         run: python scripts/validate_gm_i_a_coolprop_runtime_bridge_p002.py --receipt /tmp/gm_i_a_p002_dow_receipt.json
       - name: Bind P002 DOW receipt

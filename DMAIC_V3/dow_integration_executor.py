@@ -99,7 +99,10 @@ class DOWIntegrationExecutor:
             if previous.exists():
                 args.extend(["--previous", str(previous)])
             else:
-                print(f"[!] Previous iteration directory not present; running convergence without --previous: {previous}")
+                print(
+                    "[!] Previous iteration directory not present; "
+                    f"running convergence without --previous: {previous}"
+                )
         return self._run_agent("dow_convergence_calculator", args)
 
     def _run_agent(self, agent_name: str, args: List[str]) -> Dict[str, Any]:
@@ -233,7 +236,9 @@ class DOWIntegrationExecutor:
         ]
         for result in self.results:
             lines.append(
-                f"  {result.get('stage', '?')}. {result.get('stage_name', result.get('agent', 'unknown'))}: {result.get('status', 'unknown')}"
+                f"  {result.get('stage', '?')}. "
+                f"{result.get('stage_name', result.get('agent', 'unknown'))}: "
+                f"{result.get('status', 'unknown')}"
             )
         return "\n".join(lines) + "\n"
 

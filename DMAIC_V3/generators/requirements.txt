@@ -11,8 +11,15 @@ markdown>=3.3.0,<3.11; python_version < '3.11'
 markdown>=3.11; python_version >= '3.11'
 
 # PDF handling
-PyPDF2>=3.0.1
+# OSV BD-24b: PyPDF2 never released 3.9.0 (last release 3.0.1, project deprecated), so the
+# previous floor made OSV resolution impossible and nothing was scanned. Nothing in the repo
+# imports PyPDF2; PDF reading uses its maintained successor pypdf (tools/qps_binary_bridge.py).
+pypdf>=7.1.0
 reportlab>=5.0.1
+
+# Image handling (transitive via python-docx / python-pptx / reportlab).
+# OSV BD-24 security floor: all reported Pillow advisories are fixed by 13.0.0.
+Pillow>=13.0.0
 
 # Data processing
 pandas>=1.5.3; python_version < '3.9'
@@ -22,7 +29,7 @@ numpy>=1.24.4; python_version < '3.9'
 numpy>=2.0.2; python_version >= '3.9' and python_version < '3.10'
 numpy>=2.2.6; python_version >= '3.10' and python_version < '3.11'
 numpy>=2.4.6; python_version >= '3.11' and python_version < '3.12'
-numpy>=2.5.3; python_version >= '3.12'
+numpy>=2.5.4; python_version >= '3.12'
 
 # Utilities
 python-dateutil>=2.9.0.post0

@@ -1,5 +1,6 @@
 """Fail-closed contract for shared root-conftest pytest prerequisites."""
 
+import json
 import unittest
 from pathlib import Path
 
@@ -29,7 +30,14 @@ class EVERREDPytestDependencies(unittest.TestCase):
 
     def test_all_python_versions_share_same_dependency_step(self):
         workflow = WORKFLOW.read_text(encoding="utf-8")
-        self.assertIn("python-version: ['3.10', '3.12']", workflow)
+        # numpy==1.26.4 caps this workflow to the numpy-1x-pin lane in
+        # ssot/python_versions.yaml; the matrix is that lane's edge pair.
+        lane = json.loads(
+            (ROOT / "ssot" / "python_versions.lanes.json").read_text(encoding="utf-8")
+        )["lanes"]["numpy-1x-pin"]
+        self.assertIn(
+            f"python-version: ['{lane['oldest']}', '{lane['newest']}']", workflow
+        )
         self.assertIn(
             "python -m pytest -q ../../tests/test_bd_ldab_join_census.py", workflow
         )

@@ -394,7 +394,7 @@ python test_dmaic_v3_foundation.py
 
 ## 🎉 CONCLUSION
 
-The DMAIC V3.0 foundation is **complete, tested, and validated**! 
+The DMAIC V3.0 foundation is **complete, tested, and validated**!
 
 ### What We Built:
 - ✅ Solid modular architecture

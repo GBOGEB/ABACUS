@@ -331,7 +331,7 @@ GBA_INIT_001 ──┬── GBA_INIT_002
                                   ├── GBA_TEST_003
                                   ├── GBA_TEST_004
                                   └── GBA_TEST_005 → GBA_TEST_006
-               
+
 GBA_RENDER_001 ─┐
 GBA_RENDER_002 ─┤→ GBA_RENDER_004 → GBA_JEK_001 → GBA_JEK_002 → GBA_JEK_003 → GBA_JEK_004
 GBA_RENDER_003 ─┘                                                                   │

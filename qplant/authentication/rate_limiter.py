@@ -6,7 +6,7 @@ Implements token-bucket algorithm with thread safety.
 import threading
 from collections import defaultdict
 from datetime import datetime
-from typing import Tuple, Dict, Any
+from typing import Any, Dict, Tuple
 
 
 class RateLimiter:

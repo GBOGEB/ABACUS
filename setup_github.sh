@@ -54,7 +54,7 @@ if git remote get-url origin &> /dev/null; then
     echo ""
     echo "✓ Remote 'origin' already configured:"
     echo "  $EXISTING_REMOTE"
-    
+
     read -p "Do you want to update it? (y/N): " response
     if [[ "$response" =~ ^[Yy]$ ]]; then
         if [ "$DRY_RUN" = false ]; then

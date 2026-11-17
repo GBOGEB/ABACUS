@@ -25,7 +25,7 @@ jobs:
 
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.11'
+          python-version: '3.14'
 
       - name: Extract module docstrings
         run: |
@@ -82,7 +82,7 @@ jobs:
               "modules": modules,
           }
           pathlib.Path("docs/api/modules.json").write_text(
-              json.dumps(out, indent=2),
+              json.dumps(out, indent=2) + "\n",
               encoding="utf-8",
           )
           print(f"Extracted {len(modules)} modules")
@@ -116,7 +116,8 @@ jobs:
               "dashboards": dashboards,
           }
           pathlib.Path("docs/api/deployment_matrix.json").write_text(
-              json.dumps(matrix, indent=2)
+              json.dumps(matrix, indent=2) + "\n",
+              encoding="utf-8",
           )
           print(f"Found {len(dashboards)} dashboards")
           PYEOF

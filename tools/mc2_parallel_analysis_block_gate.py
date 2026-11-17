@@ -5,6 +5,7 @@ Unlike the original runtime-only gate, this wrapper can evaluate runtime_pca or
 semantic_pca. A withheld input PCA produces a withheld PA receipt with exit 0;
 it never fabricates eigenvalues and never grants allocation authority.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -14,14 +15,15 @@ from pathlib import Path
 
 from mc2_parallel_analysis_gate import parallel_analysis
 
-
 BLOCKS = {"runtime_pca", "semantic_pca"}
 
 
 def write_result(path: Path, result: dict) -> None:
     canonical = json.dumps(result, sort_keys=True, separators=(",", ":")).encode()
     result["receipt_sha256"] = hashlib.sha256(canonical).hexdigest()
-    path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps(result, sort_keys=True))
 
 

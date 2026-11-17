@@ -3,13 +3,14 @@
 These are 12 additional distinct high-yield cases after W40's matched
 N/N+1 native census. Source under test stays unchanged.
 """
+
 from __future__ import annotations
 
 import importlib.util
 import json
-from pathlib import Path
 import sys
 import zipfile
+from pathlib import Path
 
 import pytest
 
@@ -35,8 +36,12 @@ def archive(path, entries):
 
 def normalized(path):
     return bridge.normalize_source(
-        path, authority="CHILD_SSOT", lifecycle_status="CURRENT",
-        trace_links=[], supersedes=[], producer_commit="c" * 40,
+        path,
+        authority="CHILD_SSOT",
+        lifecycle_status="CURRENT",
+        trace_links=[],
+        supersedes=[],
+        producer_commit="c" * 40,
     )["hierarchy_node"]
 
 
@@ -49,12 +54,17 @@ def test_producer_head_refuses_invalid_non_full_sha(monkeypatch, bad):
 
 def test_docx_empty_paragraph_is_not_fabricated_as_semantic_block(tmp_path):
     path = tmp_path / "empty.docx"
-    archive(path, {"word/document.xml": (
-        f'<w:document xmlns:w="{W}"><w:body>'
-        '<w:p><w:r><w:t> </w:t></w:r></w:p>'
-        '<w:p><w:r><w:t>Visible</w:t></w:r></w:p>'
-        '</w:body></w:document>'
-    )})
+    archive(
+        path,
+        {
+            "word/document.xml": (
+                f'<w:document xmlns:w="{W}"><w:body>'
+                "<w:p><w:r><w:t> </w:t></w:r></w:p>"
+                "<w:p><w:r><w:t>Visible</w:t></w:r></w:p>"
+                "</w:body></w:document>"
+            )
+        },
+    )
     blocks = normalized(path)["blocks"]
     assert len(blocks) == 1
     assert blocks[0]["text"] == "Visible"
@@ -65,7 +75,7 @@ def spreadsheet_parts(shared_index=None, empty=False):
         "xl/workbook.xml": (
             f'<workbook xmlns="{S}" xmlns:r="{R}"><sheets>'
             '<sheet name="First" sheetId="1" r:id="rId1"/>'
-            '</sheets></workbook>'
+            "</sheets></workbook>"
         ),
         "xl/_rels/workbook.xml.rels": (
             f'<Relationships xmlns="{REL}"><Relationship Id="rId1" '
@@ -83,7 +93,7 @@ def spreadsheet_parts(shared_index=None, empty=False):
         cells = '<c r="A1"/>' + cells
     common["xl/worksheets/sheet1.xml"] = (
         f'<worksheet xmlns="{S}"><sheetData><row>{cells}</row>'
-        '</sheetData></worksheet>'
+        "</sheetData></worksheet>"
     )
     return common
 
@@ -95,10 +105,15 @@ def test_xlsx_shared_string_valid_and_out_of_range_are_disjoint(
     source = tmp_path / "shared.xlsx"
     archive(source, spreadsheet_parts(shared_index=index))
     cells = normalized(source)["sheets"][0]["cells"]
-    assert cells == [{
-        "anchor": "First!B1", "value": expected, "formula": None,
-        "formula_type": None, "formula_shared_index": None,
-    }]
+    assert cells == [
+        {
+            "anchor": "First!B1",
+            "value": expected,
+            "formula": None,
+            "formula_type": None,
+            "formula_shared_index": None,
+        }
+    ]
 
 
 def test_xlsx_no_value_no_formula_cell_is_not_fabricated(tmp_path):
@@ -148,12 +163,24 @@ def test_main_cli_emits_source_bound_output_without_authority_promotion(
     source.write_text("<p>Derived trace</p>", encoding="utf-8")
     target = tmp_path / "outputs" / "bridge.json"
     monkeypatch.setattr(bridge, "git_sha", lambda: "b" * 40)
-    monkeypatch.setattr(sys, "argv", [
-        "qps_binary_bridge.py", str(source), "--output", str(target),
-        "--authority", "DERIVED_REVIEW",
-        "--lifecycle-status", "CURRENT", "--trace-link", "W41_TRACE",
-        "--supersedes", "W40",
-    ])
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "qps_binary_bridge.py",
+            str(source),
+            "--output",
+            str(target),
+            "--authority",
+            "DERIVED_REVIEW",
+            "--lifecycle-status",
+            "CURRENT",
+            "--trace-link",
+            "W41_TRACE",
+            "--supersedes",
+            "W40",
+        ],
+    )
     assert bridge.main() == 0
     report = json.loads(target.read_text(encoding="utf-8"))
     assert report["producer_commit"] == "b" * 40

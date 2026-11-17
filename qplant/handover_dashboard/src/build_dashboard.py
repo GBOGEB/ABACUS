@@ -89,10 +89,10 @@ def _phase_cards(version: str, ts: str, test_summary: str) -> str:
     for card in cards:
         status_label = card.get("status_override", card["status"])
         links = "".join(
-            f'<li><a href="{href}">{label}</a></li>' for label, href in card["artifacts"]
+            f'<li><a href="{href}">{label}</a></li>'
+            for label, href in card["artifacts"]
         )
-        blocks.append(
-            f"""
+        blocks.append(f"""
             <section class=\"card\">
               <div class=\"card-head\">
                 <h2>{card['title']}</h2>
@@ -102,8 +102,7 @@ def _phase_cards(version: str, ts: str, test_summary: str) -> str:
               <ul>{links}</ul>
               <div class=\"updated\">Last updated: {ts}</div>
             </section>
-            """
-        )
+            """)
     return "\n".join(blocks)
 
 

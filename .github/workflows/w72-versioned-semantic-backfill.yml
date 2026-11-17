@@ -44,15 +44,18 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.11"
+          python-version: "3.14"
 
       - name: Run W74 helper tests
         shell: bash
+        # The file holds pytest-style functions, which unittest discovery never
+        # collects; Python 3.12+ makes that a failure (exit 5, NO TESTS RAN)
+        # instead of the silent "Ran 0 tests" success earlier interpreters gave.
         run: |
           set -euo pipefail
-          python -m unittest discover \
-            -s tests \
-            -p 'test_w74_paired_pressure.py'
+          python -m pip install "pytest>=8.3.5,<9.2"
+          python -m pytest -q -p no:cacheprovider -o addopts="" --noconftest \
+            tests/test_w74_paired_pressure.py
 
       - name: Backfill five governed exact SHAs under W72 schema
         shell: bash
@@ -219,7 +222,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.11"
+          python-version: "3.14"
 
       - name: Execute exact-SHA semantic runtime probe
         shell: bash
@@ -292,16 +295,16 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.11"
+          python-version: "3.14"
 
       - name: Download exact-SHA runtime probes
-        uses: actions/download-artifact@v8.0.2
+        uses: actions/download-artifact@v8
         with:
           pattern: w74-probe-*-${{ github.sha }}
           path: architecture/w74/probes
 
       - name: Download W73 semantic-topology evidence
-        uses: actions/download-artifact@v8.0.2
+        uses: actions/download-artifact@v8
         with:
           name: w72-w73-semantic-pressure-${{ github.sha }}
           path: architecture/w74/semantic

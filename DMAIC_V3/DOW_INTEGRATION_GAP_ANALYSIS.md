@@ -98,7 +98,7 @@ actions:
     command: "python run_iteration.py"
     inputs: ["iteration_number"]
     outputs: ["phase_results"]
-    
+
 # Missing:
     recursive_hooks:
       - consume_previous_iteration
@@ -120,7 +120,7 @@ sprints:
         action: "run_iteration"
         params:
           iteration: 3
-          
+
 # Missing:
     iteration_linkage:
       previous_sprint: "sprint_4"
@@ -816,10 +816,10 @@ python -m dow.tools.add_knowledge_gain --path . --recursive
    class DOWKnowledgeBase:
        def add_knowledge(self, knowledge_gain):
            # Add to knowledge base
-       
+
        def query_knowledge(self, query):
            # Query knowledge base
-       
+
        def get_reusable_artifacts(self, phase):
            # Get artifacts for phase
    ```

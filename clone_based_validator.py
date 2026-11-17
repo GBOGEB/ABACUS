@@ -173,7 +173,14 @@ class CloneBasedValidator:
         all_files = set(graph.keys())
         orphaned = list(all_files - imported_files)
 
-        entry_points = [f for f in orphaned if '__main__' in open(Path(self.clone_dir) / f, 'r', encoding='utf-8', errors='ignore').read()]
+        entry_points = [
+            f
+            for f in orphaned
+            if '__main__'
+            in open(
+                Path(self.clone_dir) / f, 'r', encoding='utf-8', errors='ignore'
+            ).read()
+        ]
 
         print(f"[OK] Found {len(orphaned)} orphaned files ({len(entry_points)} entry points)")
         return orphaned
@@ -225,7 +232,11 @@ class CloneBasedValidator:
         }
 
         matching = sum(1 for f, cs in clone_checksums.items() if workspace_checksums.get(f) == cs)
-        different = sum(1 for f, cs in clone_checksums.items() if workspace_checksums.get(f) != cs and f in workspace_checksums)
+        different = sum(
+            1
+            for f, cs in clone_checksums.items()
+            if workspace_checksums.get(f) != cs and f in workspace_checksums
+        )
         clone_only = [f for f in clone_checksums if f not in workspace_checksums]
         workspace_only = [f for f in workspace_checksums if f not in clone_checksums]
 

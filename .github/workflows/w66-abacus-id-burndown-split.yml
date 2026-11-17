@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: Validate lane contract
         run: |
           test -f architecture/w66/ABACUS_ID_BURNDOWN_PARALLEL_SPLIT.yaml

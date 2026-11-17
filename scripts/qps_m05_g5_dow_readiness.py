@@ -9,8 +9,7 @@ import urllib.request
 CODEX_HEAD = "18598958a38c801e63c18d14490c27df426f7e1c"
 CONTRACT_PATH = "docs/qps_m05/QPS_G5_KEB_CHALLENGE_v0.1.json"
 CONTRACT_URL = (
-    "https://raw.githubusercontent.com/GBOGEB/CODEX/"
-    f"{CODEX_HEAD}/{CONTRACT_PATH}"
+    "https://raw.githubusercontent.com/GBOGEB/CODEX/" f"{CODEX_HEAD}/{CONTRACT_PATH}"
 )
 
 H1_RUN_ID = 34730906661
@@ -126,7 +125,8 @@ def main() -> int:
 
     _, artifacts = fetch_json(f"{api}/runs/{H2_RUN_ID}/artifacts")
     amatches = [
-        item for item in artifacts.get("artifacts", [])
+        item
+        for item in artifacts.get("artifacts", [])
         if item.get("id") == H2_ARTIFACT_ID
     ]
     require(len(amatches) == 1, "expected H2 artifact not found")

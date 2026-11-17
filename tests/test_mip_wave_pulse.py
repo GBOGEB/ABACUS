@@ -18,15 +18,28 @@ T = "b" * 40
 
 
 def record(status="OPEN"):
-    return {"schema": MOD.SCHEMA, "repository": "GBOGEB/ABACUS",
-            "base_sha": S, "head_sha": T, "wave_id": "W1",
-            "roots": [{"root_id": "R1", "owner": "MIP", "status": status,
-                       "fingerprints": ["F1", "F1"]}],
-            "workers": [{"root_id": "R1", "run_id": 12, "job_id": 34}],
-            "tests": {"passed": 3, "failed": 0, "skipped": 0},
-            "first_reds": [{"root_id": "R1", "fingerprint": "F1",
-                             "classification": "inherited"}],
-            "admission": {"merge_admitted": False}, "worker_hours": 2}
+    return {
+        "schema": MOD.SCHEMA,
+        "repository": "GBOGEB/ABACUS",
+        "base_sha": S,
+        "head_sha": T,
+        "wave_id": "W1",
+        "roots": [
+            {
+                "root_id": "R1",
+                "owner": "MIP",
+                "status": status,
+                "fingerprints": ["F1", "F1"],
+            }
+        ],
+        "workers": [{"root_id": "R1", "run_id": 12, "job_id": 34}],
+        "tests": {"passed": 3, "failed": 0, "skipped": 0},
+        "first_reds": [
+            {"root_id": "R1", "fingerprint": "F1", "classification": "inherited"}
+        ],
+        "admission": {"merge_admitted": False},
+        "worker_hours": 2,
+    }
 
 
 class WavePulseTests(unittest.TestCase):
@@ -54,8 +67,11 @@ class WavePulseTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             MOD.pulse(x)
         x["admission"] = {"merge_admitted": True, "verified_main_sha": S}
-        x["roots"][0]["closure_proof"] = {"main_sha": S, "native_run_url": "https://github.com/example/run/1",
-                                          "artifact_sha256": "c" * 64}
+        x["roots"][0]["closure_proof"] = {
+            "main_sha": S,
+            "native_run_url": "https://github.com/example/run/1",
+            "artifact_sha256": "c" * 64,
+        }
         _, backlog = MOD.pulse(x)
         self.assertEqual(backlog["formal_verified_closures"], 0)
         self.assertEqual(backlog["declared_root_closures"], 1)
@@ -63,10 +79,16 @@ class WavePulseTests(unittest.TestCase):
 
     def test_coverage_comparability_and_yield(self):
         x = record()
-        base = {"scope": "combined-main", "config_id": "cfg1", "source_sha": S,
-                "scope_manifest_sha256": "c" * 64,
-                "covered_lines": 60, "total_lines": 100,
-                "covered_branches": 20, "total_branches": 50}
+        base = {
+            "scope": "combined-main",
+            "config_id": "cfg1",
+            "source_sha": S,
+            "scope_manifest_sha256": "c" * 64,
+            "covered_lines": 60,
+            "total_lines": 100,
+            "covered_branches": 20,
+            "total_branches": 50,
+        }
         head = dict(base, source_sha=T, covered_lines=65, covered_branches=22)
         x["coverage"] = {"before": base, "after": head}
         result, _ = MOD.pulse(x)
@@ -78,13 +100,19 @@ class WavePulseTests(unittest.TestCase):
 
     def test_same_counts_different_eligible_cohort_withheld(self):
         base = {
-            "scope": "combined-main", "config_id": "cfg1",
-            "source_sha": S, "scope_manifest_sha256": "c" * 64,
-            "covered_lines": 60, "total_lines": 100,
-            "covered_branches": 20, "total_branches": 50,
+            "scope": "combined-main",
+            "config_id": "cfg1",
+            "source_sha": S,
+            "scope_manifest_sha256": "c" * 64,
+            "covered_lines": 60,
+            "total_lines": 100,
+            "covered_branches": 20,
+            "total_branches": 50,
         }
         candidate = dict(
-            base, source_sha=T, scope_manifest_sha256="d" * 64,
+            base,
+            source_sha=T,
+            scope_manifest_sha256="d" * 64,
             covered_lines=90,
         )
         result = MOD.coverage_delta(base, candidate)
@@ -92,10 +120,14 @@ class WavePulseTests(unittest.TestCase):
 
     def test_missing_or_malformed_cohort_digest_fails_closed(self):
         baseline = {
-            "scope": "combined-main", "config_id": "cfg1",
-            "source_sha": S, "scope_manifest_sha256": "c" * 64,
-            "covered_lines": 60, "total_lines": 100,
-            "covered_branches": 20, "total_branches": 50,
+            "scope": "combined-main",
+            "config_id": "cfg1",
+            "source_sha": S,
+            "scope_manifest_sha256": "c" * 64,
+            "covered_lines": 60,
+            "total_lines": 100,
+            "covered_branches": 20,
+            "total_branches": 50,
         }
         candidate = dict(baseline, source_sha=T)
         del candidate["scope_manifest_sha256"]
@@ -107,10 +139,14 @@ class WavePulseTests(unittest.TestCase):
 
     def test_coverage_source_shas_must_bind_to_wave(self):
         base = {
-            "scope": "combined-main", "config_id": "cfg1",
-            "source_sha": S, "scope_manifest_sha256": "c" * 64,
-            "covered_lines": 60, "total_lines": 100,
-            "covered_branches": 20, "total_branches": 50,
+            "scope": "combined-main",
+            "config_id": "cfg1",
+            "source_sha": S,
+            "scope_manifest_sha256": "c" * 64,
+            "covered_lines": 60,
+            "total_lines": 100,
+            "covered_branches": 20,
+            "total_branches": 50,
         }
         candidate = dict(base, source_sha=T, covered_lines=62)
         wave = record()
@@ -137,8 +173,10 @@ class WavePulseTests(unittest.TestCase):
                     "executed_branches": [[1, 2]],
                     "missing_branches": [[1, 3]],
                     "summary": {
-                        "covered_lines": 1, "num_statements": 2,
-                        "covered_branches": 1, "num_branches": 2,
+                        "covered_lines": 1,
+                        "num_statements": 2,
+                        "covered_branches": 1,
+                        "num_branches": 2,
                     },
                 }
             },
@@ -151,14 +189,10 @@ class WavePulseTests(unittest.TestCase):
             before["scope_manifest_sha256"],
             after["scope_manifest_sha256"],
         )
-        self.assertEqual(
-            MOD.coverage_delta(before, after)["status"], "COMPARABLE"
-        )
+        self.assertEqual(MOD.coverage_delta(before, after)["status"], "COMPARABLE")
         report["files"]["src/a.py"]["missing_lines"] = [3]
         changed = MOD.canonical_coverage_record(report, T, "cohort", "cfg")
-        self.assertEqual(
-            MOD.coverage_delta(before, changed)["status"], "INCOMPARABLE"
-        )
+        self.assertEqual(MOD.coverage_delta(before, changed)["status"], "INCOMPARABLE")
         report["files"]["src/a.py"]["missing_lines"] = [2]
         report["files"]["src/a.py"]["summary"]["num_statements"] = 3
         with self.assertRaisesRegex(ValueError, "summary and eligible IDs"):
@@ -169,12 +203,15 @@ class WavePulseTests(unittest.TestCase):
             "meta": {"branch_coverage": True},
             "files": {
                 "src/a.py": {
-                    "executed_lines": [1], "missing_lines": [],
+                    "executed_lines": [1],
+                    "missing_lines": [],
                     "executed_branches": [[1, 2]],
                     "missing_branches": [[1, 2]],
                     "summary": {
-                        "covered_lines": 1, "num_statements": 1,
-                        "covered_branches": 1, "num_branches": 2,
+                        "covered_lines": 1,
+                        "num_statements": 1,
+                        "covered_branches": 1,
+                        "num_branches": 2,
                     },
                 }
             },
@@ -195,7 +232,6 @@ class WavePulseTests(unittest.TestCase):
         x["tests"].pop("passed")
         with self.assertRaises(ValueError):
             MOD.pulse(x)
-
 
     def test_forged_admission_cannot_promote_wave(self):
         payload = record("ROOT_CLOSED")
@@ -337,6 +373,7 @@ class WavePulseTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "missing repository"):
                     MOD.main()
             self.assertFalse(target.exists())
+
 
 if __name__ == "__main__":
     unittest.main()

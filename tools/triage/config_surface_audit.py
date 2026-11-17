@@ -5,6 +5,7 @@ YAML uses PyYAML BaseLoader composition: keys such as GitHub Actions 'on'
 remain strings. Syntax, schema, executable behavior and style are separate.
 Never silently rewrite YAML, TOML, JSON, INI, Mermaid or Graphviz files.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -24,9 +25,15 @@ except ModuleNotFoundError:  # Python 3.10: tomli is the same parser
     import tomli as tomllib
 
 SCHEMA = "codepurple.abacus.config-surface-audit.v1"
-EXTS = {".yaml": "yaml", ".yml": "yaml", ".json": "json",
-        ".toml": "toml", ".ini": "ini", ".mmd": "mermaid",
-        ".dot": "graphviz"}
+EXTS = {
+    ".yaml": "yaml",
+    ".yml": "yaml",
+    ".json": "json",
+    ".toml": "toml",
+    ".ini": "ini",
+    ".mmd": "mermaid",
+    ".dot": "graphviz",
+}
 LIMIT = 8_000_000
 
 
@@ -46,6 +53,7 @@ def check_yaml(raw: str, workflow: bool = False) -> list:
     if workflow and len(documents) != 1:
         raise ValueError("workflow must contain exactly one YAML document")
     seen_nodes = set()
+
     def walk(node):
         if id(node) in seen_nodes:
             return
@@ -62,6 +70,7 @@ def check_yaml(raw: str, workflow: bool = False) -> list:
         elif isinstance(node, yaml.SequenceNode):
             for val in node.value:
                 walk(val)
+
     for doc in documents:
         walk(doc)
     concerns = []
@@ -90,6 +99,7 @@ def check_yaml(raw: str, workflow: bool = False) -> list:
                 raise ValueError("unknown workflow job in needs: " + name)
             links[name] = literal_dep
         visited, active = set(), set()
+
         def visit(name):
             if name in active:
                 raise ValueError("cyclic workflow job needs")
@@ -100,6 +110,7 @@ def check_yaml(raw: str, workflow: bool = False) -> list:
                 visit(before)
             active.remove(name)
             visited.add(name)
+
         for name in links:
             visit(name)
     return sorted(set(concerns))
@@ -160,11 +171,9 @@ def audit(root: Path, paths: list[str], limit: int = LIMIT) -> dict:
         if name in seen:
             raise ValueError("duplicate source path in census")
         seen.add(name)
-        if (not name or name.startswith("/") or "\\" in name or
-                ".." in Path(name).parts):
+        if not name or name.startswith("/") or "\\" in name or ".." in Path(name).parts:
             raise ValueError("unsafe source path")
-        if not (name.endswith("__init__.py") or
-                Path(name).suffix.lower() in EXTS):
+        if not (name.endswith("__init__.py") or Path(name).suffix.lower() in EXTS):
             continue
         path = root / name
         try:
@@ -196,20 +205,34 @@ def audit(root: Path, paths: list[str], limit: int = LIMIT) -> dict:
             kind, concerns = check_text(name, raw)
             if concerns:
                 counts["UNVERIFIED_SEMANTICS"] += 1
-                findings.append({
-                    "path": name, "state": "UNVERIFIED_SEMANTICS",
-                    "kind": kind, "reasons": concerns,
-                })
+                findings.append(
+                    {
+                        "path": name,
+                        "state": "UNVERIFIED_SEMANTICS",
+                        "kind": kind,
+                        "reasons": concerns,
+                    }
+                )
             else:
                 counts["SYNTAX_PASS"] += 1
-        except (OSError, UnicodeError, ValueError, yaml.YAMLError,
-                json.JSONDecodeError, SyntaxError,
-                configparser.Error, tomllib.TOMLDecodeError) as exc:
+        except (
+            OSError,
+            UnicodeError,
+            ValueError,
+            yaml.YAMLError,
+            json.JSONDecodeError,
+            SyntaxError,
+            configparser.Error,
+            tomllib.TOMLDecodeError,
+        ) as exc:
             counts["SYNTAX_RED"] += 1
-            findings.append({
-                "path": name, "state": "SYNTAX_RED",
-                "error": str(exc)[:240],
-            })
+            findings.append(
+                {
+                    "path": name,
+                    "state": "SYNTAX_RED",
+                    "error": str(exc)[:240],
+                }
+            )
     return {
         "schema": SCHEMA,
         "source": "GIT_LS_FILES_TRACKED_ONLY",

@@ -37,7 +37,9 @@ def _badge(status: str) -> str:
     return f'<span class="badge {status}">{status}</span>'
 
 
-def _dmaic_block(define: str, measure: str, analyze: str, improve: str, control: str) -> str:
+def _dmaic_block(
+    define: str, measure: str, analyze: str, improve: str, control: str
+) -> str:
     return f"""
 <section class=\"card\">
   <h3>DMAIC view note</h3>
@@ -98,7 +100,9 @@ def _build_scenario_table(scenarios: list[dict[str, Any]]) -> pd.DataFrame:
     for scn in scenarios:
         for item in scn["inventory"]:
             g_year_each = leak_rate_to_mass_flow_g_year(
-                item["leak_rate_mbar_l_s"], item["temperature_k"], item["pressure_bar_abs"]
+                item["leak_rate_mbar_l_s"],
+                item["temperature_k"],
+                item["pressure_bar_abs"],
             )
             rows.append(
                 {
@@ -118,7 +122,12 @@ def _build_scenario_table(scenarios: list[dict[str, Any]]) -> pd.DataFrame:
 
 def _build_reliability_table() -> pd.DataFrame:
     rows = []
-    for label, mtbf_years in [("1e-9", 9.0), ("1e-8", 6.0), ("1e-5", 3.5), ("1e-4", 2.2)]:
+    for label, mtbf_years in [
+        ("1e-9", 9.0),
+        ("1e-8", 6.0),
+        ("1e-5", 3.5),
+        ("1e-4", 2.2),
+    ]:
         mttr_h = 6.0 if label in {"1e-9", "1e-8"} else 8.0
         mdt_h = mttr_h + 10.0
         availability = 8000.0 / (8000.0 + (1.0 / mtbf_years) * mdt_h)
@@ -137,13 +146,33 @@ def _build_reliability_table() -> pd.DataFrame:
 def _build_traceability_table() -> pd.DataFrame:
     rows = []
     themes = [
-        ("Math conversion", "src/calc_leak_rate.py", "tests/test_calc_leak_rate.py::test_dimensional_chain"),
-        ("Temperature pressure sensitivity", "docs/calculations.html", "tests/test_calc_leak_rate.py::test_temperature_pressure_scaling"),
-        ("Fleet scenarios", "data/scenarios.json", "tests/test_calc_leak_rate.py::test_baseline_scenario_total_range"),
-        ("Dashboard visuals", "docs/dashboard.html", "tests/test_build_outputs.py::test_required_outputs_exist"),
+        (
+            "Math conversion",
+            "src/calc_leak_rate.py",
+            "tests/test_calc_leak_rate.py::test_dimensional_chain",
+        ),
+        (
+            "Temperature pressure sensitivity",
+            "docs/calculations.html",
+            "tests/test_calc_leak_rate.py::test_temperature_pressure_scaling",
+        ),
+        (
+            "Fleet scenarios",
+            "data/scenarios.json",
+            "tests/test_calc_leak_rate.py::test_baseline_scenario_total_range",
+        ),
+        (
+            "Dashboard visuals",
+            "docs/dashboard.html",
+            "tests/test_build_outputs.py::test_required_outputs_exist",
+        ),
         ("Reliability strategy", "docs/dashboard.html", "manual review"),
         ("Cost/benefit", "docs/executive_summary.html", "manual review"),
-        ("Handover package", "docs/handover.html", "tests/test_build_outputs.py::test_manifest_has_hashes"),
+        (
+            "Handover package",
+            "docs/handover.html",
+            "tests/test_build_outputs.py::test_manifest_has_hashes",
+        ),
     ]
     for i, rid in enumerate(range(47, 68)):
         theme = themes[i % len(themes)]
@@ -160,7 +189,12 @@ def _build_traceability_table() -> pd.DataFrame:
 
 
 def _to_html_table(df: pd.DataFrame) -> str:
-    return df.to_html(index=False, classes="table table-wrap", float_format=lambda x: f"{x:.6g}", border=0)
+    return df.to_html(
+        index=False,
+        classes="table table-wrap",
+        float_format=lambda x: f"{x:.6g}",
+        border=0,
+    )
 
 
 def generate_dashboard() -> dict[str, Any]:
@@ -197,11 +231,19 @@ def generate_dashboard() -> dict[str, Any]:
 
     # tables
     OUT_TABLES.mkdir(parents=True, exist_ok=True)
-    write_text_if_changed(OUT_TABLES / "conversion_table.csv", conversion_df.to_csv(index=False))
-    write_text_if_changed(OUT_TABLES / "scenario_table.csv", scenario_df.to_csv(index=False))
+    write_text_if_changed(
+        OUT_TABLES / "conversion_table.csv", conversion_df.to_csv(index=False)
+    )
+    write_text_if_changed(
+        OUT_TABLES / "scenario_table.csv", scenario_df.to_csv(index=False)
+    )
     write_text_if_changed(OUT_TABLES / "cost_table.csv", cost_df.to_csv(index=False))
-    write_text_if_changed(OUT_TABLES / "reliability_table.csv", reliability_df.to_csv(index=False))
-    write_text_if_changed(OUT_TABLES / "rtm_traceability.csv", traceability_df.to_csv(index=False))
+    write_text_if_changed(
+        OUT_TABLES / "reliability_table.csv", reliability_df.to_csv(index=False)
+    )
+    write_text_if_changed(
+        OUT_TABLES / "rtm_traceability.csv", traceability_df.to_csv(index=False)
+    )
 
     # plots
     OUT_PLOTS.mkdir(parents=True, exist_ok=True)
@@ -241,7 +283,13 @@ def generate_dashboard() -> dict[str, Any]:
         annual_loss_kg=("kg_year_total", "sum")
     )
     fig4 = go.Figure()
-    fig4.add_trace(go.Bar(x=fleet_summary["scenario_id"], y=fleet_summary["annual_loss_kg"], name="Annual He loss (kg)"))
+    fig4.add_trace(
+        go.Bar(
+            x=fleet_summary["scenario_id"],
+            y=fleet_summary["annual_loss_kg"],
+            name="Annual He loss (kg)",
+        )
+    )
     fig4.update_layout(title="Fleet-size scenario sensitivity")
 
     fig5 = px.bar(
@@ -262,9 +310,9 @@ def generate_dashboard() -> dict[str, Any]:
         fig.write_html(str(OUT_PLOTS / name), include_plotlyjs="cdn", full_html=True)
         fig.write_html(str(DOCS_PLOTS / name), include_plotlyjs="cdn", full_html=True)
 
-    baseline_total_kg = (
-        scenario_df[scenario_df["scenario_id"] == "SCN-BASELINE-MIX"]["kg_year_total"].sum()
-    )
+    baseline_total_kg = scenario_df[scenario_df["scenario_id"] == "SCN-BASELINE-MIX"][
+        "kg_year_total"
+    ].sum()
     single_valve_g_year = leak_rate_to_mass_flow_g_year(1e-8, 300, 1)
     system_1e5_410_kg = leak_rate_to_mass_flow_g_year(1e-5, 4, 12) * 410 / 1000.0
     rtm048_cap_kg_year = normal_m3_per_day_to_kg_per_year(1.0)
@@ -379,18 +427,42 @@ def generate_dashboard() -> dict[str, Any]:
     )
 
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
-    write_text_if_changed(DOCS_DIR / "index.html", _page("Portal", "index.html", index_body))
-    write_text_if_changed(DOCS_DIR / "dashboard.html", _page("Dashboard", "dashboard.html", dashboard_body))
-    write_text_if_changed(DOCS_DIR / "calculations.html", _page("Calculations", "calculations.html", calc_body))
-    write_text_if_changed(DOCS_DIR / "executive_summary.html", _page("Executive Summary", "executive_summary.html", exec_body))
-    write_text_if_changed(DOCS_DIR / "rtm_traceability.html", _page("RTM Traceability", "rtm_traceability.html", trace_body))
+    write_text_if_changed(
+        DOCS_DIR / "index.html", _page("Portal", "index.html", index_body)
+    )
+    write_text_if_changed(
+        DOCS_DIR / "dashboard.html",
+        _page("Dashboard", "dashboard.html", dashboard_body),
+    )
+    write_text_if_changed(
+        DOCS_DIR / "calculations.html",
+        _page("Calculations", "calculations.html", calc_body),
+    )
+    write_text_if_changed(
+        DOCS_DIR / "executive_summary.html",
+        _page("Executive Summary", "executive_summary.html", exec_body),
+    )
+    write_text_if_changed(
+        DOCS_DIR / "rtm_traceability.html",
+        _page("RTM Traceability", "rtm_traceability.html", trace_body),
+    )
 
     # also save machine-readable tables as JSON for triage system
-    write_json_if_changed(OUT_TABLES / "conversion_table.json", conversion_df.to_dict(orient="records"))
-    write_json_if_changed(OUT_TABLES / "scenario_table.json", scenario_df.to_dict(orient="records"))
-    write_json_if_changed(OUT_TABLES / "cost_table.json", cost_df.to_dict(orient="records"))
-    write_json_if_changed(OUT_TABLES / "reliability_table.json", reliability_df.to_dict(orient="records"))
-    write_json_if_changed(OUT_TABLES / "rtm_traceability.json", traceability_df.to_dict(orient="records"))
+    write_json_if_changed(
+        OUT_TABLES / "conversion_table.json", conversion_df.to_dict(orient="records")
+    )
+    write_json_if_changed(
+        OUT_TABLES / "scenario_table.json", scenario_df.to_dict(orient="records")
+    )
+    write_json_if_changed(
+        OUT_TABLES / "cost_table.json", cost_df.to_dict(orient="records")
+    )
+    write_json_if_changed(
+        OUT_TABLES / "reliability_table.json", reliability_df.to_dict(orient="records")
+    )
+    write_json_if_changed(
+        OUT_TABLES / "rtm_traceability.json", traceability_df.to_dict(orient="records")
+    )
 
     return {
         "baseline_total_kg_year": float(baseline_total_kg),

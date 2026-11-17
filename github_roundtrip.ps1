@@ -22,29 +22,29 @@ Write-Host ""
 
 function Create-PullRequest {
     Write-Host "Creating Pull Request..." -ForegroundColor Yellow
-    
+
     # Check if PR body file exists
     if (-not (Test-Path $PR_BODY_FILE)) {
         Write-Host "Error: PR body file not found: $PR_BODY_FILE" -ForegroundColor Red
         exit 1
     }
-    
+
     # Read PR body
     $prBody = Get-Content $PR_BODY_FILE -Raw
-    
+
     # Create PR using GitHub API
     $apiUrl = "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/pulls"
-    
+
     $prData = @{
         title = $PR_TITLE
         body = $prBody
         head = $HEAD_BRANCH
         base = $BASE_BRANCH
     } | ConvertTo-Json
-    
+
     Write-Host "API URL: $apiUrl" -ForegroundColor Gray
     Write-Host "Creating PR from $HEAD_BRANCH to $BASE_BRANCH..." -ForegroundColor Yellow
-    
+
     try {
         # Note: This requires authentication. User should use web interface or gh CLI
         Write-Host ""
@@ -57,11 +57,11 @@ function Create-PullRequest {
         Write-Host "2. GitHub CLI:" -ForegroundColor Green
         Write-Host "   gh pr create --title `"$PR_TITLE`" --body-file $PR_BODY_FILE --base $BASE_BRANCH --head $HEAD_BRANCH" -ForegroundColor Cyan
         Write-Host ""
-        
+
         # Open browser
         Write-Host "Opening browser..." -ForegroundColor Yellow
         Start-Process "https://github.com/$REPO_OWNER/$REPO_NAME/pull/new/$HEAD_BRANCH"
-        
+
     } catch {
         Write-Host "Error creating PR: $_" -ForegroundColor Red
         exit 1
@@ -70,30 +70,30 @@ function Create-PullRequest {
 
 function Merge-PullRequest {
     Write-Host "Merging Pull Request..." -ForegroundColor Yellow
-    
+
     # Switch to main branch
     Write-Host "Switching to main branch..." -ForegroundColor Gray
     git checkout main
-    
+
     # Pull latest changes
     Write-Host "Pulling latest changes..." -ForegroundColor Gray
     git pull origin main
-    
+
     # Merge feature branch
     Write-Host "Merging $HEAD_BRANCH..." -ForegroundColor Gray
     git merge $HEAD_BRANCH --no-ff -m "Merge pull request: $PR_TITLE"
-    
+
     # Push to GitHub
     Write-Host "Pushing to GitHub..." -ForegroundColor Gray
     git push origin main
-    
+
     Write-Host ""
     Write-Host "✅ PR merged successfully!" -ForegroundColor Green
 }
 
 function Tag-Release {
     Write-Host "Creating release tag..." -ForegroundColor Yellow
-    
+
     $TAG_NAME = "v1.0.0-dmaic-integration"
     $TAG_MESSAGE = @"
 DMAIC + DOW Integration v1.0.0
@@ -105,15 +105,15 @@ Complete integration with live demonstration:
 - +10.5% quality improvement
 - Production ready
 "@
-    
+
     # Create annotated tag
     Write-Host "Creating tag: $TAG_NAME" -ForegroundColor Gray
     git tag -a $TAG_NAME -m $TAG_MESSAGE
-    
+
     # Push tag
     Write-Host "Pushing tag to GitHub..." -ForegroundColor Gray
     git push origin $TAG_NAME
-    
+
     Write-Host ""
     Write-Host "✅ Release tagged successfully!" -ForegroundColor Green
     Write-Host "Create GitHub release at:" -ForegroundColor Yellow
@@ -123,17 +123,17 @@ Complete integration with live demonstration:
 function Show-Status {
     Write-Host "Current Git Status:" -ForegroundColor Yellow
     Write-Host ""
-    
+
     git status
-    
+
     Write-Host ""
     Write-Host "Recent Commits:" -ForegroundColor Yellow
     git log --oneline -5
-    
+
     Write-Host ""
     Write-Host "Branches:" -ForegroundColor Yellow
     git branch -a
-    
+
     Write-Host ""
     Write-Host "Remote Info:" -ForegroundColor Yellow
     git remote -v

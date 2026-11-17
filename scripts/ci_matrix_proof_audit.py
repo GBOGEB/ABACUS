@@ -8,22 +8,48 @@ import json
 from pathlib import Path
 from typing import Any
 
-# pyproject.toml requires-python >=3.11, so 3.10 is not a proof interpreter.
+# Interpreter versions are read from the SSOT view, independently of the planner
+# outputs being audited. Authority: ssot/python_versions.yaml.
+LANES_VIEW = Path(__file__).resolve().parents[1] / "ssot" / "python_versions.lanes.json"
+DEFAULT_LANE = "coolprop-oracle"  # ci-abacus.yml declares PYTHON_LANE: coolprop-oracle
+
+# Expected check outcomes by proof duty. The lane pin is the sentinel; every
+# other interpreter in the lane is a compatibility cell.
+SENTINEL_CHECKS = {
+    "canonical_coverage": "EXECUTED_PASS",
+    "functional_compatibility": "CLASSIFIED_ROLE_SKIP",
+    "phase0": "EXECUTED_PASS",
+    "qps_w08": "EXECUTED_PASS",
+    "recursive_build": "EXECUTED_PASS",
+}
+COMPATIBILITY_CHECKS = {
+    "canonical_coverage": "CLASSIFIED_ROLE_SKIP",
+    "functional_compatibility": "EXECUTED_PASS",
+    "phase0": "CLASSIFIED_ROLE_SKIP",
+    "qps_w08": "CLASSIFIED_ROLE_SKIP",
+    "recursive_build": "EXECUTED_PASS",
+}
+
+
+def _vkey(version: str) -> tuple[int, ...]:
+    return tuple(int(part) for part in version.split("."))
+
+
+def load_lane(lane: str = DEFAULT_LANE, view: Path = LANES_VIEW) -> dict[str, Any]:
+    data = json.loads(view.read_text(encoding="utf-8"))
+    try:
+        return data["lanes"][lane]
+    except KeyError as exc:
+        raise ValueError(f"unknown Python lane: {lane}") from exc
+
+
+def expected_checks(version: str, lane: str = DEFAULT_LANE) -> dict[str, str]:
+    return SENTINEL_CHECKS if version == load_lane(lane)["pin"] else COMPATIBILITY_CHECKS
+
+
+# Per-version view for the default lane (kept for existing callers).
 EXPECTED = {
-    "3.11": {
-        "canonical_coverage": "CLASSIFIED_ROLE_SKIP",
-        "functional_compatibility": "EXECUTED_PASS",
-        "phase0": "CLASSIFIED_ROLE_SKIP",
-        "qps_w08": "CLASSIFIED_ROLE_SKIP",
-        "recursive_build": "EXECUTED_PASS",
-    },
-    "3.12": {
-        "canonical_coverage": "EXECUTED_PASS",
-        "functional_compatibility": "CLASSIFIED_ROLE_SKIP",
-        "phase0": "EXECUTED_PASS",
-        "qps_w08": "EXECUTED_PASS",
-        "recursive_build": "EXECUTED_PASS",
-    },
+    version: dict(expected_checks(version)) for version in load_lane()["versions"]
 }
 
 
@@ -36,22 +62,24 @@ def load_json(path: Path) -> dict[str, Any]:
             result[key] = value
         return result
 
-    value = json.loads(path.read_text(encoding="utf-8"),
-                       object_pairs_hook=unique_pairs)
+    value = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique_pairs)
     if not isinstance(value, dict):
         raise ValueError(f"{path}: expected object")
     return value
 
 
-def expected_versions(mode: str, secondary: str) -> list[str]:
+def expected_versions(mode: str, secondary: str, lane: str = DEFAULT_LANE) -> list[str]:
+    spec = load_lane(lane)
     if mode == "full":
-        return ["3.11", "3.12"]
+        return sorted(spec["versions"], key=_vkey)
     if mode == "sampled":
-        if secondary != "3.11":
-            raise ValueError("sampled secondary must be the independent Python 3.11 cell")
-        return sorted({"3.12", secondary})
+        if secondary != spec["oldest"]:
+            raise ValueError(
+                f"sampled secondary must be the independent Python {spec['oldest']} cell"
+            )
+        return sorted({spec["pin"], secondary}, key=_vkey)
     if mode == "sentinel":
-        return ["3.12"]
+        return [spec["pin"]]
     raise ValueError(f"unknown mode: {mode}")
 
 
@@ -60,13 +88,17 @@ def audit(
     mode: str,
     secondary: str,
     expected_sha: str,
+    lane: str = DEFAULT_LANE,
 ) -> dict[str, Any]:
     errors: list[str] = []
     rows: list[dict[str, Any]] = []
-    versions = expected_versions(mode, secondary)
+    versions = expected_versions(mode, secondary, lane)
+    sentinel = load_lane(lane)["pin"]
 
-    if not isinstance(expected_sha, str) or len(expected_sha) != 40 or any(
-        ch not in "0123456789abcdef" for ch in expected_sha
+    if (
+        not isinstance(expected_sha, str)
+        or len(expected_sha) != 40
+        or any(ch not in "0123456789abcdef" for ch in expected_sha)
     ):
         errors.append("EXPECTED_SHA_INVALID")
 
@@ -87,7 +119,7 @@ def audit(
         if mode == "full":
             role = "full-matrix"
         elif mode == "sampled":
-            role = "sentinel" if version == "3.12" else "compatibility-sample"
+            role = "sentinel" if version == sentinel else "compatibility-sample"
         else:
             role = "sentinel"
         if payload.get("proof_role") != role:
@@ -96,7 +128,7 @@ def audit(
         if not isinstance(checks, dict):
             errors.append(f"{version}:INVALID_CHECKS")
             checks = {}
-        for name, expected in EXPECTED[version].items():
+        for name, expected in expected_checks(version, lane).items():
             actual = checks.get(name)
             if actual != expected:
                 errors.append(f"{version}:{name}:{actual or 'MISSING'}")
@@ -113,6 +145,7 @@ def audit(
     return {
         "schema": "abacus-python-proof-audit/1.0.0",
         "mode": mode,
+        "lane": lane,
         "secondary": secondary,
         "status": "PASS" if not errors else "FAIL",
         "errors": errors,
@@ -124,14 +157,19 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dir", type=Path, required=True)
     parser.add_argument("--mode", required=True)
-    parser.add_argument("--secondary", default="3.11")
+    parser.add_argument("--secondary", default=None,
+                        help="defaults to the lane's oldest supported version")
+    parser.add_argument("--lane", default=DEFAULT_LANE)
     parser.add_argument("--expected-sha", required=True)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
 
-    result = audit(args.dir, args.mode, args.secondary, args.expected_sha)
+    secondary = args.secondary or load_lane(args.lane)["oldest"]
+    result = audit(args.dir, args.mode, secondary, args.expected_sha, args.lane)
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.out.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0 if result["status"] == "PASS" else 1
 

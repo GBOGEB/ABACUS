@@ -36,7 +36,9 @@ class CBDScaleCohortTests(unittest.TestCase):
     def test_no_parallel_source_mutation(self):
         result = cbd.produce(self.data)
         waves = result["candidate_disjoint_waves"]
-        self.assertTrue(any(x["scheduler_status"] == "SERIALIZE_PATH_COLLISION" for x in waves))
+        self.assertTrue(
+            any(x["scheduler_status"] == "SERIALIZE_PATH_COLLISION" for x in waves)
+        )
         self.assertFalse(any(x["source_mutation_authorized"] for x in waves))
 
     def test_determinism_and_input_immutability(self):
@@ -61,7 +63,9 @@ class CBDScaleCohortTests(unittest.TestCase):
         self.assertEqual(
             sum(row["failed_run_attempts"] for row in result["candidate_families"]), 43
         )
-        self.assertTrue(all(not row["first_red_confirmed"] for row in result["candidate_families"]))
+        self.assertTrue(
+            all(not row["first_red_confirmed"] for row in result["candidate_families"])
+        )
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 """Negative and exact-byte tests for executable MCW cold DAG slice."""
+
 import copy
 import hashlib
 import importlib.util
@@ -20,44 +21,73 @@ CHILD = "b" * 40
 class ColdDagTests(unittest.TestCase):
     def setup(self, root):
         (root / "source.json").write_text('{"value": 1}')
-        catalog = {"schema": "mcw.artifact.catalog.v1", "artifacts": [
-            {"id": "src", "role": "repository_source", "path": "source.json"},
-            {"id": "review", "role": "generated_output"},
-            {"id": "external", "role": "controlled_input"},
-        ]}
+        catalog = {
+            "schema": "mcw.artifact.catalog.v1",
+            "artifacts": [
+                {"id": "src", "role": "repository_source", "path": "source.json"},
+                {"id": "review", "role": "generated_output"},
+                {"id": "external", "role": "controlled_input"},
+            ],
+        }
         style = {"version": "0.2.0"}
         raw_catalog = json.dumps(catalog).encode()
         raw_style = json.dumps(style).encode()
         html = b"<html>read-only</html>"
         receipt = {
-            "repository": "GBOGEB/ABACUS", "source_sha": HEAD,
-            "merge_admission": "HOLD", "binary_release_admitted": False,
+            "repository": "GBOGEB/ABACUS",
+            "source_sha": HEAD,
+            "merge_admission": "HOLD",
+            "binary_release_admitted": False,
             "stages": list(M.STAGES),
             "html_sha256": M.sha256(html),
             "catalog_file_sha256": M.sha256(raw_catalog),
             "style_file_sha256": M.sha256(raw_style),
             "style_version": style["version"],
             "artifacts": [
-                {"id": "src", "role": "repository_source", "evidence": {
-                    "state": "LOCAL_BYTES_VERIFIED",
-                    "sha256": M.sha256((root / "source.json").read_bytes())}},
-                {"id": "review", "role": "generated_output", "evidence": {
-                    "state": "NOT_GENERATED_IN_COLD_VIEW", "sha256": None}},
-                {"id": "external", "role": "controlled_input", "evidence": {
-                    "state": "CONTROLLED_EXTERNAL_UNKNOWN", "sha256": None}},
-            ]
+                {
+                    "id": "src",
+                    "role": "repository_source",
+                    "evidence": {
+                        "state": "LOCAL_BYTES_VERIFIED",
+                        "sha256": M.sha256((root / "source.json").read_bytes()),
+                    },
+                },
+                {
+                    "id": "review",
+                    "role": "generated_output",
+                    "evidence": {"state": "NOT_GENERATED_IN_COLD_VIEW", "sha256": None},
+                },
+                {
+                    "id": "external",
+                    "role": "controlled_input",
+                    "evidence": {
+                        "state": "CONTROLLED_EXTERNAL_UNKNOWN",
+                        "sha256": None,
+                    },
+                },
+            ],
         }
         child = {
             "schema": "mcw.upstream.child.reference.v1",
             "owner": "GBOGEB/cryoplant-project",
             "ref_kind": "OPEN_PR_CANDIDATE",
-            "commit_sha": CHILD, "pr_number": 1926,
+            "commit_sha": CHILD,
+            "pr_number": 1926,
             "evidence_class": "SOURCE_POINTER_ONLY",
             "physical_evidence_bytes": "NOT_VERIFIED",
             "child_disposition": "UNKNOWN",
             "source_pins": [{"path": "docs/lineage.md", "git_blob_sha": CHILD}],
         }
-        return catalog, style, html, receipt, {"valid": True}, child, raw_catalog, raw_style
+        return (
+            catalog,
+            style,
+            html,
+            receipt,
+            {"valid": True},
+            child,
+            raw_catalog,
+            raw_style,
+        )
 
     def run_assess(self, root, data):
         return M.assess(root, HEAD, *data)
@@ -118,9 +148,11 @@ class ColdDagTests(unittest.TestCase):
     def test_rejects_child_authority_escalation(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
-            for key, value in (("child_disposition", "ACCEPT"),
-                               ("physical_evidence_bytes", "VERIFIED"),
-                               ("evidence_class", "RELEASE_AUTHORITY")):
+            for key, value in (
+                ("child_disposition", "ACCEPT"),
+                ("physical_evidence_bytes", "VERIFIED"),
+                ("evidence_class", "RELEASE_AUTHORITY"),
+            ):
                 base = list(self.setup(root))
                 base[5][key] = value
                 with self.subTest(key=key), self.assertRaises(ValueError):

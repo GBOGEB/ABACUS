@@ -103,9 +103,9 @@ safe_write_json(improvement_result, phase4_file)
 def fix_phase_handoffs(self):
     """Fix file path mismatches between phases"""
     print("\n[*] Fixing phase handoff file paths...")
-    
+
     iter_dir = self.output_dir / f"iteration_{self.iteration}"
-    
+
     # Fix Phase 2 -> Phase 3 handoff
     phase2_src = iter_dir / "phase2_measure" / "phase2_measure.json"
     phase2_dst = iter_dir / "phase2_metrics.json"
@@ -113,7 +113,7 @@ def fix_phase_handoffs(self):
         import shutil
         shutil.copy(phase2_src, phase2_dst)
         print(f"  [OK] Copied {phase2_src.name} to {phase2_dst.name}")
-    
+
     # Fix Phase 4 -> Phase 5 handoff
     phase4_src = iter_dir / "phase4_improvements.json"
     phase4_dir = iter_dir / "phase4_improve"

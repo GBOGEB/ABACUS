@@ -142,7 +142,7 @@ The DMAIC Sprint System has been successfully integrated into the DOW (Devour of
    ```bash
    # Read master integration document
    cat DMAIC_DOW_INTEGRATION_MASTER.md
-   
+
    # Read enhanced DOW engine
    cat ABACUS-v031/DOW_CORE_ENGINE_ENHANCED.md
    ```
@@ -152,10 +152,10 @@ The DMAIC Sprint System has been successfully integrated into the DOW (Devour of
    # Clone repository
    git clone https://github.com/GBOGEB/ABACUS.git
    cd ABACUS
-   
+
    # Checkout DMAIC branch
    git checkout dmaic-sprint-system
-   
+
    # Review PR #7
    gh pr view 7
    ```
@@ -164,7 +164,7 @@ The DMAIC Sprint System has been successfully integrated into the DOW (Devour of
    ```bash
    # Run full cycle
    python code/run_all_phases.py --iteration 3
-   
+
    # Compare iterations
    python code/compare_iterations.py --iter1 2 --iter2 3
    ```

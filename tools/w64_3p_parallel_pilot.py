@@ -4,6 +4,7 @@
 Read-only pilot. It converts current P2 duplicate findings to stable root items,
 runs discovery and discrimination variant arms, and emits timing/yield comparison.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -29,12 +30,14 @@ def p2_to_payload(p2: dict[str, object]) -> dict[str, object]:
         if finding.get("type") != "duplicate_or_competing_authority":
             continue
         paths = finding.get("paths", []) or []
-        items.append({
-            "scope": "GBOGEB/ABACUS",
-            "type": "duplicate_or_competing_authority",
-            "cluster": finding.get("family"),
-            "members": sorted(str(x) for x in paths),
-        })
+        items.append(
+            {
+                "scope": "GBOGEB/ABACUS",
+                "type": "duplicate_or_competing_authority",
+                "cluster": finding.get("family"),
+                "members": sorted(str(x) for x in paths),
+            }
+        )
     return {"items": items}
 
 
@@ -51,7 +54,9 @@ def evidence_yield(run: dict[str, object]) -> int:
     return total
 
 
-def execute_variant(root: Path, item: dict[str, object], variant: str) -> dict[str, object]:
+def execute_variant(
+    root: Path, item: dict[str, object], variant: str
+) -> dict[str, object]:
     started = time.perf_counter_ns()
     run = run_all_subtasks(root, item, variant=variant)
     finished = time.perf_counter_ns()
@@ -67,13 +72,17 @@ def execute_variant(root: Path, item: dict[str, object], variant: str) -> dict[s
     }
 
 
-def execute_arm(root: Path, items: list[dict[str, object]], arm: str, workers: int) -> dict[str, object]:
+def execute_arm(
+    root: Path, items: list[dict[str, object]], arm: str, workers: int
+) -> dict[str, object]:
     chain = ARM_CHAINS[arm]
     jobs = [(item, variant) for item in items for variant in chain]
     started = time.perf_counter_ns()
     results = []
     with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
-        futures = [pool.submit(execute_variant, root, item, variant) for item, variant in jobs]
+        futures = [
+            pool.submit(execute_variant, root, item, variant) for item, variant in jobs
+        ]
         for future in as_completed(futures):
             results.append(future.result())
     finished = time.perf_counter_ns()
@@ -89,7 +98,9 @@ def execute_arm(root: Path, items: list[dict[str, object]], arm: str, workers: i
         "median_variant_job_ms": statistics.median(durations) if durations else 0.0,
         "p95_variant_job_ms": max(durations) if durations else 0.0,
         "total_yield": sum(int(x["yield"]) for x in results),
-        "results": sorted(results, key=lambda x: (str(x["root_item_id"]), str(x["variant"]))),
+        "results": sorted(
+            results, key=lambda x: (str(x["root_item_id"]), str(x["variant"]))
+        ),
     }
 
 
@@ -111,7 +122,9 @@ def main() -> int:
     root = Path(args.root).resolve()
 
     discovery = execute_arm(root, items, "ARM_DISCOVERY", args.discovery_workers)
-    discrimination = execute_arm(root, items, "ARM_DISCRIMINATION", args.discrimination_workers)
+    discrimination = execute_arm(
+        root, items, "ARM_DISCRIMINATION", args.discrimination_workers
+    )
     result = {
         "schema_version": "W64-3P-PARALLEL-PILOT-1.0.0",
         "mutation_allowed": False,
@@ -133,7 +146,9 @@ def main() -> int:
     }
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    out.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps(result["comparison"], sort_keys=True))
     return 0
 

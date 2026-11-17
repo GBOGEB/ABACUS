@@ -66,8 +66,12 @@ def run_census(exact_sha: str | None = None) -> tuple[str, dict]:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--json-out", type=Path, default=Path("reports/dab_flake8_census.json"))
-    parser.add_argument("--text-out", type=Path, default=Path("reports/dab_flake8_census.txt"))
+    parser.add_argument(
+        "--json-out", type=Path, default=Path("reports/dab_flake8_census.json")
+    )
+    parser.add_argument(
+        "--text-out", type=Path, default=Path("reports/dab_flake8_census.txt")
+    )
     parser.add_argument("--parse-fixture", type=Path)
     parser.add_argument("--exact-sha")
     args = parser.parse_args()
@@ -86,7 +90,9 @@ def main() -> None:
 
     args.json_out.parent.mkdir(parents=True, exist_ok=True)
     args.text_out.parent.mkdir(parents=True, exist_ok=True)
-    args.json_out.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.json_out.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     args.text_out.write_text(raw, encoding="utf-8")
     print(json.dumps(payload, indent=2, sort_keys=True))
 

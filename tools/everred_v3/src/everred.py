@@ -140,7 +140,8 @@ def validate_event(e: dict) -> None:
                 "fail-closed: cannot admit without all passing gates",
             )
             raise InvalidEvidence(
-                "offline ledger cannot authenticate admission authority; record HOLD or use external server-side admission"
+                "offline ledger cannot authenticate admission authority; "
+                "record HOLD or use external server-side admission"
             )
     if e["kind"] == "lease_acquired":
         ev = e["evidence"]
@@ -412,7 +413,10 @@ def snapshot(events: list[dict]) -> dict:
             "rhel_verified_jobs",
             "cross_pr_replay_rate",
         ],
-        "disclaimer": "Imported records are historical evidence only. Snapshot does not confer merge or security authority.",
+        "disclaimer": (
+            "Imported records are historical evidence only. Snapshot does "
+            "not confer merge or security authority."
+        ),
     }
 
 

@@ -2,7 +2,6 @@ from pathlib import Path
 
 import yaml
 
-
 ROOT = Path(__file__).resolve().parents[1]
 GRAPH = ROOT / "cryo_dashboard_v0_3_0" / "dormant_capability_graph.yaml"
 

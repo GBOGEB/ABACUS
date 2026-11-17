@@ -37,9 +37,9 @@ echo ""
 if [[ $REMOTE_URL =~ github\.com[:/]([^/]+)/([^/.]+) ]]; then
     OWNER="${BASH_REMATCH[1]}"
     REPO="${BASH_REMATCH[2]}"
-    
+
     PR_URL="https://github.com/$OWNER/$REPO/compare/main...$CURRENT_BRANCH?expand=1"
-    
+
     echo "=========================================="
     echo "📝 Pull Request URL:"
     echo "$PR_URL"
@@ -47,7 +47,7 @@ if [[ $REMOTE_URL =~ github\.com[:/]([^/]+)/([^/.]+) ]]; then
     echo ""
     echo "🌐 Opening PR in browser..."
     echo ""
-    
+
     # Try to open in browser
     if command -v start &> /dev/null; then
         start "$PR_URL"
@@ -63,7 +63,7 @@ if [[ $REMOTE_URL =~ github\.com[:/]([^/]+)/([^/.]+) ]]; then
         echo "Please open this URL manually:"
         echo "$PR_URL"
     fi
-    
+
     echo ""
     echo "=========================================="
     echo "📋 PR Details to Use:"
@@ -113,7 +113,7 @@ Complete integration of Recursive DMAIC v0.4.0 CI/CD workflows with the existing
 
 See full details in `.github/PULL_REQUEST_TEMPLATE.md`
 EOF
-    
+
     echo ""
     echo ""
     echo "Labels to add:"
@@ -165,7 +165,7 @@ EOF
     echo "🚀 Ready to Ship!"
     echo "=========================================="
     echo ""
-    
+
     # Copy PR template to clipboard if possible
     if [ -f .github/PULL_REQUEST_TEMPLATE.md ]; then
         if command -v clip &> /dev/null; then
@@ -189,7 +189,7 @@ EOF
         echo "💡 TIP: Ensure the PR template exists or copy your PR description manually."
         echo ""
     fi
-    
+
 else
     echo "❌ ERROR: Could not parse GitHub URL"
     echo "Expected format: github.com/OWNER/REPO"

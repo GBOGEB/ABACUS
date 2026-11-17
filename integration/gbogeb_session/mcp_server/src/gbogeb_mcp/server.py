@@ -42,6 +42,7 @@ mcp = FastMCP("GBOGEB MCP Server")
 # Tool registrations
 # ============================================================================
 
+
 @mcp.tool()
 def tool_get_topology() -> dict:
     """
@@ -172,6 +173,7 @@ def tool_get_test_status() -> dict:
 # ============================================================================
 # Entry point
 # ============================================================================
+
 
 def main() -> None:
     """Run the GBOGEB MCP server (stdio transport)."""

@@ -8,11 +8,12 @@ Tests for DOW ↔ KEB bidirectional knowledge bridge functionality.
 Tests workspace setup, state persistence, knowledge transfer, and sync operations.
 """
 
-import pytest
 import json
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any
+from pathlib import Path
+from typing import Any, Dict, List
+
+import pytest
 
 from core.execution_backbone import ExecutionBackbone
 
@@ -72,10 +73,10 @@ class TestKEBStateManagement:
             "timestamp": datetime.now().isoformat(),
             "status": "initialized",
             "sessions": [],
-            "knowledge_transfers": 0
+            "knowledge_transfers": 0,
         }
 
-        with open(state_file, 'w') as f:
+        with open(state_file, "w") as f:
             json.dump(initial_state, f, indent=2)
 
         assert state_file.exists()
@@ -88,18 +89,18 @@ class TestKEBStateManagement:
             "timestamp": datetime.now().isoformat(),
             "status": "active",
             "sessions": ["session_001", "session_002"],
-            "knowledge_transfers": 5
+            "knowledge_transfers": 5,
         }
 
-        with open(state_file, 'w') as f:
+        with open(state_file, "w") as f:
             json.dump(test_state, f)
 
-        with open(state_file, 'r') as f:
+        with open(state_file, "r") as f:
             loaded_state = json.load(f)
 
-        assert loaded_state['status'] == 'active'
-        assert loaded_state['knowledge_transfers'] == 5
-        assert len(loaded_state['sessions']) == 2
+        assert loaded_state["status"] == "active"
+        assert loaded_state["knowledge_transfers"] == 5
+        assert len(loaded_state["sessions"]) == 2
 
 
 class TestDOWToKEBTransfer:
@@ -114,17 +115,17 @@ class TestDOWToKEBTransfer:
             "timestamp": datetime.now().isoformat(),
             "knowledge_items": [
                 {"type": "insight", "content": "Test insight"},
-                {"type": "pattern", "content": "Test pattern"}
-            ]
+                {"type": "pattern", "content": "Test pattern"},
+            ],
         }
 
         package_file = temp_workspace / "dow_package.json"
-        with open(package_file, 'w') as f:
+        with open(package_file, "w") as f:
             json.dump(dow_package, f)
 
         assert package_file.exists()
-        assert dow_package['source'] == 'DOW'
-        assert len(dow_package['knowledge_items']) == 2
+        assert dow_package["source"] == "DOW"
+        assert len(dow_package["knowledge_items"]) == 2
 
     def test_keb_receives_dow_knowledge(self, keb_path):
         """Test KEB receives knowledge from DOW"""
@@ -133,21 +134,21 @@ class TestDOWToKEBTransfer:
             "source": "DOW",
             "items": [
                 {"type": "insight", "content": "DOW insight 1"},
-                {"type": "insight", "content": "DOW insight 2"}
-            ]
+                {"type": "insight", "content": "DOW insight 2"},
+            ],
         }
 
         inbox_file = keb_path / "inbox_from_dow.json"
-        with open(inbox_file, 'w') as f:
+        with open(inbox_file, "w") as f:
             json.dump(incoming_knowledge, f)
 
         assert inbox_file.exists()
 
-        with open(inbox_file, 'r') as f:
+        with open(inbox_file, "r") as f:
             loaded = json.load(f)
 
-        assert loaded['source'] == 'DOW'
-        assert len(loaded['items']) == 2
+        assert loaded["source"] == "DOW"
+        assert len(loaded["items"]) == 2
 
 
 class TestKEBToDOWTransfer:
@@ -162,17 +163,17 @@ class TestKEBToDOWTransfer:
             "timestamp": datetime.now().isoformat(),
             "extracted_knowledge": [
                 {"type": "semantic_link", "content": "Link between A and B"},
-                {"type": "inference", "content": "Inferred relationship"}
-            ]
+                {"type": "inference", "content": "Inferred relationship"},
+            ],
         }
 
         package_file = keb_path / "outgoing_to_dow.json"
-        with open(package_file, 'w') as f:
+        with open(package_file, "w") as f:
             json.dump(keb_package, f)
 
         assert package_file.exists()
-        assert keb_package['source'] == 'KEB'
-        assert len(keb_package['extracted_knowledge']) == 2
+        assert keb_package["source"] == "KEB"
+        assert len(keb_package["extracted_knowledge"]) == 2
 
 
 class TestBidirectionalSync:
@@ -185,21 +186,21 @@ class TestBidirectionalSync:
             "last_keb_to_dow": datetime.now().isoformat(),
             "dow_to_keb_count": 10,
             "keb_to_dow_count": 8,
-            "sync_status": "healthy"
+            "sync_status": "healthy",
         }
 
         sync_file = knowledge_bridge_path / "sync_state.json"
-        with open(sync_file, 'w') as f:
+        with open(sync_file, "w") as f:
             json.dump(sync_state, f)
 
         assert sync_file.exists()
 
-        with open(sync_file, 'r') as f:
+        with open(sync_file, "r") as f:
             loaded = json.load(f)
 
-        assert loaded['sync_status'] == 'healthy'
-        assert loaded['dow_to_keb_count'] > 0
-        assert loaded['keb_to_dow_count'] > 0
+        assert loaded["sync_status"] == "healthy"
+        assert loaded["dow_to_keb_count"] > 0
+        assert loaded["keb_to_dow_count"] > 0
 
     def test_conflict_resolution(self, knowledge_bridge_path):
         """Test conflict resolution during sync"""
@@ -213,17 +214,17 @@ class TestBidirectionalSync:
                     "dow_version": "v1",
                     "keb_version": "v2",
                     "resolved_version": "v2",
-                    "timestamp": datetime.now().isoformat()
+                    "timestamp": datetime.now().isoformat(),
                 }
-            ]
+            ],
         }
 
         conflict_file = knowledge_bridge_path / "conflicts.json"
-        with open(conflict_file, 'w') as f:
+        with open(conflict_file, "w") as f:
             json.dump(conflict_log, f)
 
         assert conflict_file.exists()
-        assert conflict_log['conflicts_detected'] == conflict_log['conflicts_resolved']
+        assert conflict_log["conflicts_detected"] == conflict_log["conflicts_resolved"]
 
 
 class TestExecutionBackboneRuntimeBridge:
@@ -237,8 +238,12 @@ class TestExecutionBackboneRuntimeBridge:
         def record_bridge_event(label):
             executed.append(label)
 
-        backbone.schedule_task("dow_to_keb_runtime", record_bridge_event, priority=2, args=("dow_to_keb",))
-        backbone.schedule_task("keb_to_dow_runtime", record_bridge_event, priority=1, args=("keb_to_dow",))
+        backbone.schedule_task(
+            "dow_to_keb_runtime", record_bridge_event, priority=2, args=("dow_to_keb",)
+        )
+        backbone.schedule_task(
+            "keb_to_dow_runtime", record_bridge_event, priority=1, args=("keb_to_dow",)
+        )
 
         backbone.start()
         backbone.stop(wait=True, timeout=5)
@@ -251,5 +256,5 @@ class TestExecutionBackboneRuntimeBridge:
         assert metrics["queue_size"] == 0
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

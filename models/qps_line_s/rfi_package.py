@@ -62,7 +62,11 @@ def git_commit() -> str:
     return result.stdout.strip() or "UNKNOWN"
 
 
-def provenance_header(generated_at: str | None = None, register_hash: str | None = None, commit: str | None = None) -> str:
+def provenance_header(
+    generated_at: str | None = None,
+    register_hash: str | None = None,
+    commit: str | None = None,
+) -> str:
     timestamp = generated_at or datetime.now(UTC).isoformat()
     digest = register_hash or register_sha256()
     revision = commit or git_commit()
@@ -101,19 +105,32 @@ def render_rfi(items: list[dict[str, Any]]) -> str:
     for index, item in enumerate(items, start=1):
         item_id = item.get("id", f"GATE-{index}")
         title = item.get("title") or item.get("quantity") or item_id
-        lines.extend([
-            f"## RFI-{index}: {item_id} - {title}",
-            "",
-            f"Status: {item.get('status', 'UNKNOWN')}",
-            f"Severity: {item.get('severity', 'not_specified')}",
-            f"Value: {item.get('value', 'UNRESOLVED')}",
-            "",
-            "### Rationale",
-            "",
-        ])
-        lines.extend(_as_lines(item.get("rationale") or item.get("why_it_matters") or "Rationale not supplied."))
+        lines.extend(
+            [
+                f"## RFI-{index}: {item_id} - {title}",
+                "",
+                f"Status: {item.get('status', 'UNKNOWN')}",
+                f"Severity: {item.get('severity', 'not_specified')}",
+                f"Value: {item.get('value', 'UNRESOLVED')}",
+                "",
+                "### Rationale",
+                "",
+            ]
+        )
+        lines.extend(
+            _as_lines(
+                item.get("rationale")
+                or item.get("why_it_matters")
+                or "Rationale not supplied."
+            )
+        )
         lines.extend(["", "### Resolution options", ""])
-        lines.extend(_as_lines(item.get("resolution_options") or "Provide confirmed value / acceptance basis."))
+        lines.extend(
+            _as_lines(
+                item.get("resolution_options")
+                or "Provide confirmed value / acceptance basis."
+            )
+        )
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 

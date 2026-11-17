@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.11'
+          python-version: '3.14'
       - name: Verify exact checkout SHA
         shell: bash
         run: test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"

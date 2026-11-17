@@ -92,9 +92,9 @@ class MatplotlibCompatibilityRegression(unittest.TestCase):
         expected = {
             8: "pytest-asyncio>=0.23.8,<0.24",
             9: "pytest-asyncio>=1.2.0,<1.3",
-            10: "pytest-asyncio>=1.4.0,<1.5",
-            11: "pytest-asyncio>=1.4.0,<1.5",
-            12: "pytest-asyncio>=1.4.0,<1.5",
+            10: "pytest-asyncio>=1.4.1,<1.5",
+            11: "pytest-asyncio>=1.4.1,<1.5",
+            12: "pytest-asyncio>=1.4.1,<1.5",
         }
         self.assertEqual(3, len(lines))
         for minor, requirement in expected.items():

@@ -4,10 +4,13 @@
 Input is a child-compatible semantic-support YAML. The renderer never changes IDs,
 definitions or engineering state.
 """
+
 from __future__ import annotations
+
 import argparse
 import html
 from pathlib import Path
+
 import yaml
 
 
@@ -31,11 +34,15 @@ def render(data: dict) -> str:
             f"<td>{html.escape(alias_text)}</td>"
             "</tr>"
         )
-    return """<!doctype html><html><head><meta charset='utf-8'><title>CTaxonomy Glossary</title></head><body>
+    return (
+        """<!doctype html><html><head><meta charset='utf-8'><title>CTaxonomy Glossary</title></head><body>
 <h1>CTaxonomy Glossary</h1>
 <p>Projection only. Canonical taxonomy identity and engineering authority remain in the child SSOT.</p>
 <table><thead><tr><th>ID</th><th>Term</th><th>Definition</th><th>Aliases</th></tr></thead><tbody>
-""" + "\n".join(rows) + "\n</tbody></table></body></html>\n"
+"""
+        + "\n".join(rows)
+        + "\n</tbody></table></body></html>\n"
+    )
 
 
 def main() -> int:

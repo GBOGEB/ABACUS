@@ -171,7 +171,7 @@ assert stakeholder_tags == ["KEB", "DOW", "ALL"]
 "Generated outputs are NEVER canonical" — all changes originate in CODEX (GBC)
 
 ### Governance Flow
-CODEX (binaries) → Input_Master/ → verification_hook.py → .mock sidecars → 
+CODEX (binaries) → Input_Master/ → verification_hook.py → .mock sidecars →
 governance engines (lint, contrast, IDs) → Jekyll render → HTML output
 
 ### Topology

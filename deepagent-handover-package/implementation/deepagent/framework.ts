@@ -275,7 +275,7 @@ export interface IEvent {
   data: any;
 }
 
-export type EventType = 
+export type EventType =
   | 'project_created'
   | 'phase_completed'
   | 'kpi_threshold_breached'

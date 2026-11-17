@@ -2,6 +2,7 @@
 
 Derived surfaces are read-only; native GitHub security, A10 and main gates hold.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -31,39 +32,65 @@ def bytes_sha(value):
 
 
 def validate(trajectory, native, plan):
-    need(isinstance(trajectory, dict) and trajectory.get("schema") == OUTPUT_SCHEMA,
-         "trajectory input not validated")
-    need(trajectory.get("authority") == {"admission": "HOLD",
-                                          "security_waiver": False,
-                                          "authority_transfer": False},
-         "trajectory authority promotion")
-    need(trajectory.get("waves") == ["N5", "W7", "W8", "W9"],
-         "incomplete W7-W9 wave set")
-    need(isinstance(native, dict) and native.get("run_id") == 39026629552,
-         "unsupported native matrix run evidence")
-    need(isinstance(native.get("head_sha"), str) and HEX40.fullmatch(native["head_sha"]),
-         "unbound native run head")
-    need(native.get("run_attempt") == 1 and native.get("clock_basis") ==
-         "NATIVE_JOB_CREATED_STARTED_COMPLETED", "native job attempt/clock mismatch")
-    need(isinstance(native.get("jobs"), list) and len(native["jobs"]) == 7,
-         "native job count mismatch")
+    need(
+        isinstance(trajectory, dict) and trajectory.get("schema") == OUTPUT_SCHEMA,
+        "trajectory input not validated",
+    )
+    need(
+        trajectory.get("authority")
+        == {"admission": "HOLD", "security_waiver": False, "authority_transfer": False},
+        "trajectory authority promotion",
+    )
+    need(
+        trajectory.get("waves") == ["N5", "W7", "W8", "W9"], "incomplete W7-W9 wave set"
+    )
+    need(
+        isinstance(native, dict) and native.get("run_id") == 39026629552,
+        "unsupported native matrix run evidence",
+    )
+    need(
+        isinstance(native.get("head_sha"), str) and HEX40.fullmatch(native["head_sha"]),
+        "unbound native run head",
+    )
+    need(
+        native.get("run_attempt") == 1
+        and native.get("clock_basis") == "NATIVE_JOB_CREATED_STARTED_COMPLETED",
+        "native job attempt/clock mismatch",
+    )
+    need(
+        isinstance(native.get("jobs"), list) and len(native["jobs"]) == 7,
+        "native job count mismatch",
+    )
     seen = set()
     for j in native["jobs"]:
-        need(isinstance(j, dict) and type(j.get("job_id")) is int
-             and j["job_id"] > 0 and j["job_id"] not in seen,
-             "duplicated native job")
+        need(
+            isinstance(j, dict)
+            and type(j.get("job_id")) is int
+            and j["job_id"] > 0
+            and j["job_id"] not in seen,
+            "duplicated native job",
+        )
         seen.add(j["job_id"])
         need(j.get("run_attempt") == 1, "job attempt drift")
         for metric in ("queue_seconds", "runtime_seconds"):
             value = j.get(metric)
-            need(value is None or (type(value) in (int, float) and value >= 0),
-                 "invalid or negative native clock")
+            need(
+                value is None or (type(value) in (int, float) and value >= 0),
+                "invalid or negative native clock",
+            )
         if j.get("conclusion") == "skipped":
             need(j.get("runtime_seconds") is None, "skipped job duration forged")
-    need(isinstance(plan, dict) and plan.get("schema") ==
-         "code-purple.eoss.n6.plan.v1" and plan.get("authority") ==
-         {"merge_admission": "HOLD", "security_waiver": False,
-          "authority_transfer": False}, "planned wave admission drift")
+    need(
+        isinstance(plan, dict)
+        and plan.get("schema") == "code-purple.eoss.n6.plan.v1"
+        and plan.get("authority")
+        == {
+            "merge_admission": "HOLD",
+            "security_waiver": False,
+            "authority_transfer": False,
+        },
+        "planned wave admission drift",
+    )
     need(len(plan.get("waves", [])) == 3, "planned waves missing")
     return True
 
@@ -122,7 +149,8 @@ def clock_graph():
 
 
 def glossary():
-    return """# CODE PURPLE EOSS N6 — Three-wave glossary and interpretation
+    return (
+        """# CODE PURPLE EOSS N6 — Three-wave glossary and interpretation
 
 **Scope:** LOCAL E0-E2, REPO E3-E5, FEDERATION E6. EOSS remains a family of review projections; no new SSOT.
 
@@ -151,43 +179,72 @@ View the [interactive HTML](eoss_n6.html) for trajectory, evidence clocks, and e
 ## Process DAG
 
 ```mermaid
-""" + dag() + "```\n\nThe process path is directional. Candidate symptom evidence returns to an owner, not directly to a merger.\n\n## SIPOC\n\n```mermaid\n" + sipoc() + "```\n\nThe output suite is a projection of source receipts; customer feedback is a new owned change request.\n\n## Clock scope\n\n```mermaid\n" + clock_graph() + "```\n\nNo local build or simulated I/O result is a GitHub runner or CoolProp speedup.\n"
+"""
+        + dag()
+        + "```\n\nThe process path is directional. Candidate symptom evidence returns to an owner, not directly to a merger.\n\n## SIPOC\n\n```mermaid\n"
+        + sipoc()
+        + "```\n\nThe output suite is a projection of source receipts; customer feedback is a new owned change request.\n\n## Clock scope\n\n```mermaid\n"
+        + clock_graph()
+        + "```\n\nNo local build or simulated I/O result is a GitHub runner or CoolProp speedup.\n"
+    )
 
 
 def release(trajectory, native, plan, template):
     validate(trajectory, native, plan)
-    need(isinstance(template, str) and template.count("__N6_SOURCE_JSON__") == 1,
-         "HTML projection template contract drift")
+    need(
+        isinstance(template, str) and template.count("__N6_SOURCE_JSON__") == 1,
+        "HTML projection template contract drift",
+    )
     valid_jobs = [j for j in native["jobs"] if j["runtime_seconds"] is not None]
-    waits = [j["queue_seconds"] for j in native["jobs"]
-             if j["queue_seconds"] is not None and j["runtime_seconds"] is not None]
-    metrics = {"matched_local_coverage_pairs": trajectory["trajectory"]["matched_pairs"],
-               "trajectory_state": trajectory["trajectory"]["state"],
-               "final_local_test_count": trajectory["observations"][-1]["tests"]["passed"],
-               "historical_N0_readbacks": 60, "historical_N0_denominator": 253,
-               "native_jobs_received": len(native["jobs"]),
-               "native_job_durations_observed": len(valid_jobs),
-               "native_clock_anomaly_jobs": len(native["jobs"]) - len(valid_jobs),
-               "native_job_runtime_seconds_p50": median(j["runtime_seconds"] for j in valid_jobs),
-               "native_job_wait_seconds_p50": median(waits),
-               "native_job_wait_is_not_run_queue": True,
-               "current_head_native_tests_terminal": False,
-               "security_governance_review": "HOLD"}
-    view = {"schema": RELEASE_SCHEMA, "metrics": metrics,
-            "trajectory": trajectory, "native_clock": native, "plan": plan,
-            "graph_narrative": "Observational DAG, SIPOC and time-basis edges; no confirmed causal roots.",
-            "authority": {"admission": "HOLD", "security_waiver": False,
-                          "authority_transfer": False}}
+    waits = [
+        j["queue_seconds"]
+        for j in native["jobs"]
+        if j["queue_seconds"] is not None and j["runtime_seconds"] is not None
+    ]
+    metrics = {
+        "matched_local_coverage_pairs": trajectory["trajectory"]["matched_pairs"],
+        "trajectory_state": trajectory["trajectory"]["state"],
+        "final_local_test_count": trajectory["observations"][-1]["tests"]["passed"],
+        "historical_N0_readbacks": 60,
+        "historical_N0_denominator": 253,
+        "native_jobs_received": len(native["jobs"]),
+        "native_job_durations_observed": len(valid_jobs),
+        "native_clock_anomaly_jobs": len(native["jobs"]) - len(valid_jobs),
+        "native_job_runtime_seconds_p50": median(
+            j["runtime_seconds"] for j in valid_jobs
+        ),
+        "native_job_wait_seconds_p50": median(waits),
+        "native_job_wait_is_not_run_queue": True,
+        "current_head_native_tests_terminal": False,
+        "security_governance_review": "HOLD",
+    }
+    view = {
+        "schema": RELEASE_SCHEMA,
+        "metrics": metrics,
+        "trajectory": trajectory,
+        "native_clock": native,
+        "plan": plan,
+        "graph_narrative": "Observational DAG, SIPOC and time-basis edges; no confirmed causal roots.",
+        "authority": {
+            "admission": "HOLD",
+            "security_waiver": False,
+            "authority_transfer": False,
+        },
+    }
     source = pretty_json(view)
-    safe_json = source.replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
+    safe_json = (
+        source.replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
+    )
     dashboard = template.replace("__N6_SOURCE_JSON__", safe_json)
     need("__N6_SOURCE_JSON__" not in dashboard, "unfilled HTML source marker")
-    return {"eoss_n6_dashboard.html": dashboard,
-            "eoss_n6_review.json": source,
-            "eoss_n6_glossary.md": glossary(),
-            "eoss_n6_process.mmd": dag(),
-            "eoss_n6_sipoc.mmd": sipoc(),
-            "eoss_n6_clock.mmd": clock_graph()}
+    return {
+        "eoss_n6_dashboard.html": dashboard,
+        "eoss_n6_review.json": source,
+        "eoss_n6_glossary.md": glossary(),
+        "eoss_n6_process.mmd": dag(),
+        "eoss_n6_sipoc.mmd": sipoc(),
+        "eoss_n6_clock.mmd": clock_graph(),
+    }
 
 
 def write(outputs, directory):
@@ -195,19 +252,30 @@ def write(outputs, directory):
     destination.mkdir(parents=True, exist_ok=True)
     sha = {}
     for name, text in sorted(outputs.items()):
-        need("/" not in name and "\\" not in name and isinstance(text, str),
-             "unsafe output name")
+        need(
+            "/" not in name and "\\" not in name and isinstance(text, str),
+            "unsafe output name",
+        )
         raw = text.encode("utf-8")
         (destination / name).write_bytes(raw)
         sha[name] = bytes_sha(raw)
-    receipt = {"schema": "code-purple.eoss.n6.local-release-receipt.v1",
-               "artifacts": sha,
-               "evidence_level": "LOCAL_REPRODUCIBILITY",
-               "checks": {"structural": "PASS", "visual_playwright": "DEFER",
-                          "native_exact_head_ci": "DEFER",
-                          "cross_artifact_sha_parity": "PASS"},
-               "authority": {"admission": "HOLD", "security_waiver": False,
-                             "authority_transfer": False}}
+    receipt = {
+        "schema": "code-purple.eoss.n6.local-release-receipt.v1",
+        "artifacts": sha,
+        "evidence_level": "LOCAL_REPRODUCIBILITY",
+        "checks": {
+            "structural": "PASS",
+            "visual_playwright": "DEFER",
+            "native_exact_head_ci": "DEFER",
+            "cross_artifact_sha_parity": "PASS",
+        },
+        "authority": {
+            "admission": "HOLD",
+            "security_waiver": False,
+            "authority_transfer": False,
+        },
+    }
     (destination / "eoss_n6_release_receipt.json").write_text(
-        pretty_json(receipt), encoding="utf-8")
+        pretty_json(receipt), encoding="utf-8"
+    )
     return receipt

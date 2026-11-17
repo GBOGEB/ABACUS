@@ -16,6 +16,8 @@ Every observation is a row keyed by
 - `checkout_kind`: `exact_head` | `synthetic_merge` | `main`. Synthetic-merge runs are PR-associated diagnostics, not literal-HEAD proof.
 - Only `status=completed` rows count. `queued`, `in_progress`, `action_required` with no jobs → no credit either way.
 - When a source SHA moves, all rows at the old SHA become `stale`.
+- A pasted handover is a dated snapshot. Read each named PR's head, checks and status block live before acting on it, and again immediately before posting any status. On 2026-11-10, GEMINI #48 moved from `d377dc67` to `fa71ed7a` about 25 minutes after a handover's readback, and another session had already recorded the result about to be posted. If the status block already carries the fact, do not post a duplicate.
+- For a `workflow_run`-triggered run, `gh run view --json headSha` returns the default-branch tip, not the PR head (2026-11-10: pipeline-automation-hub First-Pass Closure Gate run 42903278604 showed master `401c5731` while gating PR head `dae9c7fa`). Bind such a run to its PR through the PR's own check rollup or the run's receipt, never through `headSha`; otherwise `source_sha` is `UNKNOWN`.
 - For `attempt > 1`, read attempt 1. Same SHA failed→passed is a **rerun pass** (flake signal), not a displacement.
 - Artifact digests from API metadata are tagged `github_metadata`; only re-hashed bytes are `verified`.
 
@@ -38,6 +40,8 @@ Three qualifying transitions require four distinct, terminal, comparable, **sour
 ## 5. Admission requires effective governance
 
 Configured ≠ effective. Verify: required status checks naming the canonical producers; stale-review dismissal; minimal bypass actors; and a deliberately RED canary that was **rejected**. Any gap → `MERGE_ADMISSION = HOLD`.
+
+Quick tell: `gh pr view --json mergeStateStatus,reviewDecision` returning `CLEAN` with an empty `reviewDecision` means no review rule is in force, so GitHub will not stop a merge and the hold is manual. Seen on 2026-11-10 at DOCX_RTM_Automation #110 and GEMINI #48 (owners: DOCX_RTM_Automation #86, GEMINI #50). `BLOCKED` is the expected state under a working gate.
 
 Independent approval, last-push approval and thread resolution depend on the repository's **CODE PURPLE MACH level** (`docs/governance/CODE_PURPLE_MACH_LADDER.md`, evaluator `scripts/code_purple_mach_admission.py`):
 

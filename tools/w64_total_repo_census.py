@@ -8,6 +8,7 @@ classification. It does not delete, migrate, or promote any asset.
 Usage:
     python tools/w64_total_repo_census.py --root . --out architecture/w64/receipts/W64_TOTAL_REPO_CENSUS_P1.json
 """
+
 from __future__ import annotations
 
 import argparse
@@ -39,7 +40,18 @@ DORMANT_HINTS = (
     "abacus-v3",
 )
 
-BINARY_SUFFIXES = {".xlsx", ".xlsm", ".pptx", ".pdf", ".png", ".jpg", ".jpeg", ".zip", ".tar", ".gz"}
+BINARY_SUFFIXES = {
+    ".xlsx",
+    ".xlsm",
+    ".pptx",
+    ".pdf",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".zip",
+    ".tar",
+    ".gz",
+}
 SCHEMA_SUFFIXES = {".json", ".yaml", ".yml", ".toml"}
 SOURCE_SUFFIXES = {".py", ".ts", ".tsx", ".js", ".jsx", ".sh", ".ps1"}
 DOC_SUFFIXES = {".md", ".rst", ".txt"}
@@ -126,7 +138,9 @@ def build_census(root: Path) -> dict[str, object]:
                 "path": rel.as_posix(),
                 "category": category,
                 "classification": classification,
-                "sha256": sha256_file(full) if full.exists() and full.is_file() else None,
+                "sha256": (
+                    sha256_file(full) if full.exists() and full.is_file() else None
+                ),
                 "evidence_basis": "git_tracked_path_and_suffix_heuristic",
             }
         )
@@ -134,7 +148,10 @@ def build_census(root: Path) -> dict[str, object]:
     for asset in assets:
         asset_path = Path(str(asset["path"]))
         duplicate_family = duplicate_key(asset_path)
-        if duplicate_counter[duplicate_family] > 1 and asset["classification"] not in {"generated", "dormant"}:
+        if duplicate_counter[duplicate_family] > 1 and asset["classification"] not in {
+            "generated",
+            "dormant",
+        }:
             asset["duplicate_family_candidate"] = duplicate_family
 
     by_category = Counter(str(asset["category"]) for asset in assets)
@@ -170,8 +187,14 @@ def main(argv: Iterable[str] | None = None) -> int:
         out = root / out
     out.parent.mkdir(parents=True, exist_ok=True)
     census = build_census(root)
-    out.write_text(json.dumps(census, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(json.dumps({"asset_count": census["asset_count"], "out": str(out)}, sort_keys=True))
+    out.write_text(
+        json.dumps(census, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    print(
+        json.dumps(
+            {"asset_count": census["asset_count"], "out": str(out)}, sort_keys=True
+        )
+    )
     return 0
 
 

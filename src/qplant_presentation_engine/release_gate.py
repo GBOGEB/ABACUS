@@ -82,7 +82,10 @@ def _check_runtime_evidence(reports_dir: Path) -> Tuple[bool, str]:
             if status == "ok":
                 return True, f"Runtime evidence present and status=ok ({candidate})"
             return False, f"Runtime evidence found ({candidate}) but status={status!r}"
-    return False, "No runtime evidence found (runtime_status.json or runtime_publish_status.json)"
+    return (
+        False,
+        "No runtime evidence found (runtime_status.json or runtime_publish_status.json)",
+    )
 
 
 def evaluate_release_gate(
@@ -136,7 +139,9 @@ def evaluate_release_gate(
         "checks": {k: bool(v["passed"]) for k, v in checks.items()},
     }
 
-    resolved_release_path = release_readiness_path or (resolved_reports / "release_readiness.json")
+    resolved_release_path = release_readiness_path or (
+        resolved_reports / "release_readiness.json"
+    )
     resolved_ci_path = ci_status_path or (resolved_reports / "ci_status.json")
     _write_json(resolved_release_path, release_readiness)
     _write_json(resolved_ci_path, ci_status)

@@ -3,8 +3,8 @@
 Validate docs internal links (markdown + html) to prevent broken navigation.
 """
 
-import re
 import logging
+import re
 from pathlib import Path
 from typing import Iterable, List, Tuple
 from urllib.parse import unquote

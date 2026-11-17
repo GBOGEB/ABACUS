@@ -9,7 +9,9 @@ def test_stability_monitor_tracks_regressions_variance_and_report(tmp_path):
     monitor = StabilityMonitor(tmp_path, window_size=5)
     change_events = []
     alert_events = []
-    monitor.register_change_hook(lambda kind, payload: change_events.append((kind, payload)))
+    monitor.register_change_hook(
+        lambda kind, payload: change_events.append((kind, payload))
+    )
     monitor.register_alert_hook(alert_events.append)
 
     target = tmp_path / "module.py"

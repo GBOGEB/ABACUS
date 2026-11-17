@@ -24,10 +24,10 @@
    ```bash
    # Verify Phase 2 has file_metrics
    python -c "import json; d=json.load(open('DMAIC_V3_OUTPUT/sprints/iteration_3/phase2_metrics.json')); print(f'file_metrics: {len(d.get(\"file_metrics\",{}))}')"
-   
+
    # Verify Phase 3 analyzed files
    python -c "import json; d=json.load(open('DMAIC_V3_OUTPUT/sprints/iteration_3/phase3_analysis.json')); print(f'Files: {d[\"summary\"][\"total_files_analyzed\"]}')"
-   
+
    # Run comparison
    python compare_iterations.py --iter1 2 --iter2 3
    ```

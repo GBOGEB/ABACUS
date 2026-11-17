@@ -196,10 +196,10 @@ Other (77.4%)          ███████████████████
    ```yaml
    - name: Run DMAIC Sprint
      run: python dmaic_sprint_runner.py --phase 0 5
-   
+
    - name: Generate Dashboard
      run: python dmaic_progress_visualizer.py > sprint_report.txt
-   
+
    - name: Upload Artifacts
      uses: actions/upload-artifact@v3
      with:
@@ -317,7 +317,7 @@ Other (77.4%)          ███████████████████
    ```python
    # Current (failing):
    subprocess.run([sys.executable, "-m", "DMAIC_V3.dmaic_v3_engine", ...])
-   
+
    # Proposed fix:
    from DMAIC_V3.dmaic_v3_engine import run_phase
    run_phase("phase3_analyze", iteration=1, output_dir=...)

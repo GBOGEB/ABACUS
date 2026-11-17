@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class TestCase:
     """A generated test case."""
+
     name: str
     function: str
     category: str  # unit, edge_case, boundary, property, mutation
@@ -38,6 +39,7 @@ class TestCase:
 @dataclass
 class FunctionInfo:
     """Extracted function metadata."""
+
     name: str
     module: str
     args: List[Dict[str, Any]]
@@ -72,7 +74,9 @@ class CodeAnalyser:
 
         return functions
 
-    def _extract_function_info(self, node: ast.FunctionDef, module: str) -> FunctionInfo:
+    def _extract_function_info(
+        self, node: ast.FunctionDef, module: str
+    ) -> FunctionInfo:
         """Extract metadata from a function AST node."""
         args = []
         for arg in node.args.args:
@@ -143,7 +147,9 @@ class TestGenerator:
             tests.extend(self._generate_tests(func))
         return tests
 
-    def generate_for_directory(self, dir_path: str, pattern: str = "*.py") -> Dict[str, List[TestCase]]:
+    def generate_for_directory(
+        self, dir_path: str, pattern: str = "*.py"
+    ) -> Dict[str, List[TestCase]]:
         """Generate test cases for all Python files in a directory."""
         results = {}
         for py_file in Path(dir_path).glob(pattern):
@@ -196,37 +202,41 @@ class TestGenerator:
         tests = []
         for arg in func.args:
             # None test
-            tests.append(TestCase(
-                name=f"test_{func.name}_{arg['name']}_none",
-                function=func.name,
-                category="edge_case",
-                description=f"Test {func.name} with {arg['name']}=None",
-                inputs={arg["name"]: None},
-                expected_behavior="Raises TypeError/ValueError or handles gracefully",
-                code=f"""def test_{func.name}_{arg['name']}_none():
+            tests.append(
+                TestCase(
+                    name=f"test_{func.name}_{arg['name']}_none",
+                    function=func.name,
+                    category="edge_case",
+                    description=f"Test {func.name} with {arg['name']}=None",
+                    inputs={arg["name"]: None},
+                    expected_behavior="Raises TypeError/ValueError or handles gracefully",
+                    code=f"""def test_{func.name}_{arg['name']}_none():
     \"\"\"Edge case: {arg['name']} is None.\"\"\"
     import pytest
     with pytest.raises((TypeError, ValueError)):
         {func.module}.{func.name}({arg['name']}=None)
 """,
-                confidence=0.6,
-            ))
+                    confidence=0.6,
+                )
+            )
 
             # Zero/empty test
-            tests.append(TestCase(
-                name=f"test_{func.name}_{arg['name']}_zero",
-                function=func.name,
-                category="edge_case",
-                description=f"Test {func.name} with {arg['name']}=0/empty",
-                inputs={arg["name"]: 0},
-                expected_behavior="Handles zero/empty input correctly",
-                code=f"""def test_{func.name}_{arg['name']}_zero():
+            tests.append(
+                TestCase(
+                    name=f"test_{func.name}_{arg['name']}_zero",
+                    function=func.name,
+                    category="edge_case",
+                    description=f"Test {func.name} with {arg['name']}=0/empty",
+                    inputs={arg["name"]: 0},
+                    expected_behavior="Handles zero/empty input correctly",
+                    code=f"""def test_{func.name}_{arg['name']}_zero():
     \"\"\"Edge case: {arg['name']} is zero/empty.\"\"\"
     result = {func.module}.{func.name}({arg['name']}=0)
     # Verify: no crash, sensible result
 """,
-                confidence=0.5,
-            ))
+                    confidence=0.5,
+                )
+            )
 
         return tests
 
@@ -234,42 +244,48 @@ class TestGenerator:
         """Generate boundary value tests."""
         tests = []
         for arg in func.args:
-            if "type" in arg and ("int" in str(arg["type"]) or "float" in str(arg["type"])):
-                tests.append(TestCase(
-                    name=f"test_{func.name}_{arg['name']}_large",
-                    function=func.name,
-                    category="boundary",
-                    description=f"Test {func.name} with very large {arg['name']}",
-                    inputs={arg["name"]: 1e15},
-                    expected_behavior="Handles extreme values without overflow",
-                    code=f"""def test_{func.name}_{arg['name']}_large():
+            if "type" in arg and (
+                "int" in str(arg["type"]) or "float" in str(arg["type"])
+            ):
+                tests.append(
+                    TestCase(
+                        name=f"test_{func.name}_{arg['name']}_large",
+                        function=func.name,
+                        category="boundary",
+                        description=f"Test {func.name} with very large {arg['name']}",
+                        inputs={arg["name"]: 1e15},
+                        expected_behavior="Handles extreme values without overflow",
+                        code=f"""def test_{func.name}_{arg['name']}_large():
     \"\"\"Boundary: very large {arg['name']}.\"\"\"
     result = {func.module}.{func.name}({arg['name']}=1e15)
     assert result is not None
 """,
-                    confidence=0.5,
-                ))
+                        confidence=0.5,
+                    )
+                )
         return tests
 
     def _gen_type_tests(self, func: FunctionInfo) -> List[TestCase]:
         """Generate type mismatch tests."""
         tests = []
         for arg in func.args:
-            tests.append(TestCase(
-                name=f"test_{func.name}_{arg['name']}_wrong_type",
-                function=func.name,
-                category="mutation",
-                description=f"Test {func.name} with wrong type for {arg['name']}",
-                inputs={arg["name"]: "wrong_type"},
-                expected_behavior="Raises TypeError",
-                code=f"""def test_{func.name}_{arg['name']}_wrong_type():
+            tests.append(
+                TestCase(
+                    name=f"test_{func.name}_{arg['name']}_wrong_type",
+                    function=func.name,
+                    category="mutation",
+                    description=f"Test {func.name} with wrong type for {arg['name']}",
+                    inputs={arg["name"]: "wrong_type"},
+                    expected_behavior="Raises TypeError",
+                    code=f"""def test_{func.name}_{arg['name']}_wrong_type():
     \"\"\"Mutation: wrong type for {arg['name']}.\"\"\"
     import pytest
     with pytest.raises((TypeError, ValueError)):
         {func.module}.{func.name}({arg['name']}="wrong_type_string")
 """,
-                confidence=0.4,
-            ))
+                    confidence=0.4,
+                )
+            )
         return tests
 
     def _default_value(self, arg: Dict[str, Any]) -> str:
@@ -291,7 +307,11 @@ class TestGenerator:
             return "{}"
         return "None"
 
-    def export_report(self, results: Dict[str, List[TestCase]], output: str = "test_generation_report.json") -> None:
+    def export_report(
+        self,
+        results: Dict[str, List[TestCase]],
+        output: str = "test_generation_report.json",
+    ) -> None:
         """Export test generation report."""
         report = {
             "generated": __import__("datetime").datetime.now().isoformat(),

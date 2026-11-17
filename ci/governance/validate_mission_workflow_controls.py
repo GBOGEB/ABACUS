@@ -4,6 +4,7 @@
 REX-CM-003: governed external GitHub Actions are pinned to full commit SHAs.
 REX-CM-004: W74/W169 explicitly checkout and assert the evaluated PR head/push SHA.
 """
+
 from __future__ import annotations
 
 import re
@@ -12,8 +13,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 GOVERNED = {
     ".github/workflows/ci-governance.yml": {"pin_actions": True, "exact_source": False},
-    ".github/workflows/w74-qplant-k8s-contract.yml": {"pin_actions": True, "exact_source": True},
-    ".github/workflows/w169-qplant-k8s-runtime.yml": {"pin_actions": True, "exact_source": True},
+    ".github/workflows/w74-qplant-k8s-contract.yml": {
+        "pin_actions": True,
+        "exact_source": True,
+    },
+    ".github/workflows/w169-qplant-k8s-runtime.yml": {
+        "pin_actions": True,
+        "exact_source": True,
+    },
 }
 
 USES_RE = re.compile(r"^\s*-?\s*uses:\s*([^\s#]+)", re.MULTILINE)
@@ -38,7 +45,9 @@ def validate_pins(path: str, text: str) -> list[str]:
             continue
         _, version = ref.rsplit("@", 1)
         if not FULL_SHA_RE.fullmatch(version):
-            errors.append(f"{path}: external action is not pinned to 40-char SHA: {ref}")
+            errors.append(
+                f"{path}: external action is not pinned to 40-char SHA: {ref}"
+            )
     return errors
 
 
@@ -52,7 +61,9 @@ def validate_exact_source(path: str, text: str) -> list[str]:
     if missing:
         return [f"{path}: missing exact-source controls: {missing}"]
     if "ref: ${{ github.event.pull_request.head.sha || github.sha }}" not in text:
-        return [f"{path}: checkout ref is not explicitly bound to evaluated PR head/push SHA"]
+        return [
+            f"{path}: checkout ref is not explicitly bound to evaluated PR head/push SHA"
+        ]
     return []
 
 

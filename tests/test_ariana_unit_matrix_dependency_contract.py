@@ -2,11 +2,17 @@
 
 from __future__ import annotations
 
+import json
 import re
 import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+# Interpreter edges come from the SSOT view (ssot/python_versions.yaml).
+_LANE = json.loads(
+    (ROOT / "ssot/python_versions.lanes.json").read_text(encoding="utf-8")
+)["lanes"]["default"]
+EDGE_MATRIX = f"python-version: ['{_LANE['oldest']}', '{_LANE['newest']}']"
 MINIMAL = ROOT / "requirements-test.txt"
 PRODUCT_SHIM = ROOT / "requirements.txt"
 WORKFLOW = ROOT / ".github/workflows/ci-cd-tests.yml"
@@ -39,7 +45,7 @@ def _unit_matrix_workflow() -> str:
 def test_six_cell_ci_uses_shared_minimal_dependency_manifest() -> None:
     unit = _unit_matrix_workflow()
     assert "os: [ubuntu-latest, windows-latest, macos-latest]" in unit
-    assert "python-version: ['3.11', '3.12']" in unit
+    assert EDGE_MATRIX in unit
     assert "pip install -r requirements-test.txt" in unit
     assert "pip install -r requirements-dev.txt" not in unit
 
@@ -84,11 +90,10 @@ def test_missing_or_drifted_minimal_parser_fails_closed() -> None:
 
 
 def test_ariana_junit_reader_uses_secure_entity_policy() -> None:
-    source = (ROOT / "scripts/ci/ariana_dow_evidence.py").read_text(
-        encoding="utf-8"
-    )
+    source = (ROOT / "scripts/ci/ariana_dow_evidence.py").read_text(encoding="utf-8")
     assert "from defusedxml import ElementTree as ET" in source
     assert "forbid_dtd=True, forbid_entities=True, forbid_external=True" in source
+
 
 def test_real_ariana_reader_preserves_failures_and_skips() -> None:
     from scripts.ci.ariana_dow_evidence import read_junit

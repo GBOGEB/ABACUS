@@ -25,7 +25,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
-          python-version: '3.11'
+          python-version: '3.14'
       - name: Portable ZIP and trusted-byte negative tests
         run: python -m unittest discover -s tests -p test_mcl_artifact_roundtrip.py -v
   actor-boundary:
@@ -38,7 +38,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
-          python-version: '3.11'
+          python-version: '3.14'
       - name: Existing external actor authorization and anti-replay controls
         run: python -m unittest discover -s tests -p test_mission_control_lite.py -v
   hub-projection:
@@ -51,6 +51,6 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
-          python-version: '3.11'
+          python-version: '3.14'
       - name: Ledger, navigation and no-admission contract
         run: python -m unittest discover -s tests -p test_mcl_hub_contract.py -v

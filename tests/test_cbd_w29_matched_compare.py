@@ -1,4 +1,5 @@
 """W29 independent negative controls for same-head branch-coverage acceptance."""
+
 from __future__ import annotations
 
 import json
@@ -10,17 +11,34 @@ from tools.recovery import w29_temporal_native_compare as m
 
 SHA = "a" * 40
 T0 = datetime(2026, 10, 17, 10, 0, 0, tzinfo=timezone.utc)
-OLD = {"num_statements": 120, "covered_lines": 95,
-       "num_branches": 80, "covered_branches": 45}
-NEW = {"num_statements": 120, "covered_lines": 99,
-       "num_branches": 80, "covered_branches": 60}
+OLD = {
+    "num_statements": 120,
+    "covered_lines": 95,
+    "num_branches": 80,
+    "covered_branches": 45,
+}
+NEW = {
+    "num_statements": 120,
+    "covered_lines": 99,
+    "num_branches": 80,
+    "covered_branches": 60,
+}
 TEST_OLD = {"declared": 14, "observed": 14, "executed": 14, "skipped": 0}
 TEST_NEW = {"declared": 40, "observed": 40, "executed": 40, "skipped": 0}
 
 
-def metrics(before=OLD, after=NEW, old_tests=TEST_OLD, new_tests=TEST_NEW,
-            *, old_time=None, new_time=None, old_finished=None, new_finished=None,
-            sha=SHA):
+def metrics(
+    before=OLD,
+    after=NEW,
+    old_tests=TEST_OLD,
+    new_tests=TEST_NEW,
+    *,
+    old_time=None,
+    new_time=None,
+    old_finished=None,
+    new_finished=None,
+    sha=SHA,
+):
     left = (before, old_time or T0 + timedelta(seconds=10), "1" * 64)
     right = (after, new_time or T0 + timedelta(seconds=20), "2" * 64)
     jleft = (old_tests, old_finished or T0, "3" * 64)
@@ -28,8 +46,9 @@ def metrics(before=OLD, after=NEW, old_tests=TEST_OLD, new_tests=TEST_NEW,
     return m.compare(left, right, jleft, jright, exact_head=sha)
 
 
-def native_cov(tmp_path, *, totals=OLD, source=m.SOURCE, branch=True,
-               stamp="2026-10-17T10:00:20Z"):
+def native_cov(
+    tmp_path, *, totals=OLD, source=m.SOURCE, branch=True, stamp="2026-10-17T10:00:20Z"
+):
     doc = {
         "meta": {"branch_coverage": branch, "timestamp": stamp},
         "files": {source: {"summary": dict(totals)}},
@@ -42,14 +61,17 @@ def native_cov(tmp_path, *, totals=OLD, source=m.SOURCE, branch=True,
 
 def native_junit(tmp_path, *, cases=2, declared=None, failed=False):
     count = cases if declared is None else declared
-    entries = "".join(f'<testcase classname="suite" name="test_{i}"/>' for i in range(cases))
+    entries = "".join(
+        f'<testcase classname="suite" name="test_{i}"/>' for i in range(cases)
+    )
     if failed:
         entries = '<testcase classname="suite" name="failed"><failure/></testcase>'
     p = tmp_path / "j.xml"
     p.write_text(
         '<testsuite timestamp="2026-10-17T10:00:00+00:00" time="1" '
         f'tests="{count}" failures="{1 if failed else 0}" errors="0" skipped="0">'
-        + entries + "</testsuite>",
+        + entries
+        + "</testsuite>",
         encoding="utf-8",
     )
     return p
@@ -74,21 +96,27 @@ def test_force_trip_unpinned_head_not_admissible(head):
         metrics(sha=head)
 
 
-@pytest.mark.parametrize("path", [
-    "elsewhere/file.py",
-    "./scripts/cbd_coverage_temporal_gate.py",
-    "../scripts/cbd_coverage_temporal_gate.py",
-    "scripts/../scripts/cbd_coverage_temporal_gate.py",
-])
+@pytest.mark.parametrize(
+    "path",
+    [
+        "elsewhere/file.py",
+        "./scripts/cbd_coverage_temporal_gate.py",
+        "../scripts/cbd_coverage_temporal_gate.py",
+        "scripts/../scripts/cbd_coverage_temporal_gate.py",
+    ],
+)
 def test_force_trip_coverage_path_alias_or_escape_rejected(tmp_path, path):
     with pytest.raises(ValueError, match="unexpected source"):
         m.coverage_from(native_cov(tmp_path, source=path))
 
 
-@pytest.mark.parametrize("changed", [
-    {"num_statements": 121},
-    {"num_branches": 81},
-])
+@pytest.mark.parametrize(
+    "changed",
+    [
+        {"num_statements": 121},
+        {"num_branches": 81},
+    ],
+)
 def test_reverse_denominator_drift_cannot_inflate_growth(changed):
     with pytest.raises(ValueError, match="unmatched"):
         metrics(after={**NEW, **changed})
@@ -136,13 +164,16 @@ def test_force_trip_stale_coverage_json_rejected():
         metrics(new_time=T0, new_finished=T0 + timedelta(seconds=2))
 
 
-@pytest.mark.parametrize("tamper", [
-    {"meta": {"branch_coverage": False}},
-    {"meta": {}},
-    {"files": {}},
-    {"files": []},
-    {"totals": {"num_statements": False}},
-])
+@pytest.mark.parametrize(
+    "tamper",
+    [
+        {"meta": {"branch_coverage": False}},
+        {"meta": {}},
+        {"files": {}},
+        {"files": []},
+        {"totals": {"num_statements": False}},
+    ],
+)
 def test_force_trip_invalid_coverage_shape_rejected(tmp_path, tamper):
     p = native_cov(tmp_path)
     d = json.loads(p.read_text(encoding="utf-8"))

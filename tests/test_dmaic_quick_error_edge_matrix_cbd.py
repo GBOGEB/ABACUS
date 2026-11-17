@@ -3,18 +3,20 @@
 No real pipelines execute. The zero-tested historical modules are loaded by path,
 subprocess calls are stubbed, and all writable files live under tmp_path.
 """
+
 import importlib.util
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
-
 ROOT = Path(__file__).resolve().parents[1] / "DMAIC_V3"
 
 
 def load(name):
-    spec = importlib.util.spec_from_file_location("_cbd_edge_" + name, ROOT / (name + ".py"))
+    spec = importlib.util.spec_from_file_location(
+        "_cbd_edge_" + name, ROOT / (name + ".py")
+    )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -58,15 +60,23 @@ def test_nonzero_mypy_with_unparseable_output_fails_closed(monkeypatch):
 
 def test_mypy_multi_error_records_preserve_each_source_line(monkeypatch):
     module = load("quick_error_fix")
-    responses = iter([
-        SimpleNamespace(returncode=0, stdout="clean\n"),
-        SimpleNamespace(returncode=1, stdout="a.py:2: error: mismatch\nb.py:9: error: unresolved\nnoise"),
-    ])
-    monkeypatch.setattr(module.subprocess, "run", lambda *args, **kwargs: next(responses))
+    responses = iter(
+        [
+            SimpleNamespace(returncode=0, stdout="clean\n"),
+            SimpleNamespace(
+                returncode=1,
+                stdout="a.py:2: error: mismatch\nb.py:9: error: unresolved\nnoise",
+            ),
+        ]
+    )
+    monkeypatch.setattr(
+        module.subprocess, "run", lambda *args, **kwargs: next(responses)
+    )
     errors, warnings = module.ErrorDetector().scan_for_errors()
     assert [row["type"] for row in errors] == ["type_error", "type_error"]
     assert [row["message"] for row in errors] == [
-        "a.py:2: error: mismatch", "b.py:9: error: unresolved",
+        "a.py:2: error: mismatch",
+        "b.py:9: error: unresolved",
     ]
     assert warnings == []
 
@@ -94,8 +104,12 @@ def test_categorization_multi_issue_partition_and_priority():
     ]
     output = module.ErrorDetector().categorize_errors(inputs)
     assert {k: len(v) for k, v in output.items()} == {
-        "type_errors": 1, "import_errors": 1, "attribute_errors": 1,
-        "runtime_errors": 1, "syntax_errors": 1, "other": 1,
+        "type_errors": 1,
+        "import_errors": 1,
+        "attribute_errors": 1,
+        "runtime_errors": 1,
+        "syntax_errors": 1,
+        "other": 1,
     }
     assert output["type_errors"][0] is inputs[0]
 
@@ -103,7 +117,9 @@ def test_categorization_multi_issue_partition_and_priority():
 def test_multiple_type_hint_replacements_are_atomic_and_idempotent(tmp_path):
     module = load("quick_error_fix")
     target = tmp_path / "annotations.py"
-    target.write_text("x: Dict[str, ] = {}\ny: List[Dict] = []\nz: Tuple[bool, Dict] = (True,{})\n")
+    target.write_text(
+        "x: Dict[str, ] = {}\ny: List[Dict] = []\nz: Tuple[bool, Dict] = (True,{})\n"
+    )
     fixer = module.QuickFixer()
     assert fixer.fix_type_hints(target) is True
     contents = target.read_text()
@@ -126,7 +142,9 @@ def test_report_suppresses_empty_categories_and_no_fake_fix(tmp_path):
     assert "Import Errors (" not in contents
 
 
-def test_main_repairs_existing_orchestrator_without_running_pipeline(tmp_path, monkeypatch):
+def test_main_repairs_existing_orchestrator_without_running_pipeline(
+    tmp_path, monkeypatch
+):
     module = load("quick_error_fix")
     folder = tmp_path / "DMAIC_V3"
     folder.mkdir()
@@ -134,7 +152,8 @@ def test_main_repairs_existing_orchestrator_without_running_pipeline(tmp_path, m
     orchestrator.write_text("values: List[Dict] = []\n")
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(
-        module.ErrorDetector, "scan_for_errors",
+        module.ErrorDetector,
+        "scan_for_errors",
         lambda self: ([], []),
     )
     assert module.main() == 0
@@ -142,7 +161,9 @@ def test_main_repairs_existing_orchestrator_without_running_pipeline(tmp_path, m
     assert "Fixes Applied:** 1" in (folder / "ERROR_DETECTION_REPORT.md").read_text()
 
 
-def test_error_lister_multiple_issues_same_line_count_as_separate_findings(tmp_path, monkeypatch):
+def test_error_lister_multiple_issues_same_line_count_as_separate_findings(
+    tmp_path, monkeypatch
+):
     module = load("quick_error_lister")
     folder = tmp_path / "DMAIC_V3"
     folder.mkdir()

@@ -25,7 +25,9 @@ def load_metrics(evidence: Optional[Mapping[str, bool]] = None) -> Dict[str, Any
     """Return measurable runtime governance metrics payload."""
     measurable_evidence = _default_evidence()
     if evidence:
-        measurable_evidence.update({key: bool(value) for key, value in evidence.items()})
+        measurable_evidence.update(
+            {key: bool(value) for key, value in evidence.items()}
+        )
 
     truth_matrix_snapshot = build_truth_matrix_snapshot(measurable_evidence)
     forward_pca = calculate_forward_pca(measurable_evidence)

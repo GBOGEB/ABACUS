@@ -3,6 +3,7 @@
 An API observation is not a signed artifact, an independent test population,
 a causal-root closure, or a merge authority. Never silently truncate >100 runs.
 """
+
 from __future__ import annotations
 
 import re
@@ -20,8 +21,16 @@ SHA = re.compile(r"[0-9a-f]{40}\Z")
 EVENT = re.compile(r"[a-z][a-z0-9_]*\Z")
 TIMESTAMP = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z\Z")
 OPEN = {"queued", "pending", "in_progress", "requested", "waiting"}
-TERMINAL = {"success", "failure", "cancelled", "skipped", "neutral",
-            "timed_out", "action_required", "startup_failure"}
+TERMINAL = {
+    "success",
+    "failure",
+    "cancelled",
+    "skipped",
+    "neutral",
+    "timed_out",
+    "action_required",
+    "startup_failure",
+}
 
 
 def _positive(value):
@@ -51,8 +60,10 @@ def analyze_head_pages(doc):
     _require(isinstance(doc, dict), "input must be object")
     _require(doc.get("schema") == SCHEMA, "wrong source schema")
     _require(doc.get("repository") == REPO, "foreign repository")
-    _require(doc.get("source_role") == "OBSERVED_DEFAULT_BRANCH_HEAD",
-             "unsupported source identity role")
+    _require(
+        doc.get("source_role") == "OBSERVED_DEFAULT_BRANCH_HEAD",
+        "unsupported source identity role",
+    )
     sha = doc.get("source_sha")
     _require(isinstance(sha, str) and SHA.fullmatch(sha), "invalid exact head SHA")
     cutoff = doc.get("created_cutoff_utc")
@@ -62,8 +73,10 @@ def analyze_head_pages(doc):
     _require(len(pages) <= MAX_PAGES, "page-count cap exceeded")
     _require(isinstance(pages[0], dict), "invalid first API page")
     total = pages[0].get("total_count")
-    _require(_positive(total) and total <= MAX_PAGES * PAGE_SIZE,
-             "invalid or excessive native total")
+    _require(
+        _positive(total) and total <= MAX_PAGES * PAGE_SIZE,
+        "invalid or excessive native total",
+    )
     expected_pages = (total + PAGE_SIZE - 1) // PAGE_SIZE
     _require(len(pages) == expected_pages, "truncated or excess API page count")
 
@@ -75,36 +88,51 @@ def analyze_head_pages(doc):
     total_read = 0
     for page_number, page in enumerate(pages, 1):
         _require(isinstance(page, dict), "API page must be object")
-        _require(type(page.get("page")) is int and page["page"] == page_number,
-                 "out-of-order API pagination")
-        _require(page.get("total_count") == total and
-                 type(page.get("total_count")) is int,
-                 "unstable API total denominator")
-        expected_url = (f"{API}?head_sha={sha}&per_page={PAGE_SIZE}"
-                        f"&page={page_number}")
+        _require(
+            type(page.get("page")) is int and page["page"] == page_number,
+            "out-of-order API pagination",
+        )
+        _require(
+            page.get("total_count") == total and type(page.get("total_count")) is int,
+            "unstable API total denominator",
+        )
+        expected_url = (
+            f"{API}?head_sha={sha}&per_page={PAGE_SIZE}" f"&page={page_number}"
+        )
         if cutoff is not None:
             expected_url += "&created=" + quote("<=" + cutoff, safe="")
         _require(page.get("api_url") == expected_url, "unbound API page URL")
         rows = page.get("runs")
         expected_length = min(PAGE_SIZE, total - PAGE_SIZE * (page_number - 1))
-        _require(isinstance(rows, list) and len(rows) == expected_length,
-                 "missing or excess native rows within page")
+        _require(
+            isinstance(rows, list) and len(rows) == expected_length,
+            "missing or excess native rows within page",
+        )
         for row in rows:
             _require(isinstance(row, dict), "nonobject native run")
-            rid, wf, attempt = (row.get("id"), row.get("workflow_id"),
-                                row.get("run_attempt"))
-            _require(all(_positive(x) for x in (rid, wf, attempt)),
-                     "invalid native run/workflow/attempt identity")
+            rid, wf, attempt = (
+                row.get("id"),
+                row.get("workflow_id"),
+                row.get("run_attempt"),
+            )
+            _require(
+                all(_positive(x) for x in (rid, wf, attempt)),
+                "invalid native run/workflow/attempt identity",
+            )
             _require(rid not in run_seen, "duplicate native run identity")
             run_seen.add(rid)
             _require(row.get("head_sha") == sha, "mixed head SHA in API cohort")
             if cutoff is not None:
                 timestamp = _utc_timestamp(row.get("created_at"))
-                _require(timestamp <= cutoff_time,
-                         "native run created after frozen UTC cutoff")
+                _require(
+                    timestamp <= cutoff_time,
+                    "native run created after frozen UTC cutoff",
+                )
             event = row.get("event")
-            _require(isinstance(event, str) and EVENT.fullmatch(event),
-                     "invalid GitHub triggering event")
+            _require(
+                isinstance(event, str) and EVENT.fullmatch(event),
+                "invalid GitHub triggering event",
+            )
             status, conclusion = row.get("status"), row.get("conclusion")
             _require(isinstance(status, str), "missing native status")
             if status == "completed":
@@ -122,23 +150,29 @@ def analyze_head_pages(doc):
     manifest = []
     for wf, runs in families.items():
         events = Counter(row[1] for row in runs)
-        manifest.append({
-            "workflow_id": wf,
-            "observed_run_count": len(runs),
-            "repeat_excess": len(runs) - 1,
-            "event_counts": dict(sorted(events.items())),
-            "nonterminal": sum(row[2] != "completed" for row in runs),
-            "terminal_success": sum(row[3] == "success" for row in runs),
-            "terminal_failure": sum(row[3] in {"failure", "timed_out",
-                                                   "action_required", "startup_failure"}
-                                    for row in runs),
-            "run_ids": sorted(row[0] for row in runs),
-        })
+        manifest.append(
+            {
+                "workflow_id": wf,
+                "observed_run_count": len(runs),
+                "repeat_excess": len(runs) - 1,
+                "event_counts": dict(sorted(events.items())),
+                "nonterminal": sum(row[2] != "completed" for row in runs),
+                "terminal_success": sum(row[3] == "success" for row in runs),
+                "terminal_failure": sum(
+                    row[3]
+                    in {"failure", "timed_out", "action_required", "startup_failure"}
+                    for row in runs
+                ),
+                "run_ids": sorted(row[0] for row in runs),
+            }
+        )
     manifest.sort(key=lambda x: (-x["observed_run_count"], x["workflow_id"]))
     terminal = status_counts["completed"]
     repeat_excess = total - len(families)
-    _require(sum(x["repeat_excess"] for x in manifest) == repeat_excess,
-             "repeat-run accounting mismatch")
+    _require(
+        sum(x["repeat_excess"] for x in manifest) == repeat_excess,
+        "repeat-run accounting mismatch",
+    )
     return {
         "schema": OUTPUT,
         "repository": REPO,
@@ -146,7 +180,8 @@ def analyze_head_pages(doc):
         "source_role": "OBSERVED_DEFAULT_BRANCH_HEAD",
         "created_cutoff_utc": cutoff,
         "snapshot_population": (
-            "FROZEN_CREATION_WINDOW_STATUS_AS_OBSERVED" if cutoff is not None
+            "FROZEN_CREATION_WINDOW_STATUS_AS_OBSERVED"
+            if cutoff is not None
             else "UNFILTERED_NONATOMIC_STATUS_OBSERVATION"
         ),
         "page_size": PAGE_SIZE,

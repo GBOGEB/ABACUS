@@ -14,7 +14,7 @@ v2.3 introduces the Model Context Protocol (MCP) integration layer with upgraded
 
 ## Architecture
 ```
-IDE (VS Code/Cursor) 
+IDE (VS Code/Cursor)
   └─→ MCP Protocol Layer
        └─→ Agent Orchestrator v3.0
             ├─→ Documentation Agent
