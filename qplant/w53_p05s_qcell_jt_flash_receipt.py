@@ -23,11 +23,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from models.helium_properties.provider import (  # noqa: E402
-    LAMBDA_K,
-    SUB_LAMBDA_EXTRAPOLATED,
-    require_above_lambda,
-)
+from models.helium_properties import provider as hp  # noqa: E402
 
 FLUID = "Helium"
 A_T_K = 4.5
@@ -37,12 +33,12 @@ A_FLOW_CASES_G_S = [39.18, 43.10, 47.0, 50.0, 60.0]
 
 
 def main(*, allow_sub_lambda_extrapolation: bool = False) -> None:
-    require_above_lambda(A_T_K, context="W53-P05S inlet A")
+    hp.require_above_lambda(A_T_K, context="W53-P05S inlet A")
     h_a = PropsSI("H", "T", A_T_K, "P", A_P_PA, FLUID)
     t_sat = PropsSI("T", "P", QCELL_P_PA, "Q", 0, FLUID)
-    sub_lambda = not t_sat >= LAMBDA_K
+    sub_lambda = not t_sat >= hp.LAMBDA_K
     if not allow_sub_lambda_extrapolation:
-        require_above_lambda(t_sat, context="W53-P05S QCELL outlet T_sat")
+        hp.require_above_lambda(t_sat, context="W53-P05S QCELL outlet T_sat")
     h_f = PropsSI("H", "P", QCELL_P_PA, "Q", 0, FLUID)
     h_g = PropsSI("H", "P", QCELL_P_PA, "Q", 1, FLUID)
     x = (h_a - h_f) / (h_g - h_f)
@@ -71,7 +67,7 @@ def main(*, allow_sub_lambda_extrapolation: bool = False) -> None:
             for flow in A_FLOW_CASES_G_S
         ],
         "validation": (
-            SUB_LAMBDA_EXTRAPOLATED
+            hp.SUB_LAMBDA_EXTRAPOLATED
             if sub_lambda
             else "HEPAK_OR_INDEPENDENT_LOWT_REFERENCE_REQUIRED"
         ),

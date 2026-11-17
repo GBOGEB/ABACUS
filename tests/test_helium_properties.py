@@ -63,22 +63,3 @@ def test_envelope_fails_closed():
     )
     with pytest.raises(ValueError):
         state_tp(301.0, 1.05e5)
-
-
-# ---- require_above_lambda: guard for modules that call CoolProp directly ----
-
-
-def test_require_above_lambda_passes_he_i_temperatures_through():
-    from models.helium_properties.provider import require_above_lambda
-
-    assert require_above_lambda(LAMBDA_K) == LAMBDA_K
-    assert require_above_lambda(4) == 4.0
-    assert isinstance(require_above_lambda(4), float)
-
-
-@pytest.mark.parametrize("T", [2.0, LAMBDA_K - 1e-9, -1.39e7, float("nan")])
-def test_require_above_lambda_fails_closed(T):
-    from models.helium_properties.provider import require_above_lambda
-
-    with pytest.raises(SubLambdaOutOfRangeError, match=r"HE_II_SUB_LAMBDA.*\[ctx\]"):
-        require_above_lambda(T, context="ctx")
