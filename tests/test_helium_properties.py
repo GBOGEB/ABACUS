@@ -1,7 +1,13 @@
 import pytest
 
 from models.helium_properties.hepak_reference import reference_status
-from models.helium_properties.provider import _regime, state_tp
+from models.helium_properties.provider import (
+    LAMBDA_K,
+    SUB_LAMBDA_EXTRAPOLATED,
+    SubLambdaOutOfRangeError,
+    _regime,
+    state_tp,
+)
 
 
 def test_regime_marks_sub_lambda_as_hepak_required():
@@ -26,6 +32,28 @@ def test_property_provider_has_no_formal_credit():
     assert state.formal_credit_delta == 0
     assert state.backend == "CoolProp"
     assert state.temperature_K == 300.0
+
+
+@pytest.mark.TEST_BLOCKED_DEPENDENCY
+def test_lambda_constant_matches_backend_tmin():
+    """If the pinned CoolProp helium EOS moves its lower limit, LAMBDA_K must be revisited."""
+    pytest.importorskip(
+        "CoolProp", reason="TEST_BLOCKED_DEPENDENCY: CoolProp is unavailable"
+    )
+    from CoolProp.CoolProp import PropsSI
+
+    assert PropsSI("Tmin", "Helium") == pytest.approx(LAMBDA_K, abs=1e-4)
+
+
+@pytest.mark.TEST_BLOCKED_DEPENDENCY
+def test_real_backend_sub_lambda_fails_closed():
+    pytest.importorskip(
+        "CoolProp", reason="TEST_BLOCKED_DEPENDENCY: CoolProp is unavailable"
+    )
+    with pytest.raises(SubLambdaOutOfRangeError):
+        state_tp(1.8, 1.0e5)
+    extrapolated = state_tp(1.8, 1.0e5, allow_sub_lambda_extrapolation=True)
+    assert extrapolated.validation == SUB_LAMBDA_EXTRAPOLATED
 
 
 @pytest.mark.TEST_BLOCKED_DEPENDENCY
