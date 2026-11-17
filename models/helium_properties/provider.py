@@ -3,6 +3,13 @@
 Runtime calculations use the repository-pinned CoolProp backend. HEPAK is an
 independent validation oracle, not silently substituted when unavailable.
 Results are engineering candidates and never grant compliance credit.
+
+He II guard: the CoolProp helium EOS has its lower limit (Tmin) at the lambda
+point. Below it, CoolProp still returns numbers for single-phase T/P calls,
+extrapolated across the lambda transition (cp comes out several times too high
+at 1.8 K). Those numbers are not He II properties, so ``state_tp`` refuses
+T < LAMBDA_K unless the caller asks for the extrapolation explicitly, and then
+tags the result as not physical.
 """
 
 from __future__ import annotations
@@ -19,7 +26,12 @@ except ImportError:  # pragma: no cover
 
 FLUID = "Helium"
 BAR = 1e5
-LAMBDA_K = 2.1768
+LAMBDA_K = 2.1768  # lambda point at saturation; equals CoolProp's helium Tmin
+SUB_LAMBDA_EXTRAPOLATED = "COOLPROP_EXTRAPOLATED_BELOW_TMIN_NOT_PHYSICAL"
+
+
+class SubLambdaOutOfRangeError(ValueError):
+    """T is below the lambda point (He II), outside the range of the CoolProp helium EOS."""
 
 
 @dataclass(frozen=True)
@@ -59,8 +71,20 @@ def _regime(T: float) -> str:
     return "HE_I_WARM"
 
 
-def state_tp(temperature_K: float, pressure_Pa: float) -> HeliumState:
-    """Return He-4 properties at T/P with provenance and validation state."""
+def state_tp(
+    temperature_K: float,
+    pressure_Pa: float,
+    *,
+    allow_sub_lambda_extrapolation: bool = False,
+) -> HeliumState:
+    """Return He-4 properties at T/P with provenance and validation state.
+
+    Below the lambda point this raises ``SubLambdaOutOfRangeError``: governing He II
+    values come from the HEPAK receipt (``qplant_provider``). With
+    ``allow_sub_lambda_extrapolation=True`` it returns CoolProp's extrapolated numbers
+    for diagnostics and V&V comparison only, with ``validation`` set to
+    ``SUB_LAMBDA_EXTRAPOLATED``.
+    """
     _require_backend()
     T = float(temperature_K)
     P = float(pressure_Pa)
@@ -68,9 +92,22 @@ def state_tp(temperature_K: float, pressure_Pa: float) -> HeliumState:
         raise ValueError("temperature_K outside governed 1.8..300 K envelope")
     if P <= 0.0:
         raise ValueError("pressure_Pa must be positive")
+    sub_lambda = T < LAMBDA_K
+    if sub_lambda and not allow_sub_lambda_extrapolation:
+        raise SubLambdaOutOfRangeError(
+            f"HE_II_SUB_LAMBDA_OUT_OF_COOLPROP_RANGE: T={T} K is below the lambda point "
+            f"({LAMBDA_K} K), the lower limit of the CoolProp helium EOS. Use the HEPAK "
+            "receipt (qplant_provider), or pass allow_sub_lambda_extrapolation=True for a "
+            "diagnostic value that is not a He II property."
+        )
     phase = str(PropsSI("Phase", "T", T, "P", P, FLUID))
     regime = _regime(T)
-    validation = "HEPAK_REFERENCE_REQUIRED" if T <= LAMBDA_K else "RUNTIME_BACKEND_ONLY"
+    if sub_lambda:
+        validation = SUB_LAMBDA_EXTRAPOLATED
+    elif T <= LAMBDA_K:
+        validation = "HEPAK_REFERENCE_REQUIRED"
+    else:
+        validation = "RUNTIME_BACKEND_ONLY"
     return HeliumState(
         temperature_K=T,
         pressure_Pa=P,
