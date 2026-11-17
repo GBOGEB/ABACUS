@@ -21,7 +21,9 @@ from DMAIC_V3.phases.phase5_control import Phase5Control
 from DMAIC_V3.phases.phase6_knowledge import Phase6Knowledge
 from DMAIC_V3.phases.phase7_action_tracking import Phase7ActionTracking
 from DMAIC_V3.phases.phase8_todo_management import Phase8TODOManagement
-from DMAIC_V3.phases.phase9_documentation_generation import Phase9_DocumentationGeneration
+from DMAIC_V3.phases.phase9_documentation_generation import (
+    Phase9_DocumentationGeneration,
+)
 
 
 @pytest.fixture
@@ -61,15 +63,15 @@ def all_phases(config, state_manager, monkeypatch, tmp_path):
     """Instantiate all 9 phases with redirected working directory."""
     monkeypatch.chdir(tmp_path)
     return {
-        'phase1': Phase1Define(config, state_manager),
-        'phase2': Phase2Measure(config, state_manager),
-        'phase3': Phase3Analyze(config, state_manager),
-        'phase4': Phase4Improve(config, state_manager),
-        'phase5': Phase5Control(config, state_manager),
-        'phase6': Phase6Knowledge(config=config, state=state_manager),
-        'phase7': Phase7ActionTracking(config, state_manager),
-        'phase8': Phase8TODOManagement(config, state_manager),
-        'phase9': Phase9_DocumentationGeneration(),
+        "phase1": Phase1Define(config, state_manager),
+        "phase2": Phase2Measure(config, state_manager),
+        "phase3": Phase3Analyze(config, state_manager),
+        "phase4": Phase4Improve(config, state_manager),
+        "phase5": Phase5Control(config, state_manager),
+        "phase6": Phase6Knowledge(config=config, state=state_manager),
+        "phase7": Phase7ActionTracking(config, state_manager),
+        "phase8": Phase8TODOManagement(config, state_manager),
+        "phase9": Phase9_DocumentationGeneration(),
     }
 
 
@@ -101,7 +103,9 @@ class TestSuperBridgeIntegration:
         assert test_bridge.mcp is not None
 
     def test_bridge_action_logging(self, test_bridge):
-        test_bridge.log_action("super_bridge_test", "Super bridge smoke test", {"scope": "full"})
+        test_bridge.log_action(
+            "super_bridge_test", "Super bridge smoke test", {"scope": "full"}
+        )
         assert test_bridge.actions_file.exists()
         content = test_bridge.actions_file.read_text()
         assert "super_bridge_test" in content
@@ -120,29 +124,37 @@ class TestSuperBridgeIntegration:
 
     def test_all_phases_have_execute(self, all_phases):
         for name, phase in all_phases.items():
-            assert callable(getattr(phase, 'execute', None)), \
-                f"{name} missing callable execute()"
+            assert callable(
+                getattr(phase, "execute", None)
+            ), f"{name} missing callable execute()"
 
     # ------------------------------------------------------------------ phase 1-5: core DMAIC
 
     def test_phase1_returns_valid_contract(self, all_phases):
-        success, result = all_phases['phase1'].execute(iteration=1)
+        success, result = all_phases["phase1"].execute(iteration=1)
         assert isinstance(success, bool)
         assert isinstance(result, dict)
-        assert result.get('phase') == 'DEFINE'
-        assert result.get('iteration') == 1
+        assert result.get("phase") == "DEFINE"
+        assert result.get("iteration") == 1
 
-    def test_phase2_returns_valid_contract(self, all_phases, sample_python_file, config):
+    def test_phase2_returns_valid_contract(
+        self, all_phases, sample_python_file, config
+    ):
         # Seed phase1 output so phase2 can load it
         output_dir = config.paths.output_root / "iteration_1" / "phase1_define"
         output_dir.mkdir(parents=True, exist_ok=True)
         phase1_out = output_dir / "phase1_define.json"
-        phase1_out.write_text(json.dumps({
-            "phase": "DEFINE", "iteration": 1,
-            "files": [str(sample_python_file)],
-        }))
+        phase1_out.write_text(
+            json.dumps(
+                {
+                    "phase": "DEFINE",
+                    "iteration": 1,
+                    "files": [str(sample_python_file)],
+                }
+            )
+        )
 
-        success, result = all_phases['phase2'].execute(iteration=1)
+        success, result = all_phases["phase2"].execute(iteration=1)
         assert isinstance(success, bool)
         assert isinstance(result, dict)
 
@@ -151,25 +163,30 @@ class TestSuperBridgeIntegration:
         output_dir = config.paths.output_root / "iteration_1"
         output_dir.mkdir(parents=True, exist_ok=True)
         phase2_out = output_dir / "phase2_metrics.json"
-        phase2_out.write_text(json.dumps({
-            "phase": "MEASURE", "iteration": 1,
-            "file_metrics": {},
-        }))
+        phase2_out.write_text(
+            json.dumps(
+                {
+                    "phase": "MEASURE",
+                    "iteration": 1,
+                    "file_metrics": {},
+                }
+            )
+        )
 
-        success, result = all_phases['phase3'].execute(iteration=1)
+        success, result = all_phases["phase3"].execute(iteration=1)
         assert isinstance(success, bool)
         assert isinstance(result, dict)
-        assert 'summary' in result
+        assert "summary" in result
 
     def test_phase4_returns_valid_contract(self, all_phases):
         # Phase 4 runs gracefully even with no phase3 output
-        success, result = all_phases['phase4'].execute(iteration=1)
+        success, result = all_phases["phase4"].execute(iteration=1)
         assert isinstance(success, bool)
         assert isinstance(result, dict)
-        assert 'improvements' in result
+        assert "improvements" in result
 
     def test_phase5_returns_valid_contract(self, all_phases):
-        success, result = all_phases['phase5'].execute(iteration=1)
+        success, result = all_phases["phase5"].execute(iteration=1)
         assert isinstance(success, bool)
         assert isinstance(result, dict)
 
@@ -177,38 +194,39 @@ class TestSuperBridgeIntegration:
 
     @pytest.mark.phase6
     def test_phase6_returns_valid_contract(self, all_phases):
-        success, result = all_phases['phase6'].execute(iteration=1)
+        success, result = all_phases["phase6"].execute(iteration=1)
         assert success is True
         assert isinstance(result, dict)
-        assert 'maturity_score' in result
+        assert "maturity_score" in result
 
     @pytest.mark.phase7
     def test_phase7_returns_valid_contract(self, all_phases):
-        success, result = all_phases['phase7'].execute(iteration=1)
+        success, result = all_phases["phase7"].execute(iteration=1)
         assert success is True
         assert isinstance(result, dict)
-        assert result.get('phase') == 'phase7_action_tracking'
+        assert result.get("phase") == "phase7_action_tracking"
 
     @pytest.mark.phase8
     def test_phase8_returns_valid_contract(self, all_phases):
-        success, result = all_phases['phase8'].execute(iteration=1)
+        success, result = all_phases["phase8"].execute(iteration=1)
         assert success is True
         assert isinstance(result, dict)
-        assert result.get('phase') == 'phase8_todo_management'
+        assert result.get("phase") == "phase8_todo_management"
 
     @pytest.mark.phase9
     def test_phase9_skip_when_no_priors(self, all_phases):
         # Phase 9 skips gracefully when prior phases have not run
-        success, result = all_phases['phase9'].execute(iteration=1)
+        success, result = all_phases["phase9"].execute(iteration=1)
         assert success is False
-        assert result.get('status') == 'skipped'
+        assert result.get("status") == "skipped"
 
     # ------------------------------------------------------------------ end-to-end pipeline
 
     @pytest.mark.e2e
     @pytest.mark.slow
-    def test_full_pipeline_phases_1_to_6(self, config, state_manager, monkeypatch, tmp_path,
-                                          sample_python_file):
+    def test_full_pipeline_phases_1_to_6(
+        self, config, state_manager, monkeypatch, tmp_path, sample_python_file
+    ):
         """
         Run phases 1-6 sequentially, passing output from each phase into the next.
         Validates the core DMAIC pipeline contracts chain correctly.
@@ -219,15 +237,20 @@ class TestSuperBridgeIntegration:
         p1 = Phase1Define(config, state_manager)
         ok1, r1 = p1.execute(iteration=1)
         assert ok1 is True
-        assert r1['phase'] == 'DEFINE'
+        assert r1["phase"] == "DEFINE"
 
         # Seed phase2 input (requires phase1_define.json in output_root)
         phase1_dir = config.paths.output_root / "iteration_1" / "phase1_define"
         phase1_dir.mkdir(parents=True, exist_ok=True)
-        (phase1_dir / "phase1_define.json").write_text(json.dumps({
-            "phase": "DEFINE", "iteration": 1,
-            "files": [str(sample_python_file)],
-        }))
+        (phase1_dir / "phase1_define.json").write_text(
+            json.dumps(
+                {
+                    "phase": "DEFINE",
+                    "iteration": 1,
+                    "files": [str(sample_python_file)],
+                }
+            )
+        )
 
         # Phase 2
         p2 = Phase2Measure(config, state_manager)
@@ -236,23 +259,31 @@ class TestSuperBridgeIntegration:
         assert isinstance(r2, dict)
 
         # Seed phase3 input
-        phase2_metrics = config.paths.output_root / "iteration_1" / "phase2_metrics.json"
+        phase2_metrics = (
+            config.paths.output_root / "iteration_1" / "phase2_metrics.json"
+        )
         phase2_metrics.parent.mkdir(parents=True, exist_ok=True)
-        phase2_metrics.write_text(json.dumps({
-            "phase": "MEASURE", "iteration": 1, "file_metrics": {},
-        }))
+        phase2_metrics.write_text(
+            json.dumps(
+                {
+                    "phase": "MEASURE",
+                    "iteration": 1,
+                    "file_metrics": {},
+                }
+            )
+        )
 
         # Phase 3
         p3 = Phase3Analyze(config, state_manager)
         ok3, r3 = p3.execute(iteration=1)
         assert isinstance(ok3, bool)
-        assert 'summary' in r3
+        assert "summary" in r3
 
         # Phase 4
         p4 = Phase4Improve(config, state_manager)
         ok4, r4 = p4.execute(iteration=1)
         assert isinstance(ok4, bool)
-        assert 'improvements' in r4
+        assert "improvements" in r4
 
         # Phase 5
         p5 = Phase5Control(config, state_manager)
@@ -264,16 +295,17 @@ class TestSuperBridgeIntegration:
         p6 = Phase6Knowledge(config=config, state=state_manager)
         ok6, r6 = p6.execute(iteration=1)
         assert ok6 is True
-        assert 'maturity_score' in r6
+        assert "maturity_score" in r6
 
     def test_bridge_deployment_metrics_after_pipeline(self, test_bridge):
         """
         Bridge should produce valid DeploymentMetrics after running an inline test.
         """
         import sys
+
         test_bridge.run_test(
-            'pipeline_smoke',
-            [sys.executable, '-c', 'import DMAIC_V3; print("ok")'],
+            "pipeline_smoke",
+            [sys.executable, "-c", 'import DMAIC_V3; print("ok")'],
             timeout=15,
         )
         metrics = test_bridge.generate_deployment_metrics()
