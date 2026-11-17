@@ -63,11 +63,34 @@ def test_state_tp_he_i(props):
     assert d["formal_credit_delta"] == 0 and d["cp_J_kgK"] == 40.0
 
 
-def test_state_tp_he_ii_and_unknown_version(props, monkeypatch):
+def test_state_tp_at_lambda_and_unknown_version(props, monkeypatch):
     monkeypatch.setattr(hp, "CoolProp", object())
-    st = hp.state_tp(2.0, 3000.0)
+    st = hp.state_tp(hp.LAMBDA_K, 5040.0)
     assert st.validation == "HEPAK_REFERENCE_REQUIRED"
     assert st.backend_version == "unknown"
+
+
+@pytest.mark.parametrize("temp,pres", [(1.8, 1640.0), (2.0, 3000.0), (2.1767, 1e5)])
+def test_state_tp_refuses_sub_lambda(props, temp, pres):
+    with pytest.raises(hp.SubLambdaOutOfRangeError, match="HE_II_SUB_LAMBDA"):
+        hp.state_tp(temp, pres)
+    assert props.calls == []
+
+
+def test_sub_lambda_error_is_a_value_error():
+    assert issubclass(hp.SubLambdaOutOfRangeError, ValueError)
+
+
+def test_sub_lambda_extrapolation_is_explicit_and_tagged(props):
+    st = hp.state_tp(1.8, 1e5, allow_sub_lambda_extrapolation=True)
+    assert st.validation == hp.SUB_LAMBDA_EXTRAPOLATED
+    assert st.regime == "HE_II_SUB_LAMBDA_REQUIRES_HEPAK_VALIDATION"
+    assert st.formal_credit_delta == 0
+
+
+def test_extrapolation_flag_does_not_change_he_i(props):
+    st = hp.state_tp(4.2, hp.BAR, allow_sub_lambda_extrapolation=True)
+    assert st.validation == "RUNTIME_BACKEND_ONLY"
 
 
 @pytest.mark.parametrize(
