@@ -12,6 +12,7 @@ All outputs remain diagnostic unless separately source-accepted by the child aut
 from __future__ import annotations
 
 import json
+import sys
 from dataclasses import asdict, dataclass
 from math import exp, pi
 from pathlib import Path
@@ -22,6 +23,11 @@ import numpy as np
 from CoolProp.CoolProp import PropsSI
 
 ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:  # CI runs this file as a script
+    sys.path.insert(0, str(ROOT))
+
+from models.helium_properties.provider import require_above_lambda  # noqa: E402
+
 OUT = (
     ROOT / "docs" / "qps_quantitative" / "generated" / "P05J_QUANTITATIVE_RECEIPT.json"
 )
@@ -59,7 +65,7 @@ def q1_vlp() -> dict:
     total_flow = 0.050
     boundary = 27.0
     local_limit = 31.0
-    T = 4.0
+    T = require_above_lambda(4.0, context="P05J Q1 VLP state")
     P = boundary * 100.0
     rho = PropsSI("D", "T", T, "P", P, FLUID)
     mu = PropsSI("V", "T", T, "P", P, FLUID)
@@ -116,9 +122,9 @@ def q2_ts_residual() -> dict:
     # Contract/current design-flow boundary: D~14 bar/40 K -> E~13 bar/60 K,
     # mdot~77 g/s, Q_TS=8200 W. Normal-fluid state; appropriate for CoolProp.
     pin = 14.0e5
-    tin = 40.0
+    tin = require_above_lambda(40.0, context="P05J Q2 state D")
     pout = 13.0e5
-    tout = 60.0
+    tout = require_above_lambda(60.0, context="P05J Q2 state E")
     mdot = 0.077
     source_q = 8200.0
     hin = PropsSI("H", "T", tin, "P", pin, FLUID)
@@ -195,10 +201,12 @@ def q3_line_s() -> dict:
             dm = (mi - mo) * dt
             u += (mi * hi - mo * ho) * dt
             m = max(m + dm, 1e-6)
-            # fixed-point update of T using local Cv.
+            # fixed-point update of T using local Cv. This used to clamp T at 2.0 K,
+            # which is below the lambda point, where CoolProp only extrapolates.
+            # Fail closed there instead.
             for _ in range(4):
-                cv = PropsSI("CVMASS", "T", max(T, 2.0), "P", max(p, 1e4), FLUID)
-                T = max(u / (m * cv), 2.0)
+                cv = PropsSI("CVMASS", "T", T, "P", max(p, 1e4), FLUID)
+                T = require_above_lambda(u / (m * cv), context="P05J Q3 Line-S gas T")
                 p = m * R * T / case.volume_m3
             released += mi * dt
             recovered += mo * dt

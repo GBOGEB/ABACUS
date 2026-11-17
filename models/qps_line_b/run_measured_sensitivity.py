@@ -9,6 +9,8 @@ from pathlib import Path
 import CoolProp
 from CoolProp.CoolProp import PropsSI
 
+from models.helium_properties.provider import require_above_lambda
+
 from .bounded_sensitivity import diagnostic_population, worst_case, one_at_a_time_sensitivity
 from .property_receipt import from_provider_state
 
@@ -22,6 +24,7 @@ OUT = Path(__file__).resolve().parents[2] / "docs" / "qps_line_b" / "generated" 
 def main() -> int:
     if CoolProp.__version__ != "7.2.0":
         raise RuntimeError(f"CoolProp 7.2.0 required, got {CoolProp.__version__}")
+    require_above_lambda(T_K, context="P05F Line-B surrogate state")
     state = {
         "temperature_K": T_K,
         "pressure_mbar_abs": P_MBAR_ABS,
