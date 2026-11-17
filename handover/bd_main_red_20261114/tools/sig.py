@@ -5,7 +5,10 @@ def api(p,raw=False):
     o=subprocess.run(["gh","api",p],capture_output=True)
     if o.returncode: return None
     return o.stdout.decode("utf-8","replace") if raw else json.loads(o.stdout)
-reds=[x for r in ["abacus","codex"] for x in json.load(open(f"{S}/wf_{r}.json")) if x["cls"] in("EVERRED","GREEN_TO_RED")]
+reds=[]
+for r in ["abacus","codex"]:
+    with open(f"{S}/wf_{r}.json") as _f:
+        reds.extend([x for x in json.load(_f) if x["cls"] in("EVERRED","GREEN_TO_RED")])
 PAT=re.compile(r"(##\[error\].*|.*\b(Error|ERROR|error:|Traceback|FAILED|ModuleNotFoundError|No such file|not found|exit code \d+|Permission|denied|403|404|Invalid workflow|startup_failure)\b.*)")
 def one(x):
     run=api(f"repos/GBOGEB/{x['repo']}/actions/runs/{x['last_run']}")
@@ -23,7 +26,8 @@ def one(x):
         x["failed"].append(dict(job="<none>",steps=[],err=[f"no jobs; run conclusion={run and run['conclusion']}"]))
     return x
 with ThreadPoolExecutor(6) as ex: out=list(ex.map(one,reds))
-json.dump(out,open(f"{S}/red_sig.json","w"),indent=1)
+with open(f"{S}/red_sig.json","w") as _f:
+    json.dump(out,_f,indent=1)
 for x in out:
     print(f"\n### {x['repo']}/{x['path'].split('/')[-1]} [{x['cls']} {x['seq']}] jobs {x['n_failed_jobs']}/{x['n_jobs']} failed")
     for f in x["failed"]:
