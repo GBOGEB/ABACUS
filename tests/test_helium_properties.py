@@ -1,13 +1,8 @@
 import pytest
 
+from models.helium_properties import provider as hp
 from models.helium_properties.hepak_reference import reference_status
-from models.helium_properties.provider import (
-    LAMBDA_K,
-    SUB_LAMBDA_EXTRAPOLATED,
-    SubLambdaOutOfRangeError,
-    _regime,
-    state_tp,
-)
+from models.helium_properties.provider import _regime, state_tp
 
 
 def test_regime_marks_sub_lambda_as_hepak_required():
@@ -42,7 +37,7 @@ def test_lambda_constant_matches_backend_tmin():
     )
     from CoolProp.CoolProp import PropsSI
 
-    assert PropsSI("Tmin", "Helium") == pytest.approx(LAMBDA_K, abs=1e-4)
+    assert PropsSI("Tmin", "Helium") == pytest.approx(hp.LAMBDA_K, abs=1e-4)
 
 
 @pytest.mark.TEST_BLOCKED_DEPENDENCY
@@ -50,10 +45,10 @@ def test_real_backend_sub_lambda_fails_closed():
     pytest.importorskip(
         "CoolProp", reason="TEST_BLOCKED_DEPENDENCY: CoolProp is unavailable"
     )
-    with pytest.raises(SubLambdaOutOfRangeError):
+    with pytest.raises(hp.SubLambdaOutOfRangeError):
         state_tp(1.8, 1.0e5)
     extrapolated = state_tp(1.8, 1.0e5, allow_sub_lambda_extrapolation=True)
-    assert extrapolated.validation == SUB_LAMBDA_EXTRAPOLATED
+    assert extrapolated.validation == hp.SUB_LAMBDA_EXTRAPOLATED
 
 
 @pytest.mark.TEST_BLOCKED_DEPENDENCY
