@@ -163,7 +163,7 @@ class LiveTransportTests(unittest.TestCase):
         conn1, conn2 = mock.Mock(), mock.Mock()
         conn1.getresponse.return_value = first
         conn2.getresponse.return_value = second
-        with mock.patch.object(rc.http.client, "HTTPSConnection", side_effect=[conn1, conn2]), \\
+        with mock.patch.object(rc.http.client, "HTTPSConnection", side_effect=[conn1, conn2]) as conn_factory, \
              mock.patch.object(rc.time, "sleep") as sleep:
             self.assertEqual(rc.LiveClient(None).get("/health"), {"ok": True})
         sleep.assert_called_once_with(5)
