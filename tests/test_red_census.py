@@ -113,6 +113,64 @@ def fixture(workflow_total=None):
     return r
 
 
+class LiveTransportTests(unittest.TestCase):
+    def test_https_origin_and_headers_are_pinned(self):
+        from unittest import mock
+        response = mock.Mock(status=200)
+        response.read.return_value = b'{"ok":true}'
+        conn = mock.Mock()
+        conn.getresponse.return_value = response
+        with mock.patch.object(rc.http.client, "HTTPSConnection", return_value=conn) as factory:
+            recorded = {}
+            got = rc.LiveClient("test-token", recorded).get("/repos/GBOGEB/ABACUS")
+        self.assertEqual(got, {"ok": True})
+        self.assertEqual(recorded["GET /repos/GBOGEB/ABACUS"], got)
+        factory.assert_called_once_with("api.github.com", timeout=60)
+        args, kwargs = conn.request.call_args
+        self.assertEqual(args, ("GET", "/repos/GBOGEB/ABACUS"))
+        self.assertEqual(kwargs["headers"]["Authorization"], "Bearer test-token")
+        conn.close.assert_called_once()
+
+    def test_redirect_is_rejected_without_following_location(self):
+        from unittest import mock
+        response = mock.Mock(status=302, reason="Found", headers={"Location": "http://evil.invalid"})
+        conn = mock.Mock()
+        conn.getresponse.return_value = response
+        with mock.patch.object(rc.http.client, "HTTPSConnection", return_value=conn):
+            with self.assertRaises(rc.urllib.error.HTTPError) as caught:
+                rc.LiveClient("test-token").get("/repos/GBOGEB/ABACUS")
+        self.assertEqual(caught.exception.code, 302)
+        self.assertEqual(conn.request.call_count, 1)
+        conn.close.assert_called_once()
+
+    def test_404_retains_offline_not_found_contract(self):
+        from unittest import mock
+        response = mock.Mock(status=404, reason="Not Found", headers={})
+        conn = mock.Mock()
+        conn.getresponse.return_value = response
+        recorded = {}
+        with mock.patch.object(rc.http.client, "HTTPSConnection", return_value=conn):
+            with self.assertRaises(rc.NotFound):
+                rc.LiveClient(None, recorded).get("/missing")
+        self.assertEqual(recorded["GET /missing"], {"__status__": 404})
+        conn.close.assert_called_once()
+
+    def test_429_retries_then_succeeds(self):
+        from unittest import mock
+        first = mock.Mock(status=429, reason="Rate Limited", headers={})
+        second = mock.Mock(status=200)
+        second.read.return_value = b'{"ok":true}'
+        conn1, conn2 = mock.Mock(), mock.Mock()
+        conn1.getresponse.return_value = first
+        conn2.getresponse.return_value = second
+        with mock.patch.object(rc.http.client, "HTTPSConnection", side_effect=[conn1, conn2]), \\
+             mock.patch.object(rc.time, "sleep") as sleep:
+            self.assertEqual(rc.LiveClient(None).get("/health"), {"ok": True})
+        sleep.assert_called_once_with(5)
+        conn1.close.assert_called_once()
+        conn2.close.assert_called_once()
+
+
 class ClassifyTests(unittest.TestCase):
     def test_classes(self):
         self.assertEqual(rc.classify([]), ("NO_MAIN_RUNS", None))
