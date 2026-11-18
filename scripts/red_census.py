@@ -33,13 +33,13 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import http.client
 import json
 import os
 import sys
 import time
 import urllib.error
 import urllib.parse
-import urllib.request
 from pathlib import Path
 
 SCHEMA = "red.census.v1"
@@ -107,11 +107,21 @@ class LiveClient:
         if self.token:
             headers["Authorization"] = f"Bearer {self.token}"
         for attempt in range(3):
-            req = urllib.request.Request(url, headers=headers)
+            # Pin the TLS destination. HTTPSConnection verifies the server
+            # certificate by default and does not follow redirects to another
+            # origin (which could otherwise receive the Authorization header).
+            conn = http.client.HTTPSConnection("api.github.com", timeout=60)
             try:
-                with urllib.request.urlopen(req, timeout=60) as resp:
-                    body = json.loads(resp.read().decode("utf-8"))
+                conn.request("GET", key[4:], headers=headers)
+                resp = conn.getresponse()
+                if not 200 <= resp.status < 300:
+                    raise urllib.error.HTTPError(
+                        url, resp.status, resp.reason, resp.headers, None
+                    )
+                body = json.loads(resp.read().decode("utf-8"))
                 break
+            finally:
+                conn.close()
             except urllib.error.HTTPError as exc:
                 if exc.code == 404:
                     if self.record is not None:
