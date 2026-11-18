@@ -120,8 +120,6 @@ class LiveClient:
                     )
                 body = json.loads(resp.read().decode("utf-8"))
                 break
-            finally:
-                conn.close()
             except urllib.error.HTTPError as exc:
                 if exc.code == 404:
                     if self.record is not None:
@@ -131,6 +129,8 @@ class LiveClient:
                     time.sleep(5)
                     continue
                 raise
+            finally:
+                conn.close()
         if self.record is not None:
             self.record[key] = body
         return body
