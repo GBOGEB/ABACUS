@@ -7,6 +7,10 @@ import types
 
 import pytest
 
+# Import the real provider before CoolProp is faked below, so the provider module
+# cached in sys.modules keeps the real backend for later tests.
+from models.helium_properties.provider import SubLambdaOutOfRangeError
+
 MODNAME = "models.qps_line_b.run_measured_sensitivity"
 
 
@@ -72,3 +76,12 @@ def test_module_constants(load_module):
     mod, _, _ = load_module()
     assert mod.P_PA == 2700.0
     assert mod.FLUID == "Helium"
+
+
+def test_main_refuses_sub_lambda_state(load_module, monkeypatch):
+    mod, out, calls = load_module()
+    monkeypatch.setattr(mod, "T_K", 2.0)
+    with pytest.raises(SubLambdaOutOfRangeError, match="P05F"):
+        mod.main()
+    assert not out.exists()
+    assert calls == []

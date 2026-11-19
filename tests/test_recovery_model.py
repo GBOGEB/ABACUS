@@ -127,3 +127,54 @@ def test_main_success_and_missing_dependency(monkeypatch):
 
     with pytest.raises(SystemExit, match="CoolProp==7.2.0"):
         recovery_model.main()
+
+
+# ---- He II guard: Line-S saturation helpers refuse T below the lambda point ----
+
+from models.helium_properties.provider import LAMBDA_K, SubLambdaOutOfRangeError
+
+
+def test_default_rows_stay_in_he_i(monkeypatch):
+    seen = []
+    real_guard = recovery_model.require_above_lambda
+
+    def recording_guard(T, context=""):
+        seen.append(float(T))
+        return real_guard(T, context=context)
+
+    monkeypatch.setattr(recovery_model, "require_above_lambda", recording_guard)
+    recovery_model.default_rows(Config())
+    assert seen
+    # Saturation at 1.05 bar suction is about 4.26 K; the bath only warms from there.
+    assert min(seen) == pytest.approx(4.2619, abs=1e-3)
+
+
+@pytest.mark.parametrize(
+    "helper", ["sat_pressure", "latent_heat", "liquid_cp"], ids=lambda h: h
+)
+def test_temperature_helpers_refuse_sub_lambda_before_calling_coolprop(
+    monkeypatch, helper
+):
+    calls = []
+    monkeypatch.setattr(recovery_model, "PropsSI", lambda *a: calls.append(a) or 0.0)
+    with pytest.raises(SubLambdaOutOfRangeError, match="Line-S"):
+        getattr(recovery_model, helper)(2.0)
+    assert calls == []
+
+
+def test_sat_temp_refuses_sub_lambda_result(monkeypatch):
+    # CoolProp 7.2.0 extrapolates the P-Q flash below the lambda pressure
+    # (about 50 mbar) instead of raising; T_sat(31 mbar) comes back as 1.99 K.
+    monkeypatch.setattr(recovery_model, "PropsSI", lambda *a: 1.9933593735176762)
+    with pytest.raises(SubLambdaOutOfRangeError, match="sat_temp"):
+        recovery_model.sat_temp(3100.0)
+
+
+def test_sub_lambda_suction_pressure_fails_closed():
+    with pytest.raises(ValueError):  # SubLambdaOutOfRangeError on CoolProp 7.2.0
+        simulate(0.05, Config(p_suction_bar=0.031))
+
+
+def test_balloon_state_refuses_sub_lambda():
+    with pytest.raises(SubLambdaOutOfRangeError, match="balloon"):
+        recovery_model.balloon_capacity(Config(balloon_T_K=LAMBDA_K - 0.1))

@@ -18,6 +18,8 @@ try:
 except ImportError:  # pragma: no cover - tests use importorskip before simulation
     PropsSI = None
 
+from models.helium_properties.provider import require_above_lambda
+
 FLUID = "Helium"
 BAR = 1e5
 ROOT = Path(__file__).resolve().parents[2]
@@ -46,23 +48,33 @@ def require_coolprop() -> None:
         raise RuntimeError("missing dependency: pip install CoolProp==7.2.0")
 
 
+# He II guard: every saturation helper refuses T below the lambda point, where
+# CoolProp only extrapolates. sat_temp checks the temperature CoolProp returns,
+# because a suction pressure below ~50 mbar puts the bath in He II.
+
+
 def sat_pressure(T: float) -> float:
     require_coolprop()
+    T = require_above_lambda(T, context="Line-S sat_pressure")
     return PropsSI("P", "T", T, "Q", 0, FLUID)
 
 
 def sat_temp(P: float) -> float:
     require_coolprop()
-    return PropsSI("T", "P", P, "Q", 0, FLUID)
+    return require_above_lambda(
+        PropsSI("T", "P", P, "Q", 0, FLUID), context=f"Line-S sat_temp(P={P} Pa)"
+    )
 
 
 def latent_heat(T: float) -> float:
     require_coolprop()
+    T = require_above_lambda(T, context="Line-S latent_heat")
     return PropsSI("H", "T", T, "Q", 1, FLUID) - PropsSI("H", "T", T, "Q", 0, FLUID)
 
 
 def liquid_cp(T: float) -> float:
     require_coolprop()
+    T = require_above_lambda(T, context="Line-S liquid_cp")
     return PropsSI("C", "T", T, "Q", 0, FLUID)
 
 
@@ -76,7 +88,8 @@ def metal_cp(T: float) -> float:
 
 def balloon_capacity(cfg: Config) -> float:
     require_coolprop()
-    rho = PropsSI("D", "P", cfg.balloon_fill_bar * BAR, "T", cfg.balloon_T_K, FLUID)
+    T = require_above_lambda(cfg.balloon_T_K, context="Line-S balloon state")
+    rho = PropsSI("D", "P", cfg.balloon_fill_bar * BAR, "T", T, FLUID)
     return rho * cfg.balloon_vol_m3
 
 
