@@ -4,10 +4,20 @@ HD,S,OUT=sys.argv[1:4]
 NOW=datetime(2026,11,15,14,30,tzinfo=timezone.utc)
 d=lambda s: datetime.fromisoformat(s.replace("Z","+00:00"))
 days=lambda s: (NOW-d(s)).days
-H=json.load(open(f"{HD}/handover.json"))
-reds={(x["repo"],x["path"].split("/")[-1]):x for x in json.load(open(f"{S}/reds_now.json"))}
-c08={(r,x["path"].split("/")[-1]):x for r in ["abacus","codex"] for x in json.load(open(f"{HD}/census/wf_{r}_20261108.json"))}
-c14={(r,x["path"].split("/")[-1]):x for r in ["abacus","codex"] for x in json.load(open(f"{HD}/census/wf_{r}_20261114.json"))}
+with open(f"{HD}/handover.json") as f:
+    H=json.load(f)
+with open(f"{S}/reds_now.json") as f:
+    reds={(x["repo"],x["path"].split("/")[-1]):x for x in json.load(f)}
+c08_items=[]
+for r in ["abacus","codex"]:
+    with open(f"{HD}/census/wf_{r}_20261108.json") as f:
+        c08_items.extend((r,x) for x in json.load(f))
+c08={(r,x["path"].split("/")[-1]):x for r,x in c08_items}
+c14_items=[]
+for r in ["abacus","codex"]:
+    with open(f"{HD}/census/wf_{r}_20261114.json") as f:
+        c14_items.extend((r,x) for x in json.load(f))
+c14={(r,x["path"].split("/")[-1]):x for r,x in c14_items}
 RED=("EVERRED","GREEN_TO_RED")
 def first_seen(k):
     if k in c08 and c08[k]["cls"] in RED: return "2026-11-08"
