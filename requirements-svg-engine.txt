@@ -5,7 +5,9 @@ PyMuPDF==1.26.7
 CairoSVG==2.9.1
 numpy==2.3.4
 python-pptx==1.0.2
-pytest==8.4.2
+pytest==9.0.3
+# Pin scanner-identified transitive syntax-highlighter dependency.
+Pygments==2.20.0
 # Pin CairoSVG's Pillow dependency above observed 2026 OSV advisories.
 # Supported dedicated matrix: Python 3.11 and 3.14; scanner validation required.
 pillow==13.0.0
