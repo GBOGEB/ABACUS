@@ -26,7 +26,7 @@ concurrency:
 env:
   # gg_MATH source commit pinned in ggmath_bridge.py PINS.
   # test_binary_engines_ggmath_bridge keeps this value and the pins equal.
-  GG_MATH_COMMIT: 198ec510dc0b929c28fee41c29ab3f9da8affada
+  GG_MATH_COMMIT: 4a9a56518f1db9c2f3a59c268e816c6cfa9b482a
 
 jobs:
   test:
