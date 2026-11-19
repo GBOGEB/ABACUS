@@ -1,0 +1,55 @@
+{
+  "schema": "abacus-binary-bridge-lane-contract/v1",
+  "output_schema": "abacus-binary-bridge-lane/v1",
+  "state": "LOCAL_PROPOSAL_NOT_INTEGRATED",
+  "implementation": "tools/qps_binary_bridge_lane_adapter.py",
+  "upstream": {
+    "repository": "GBOGEB/ABACUS",
+    "ref": "ecc601294ffdc5e1ba167071581921bf09939d00",
+    "path": "tools/qps_binary_bridge.py",
+    "git_blob_sha1": "31b8f1826251949f18350f9c86856b6b7b1be6ba",
+    "source_sha256": "daf90d0df06e18caaa4262bf99543cd986def26245c88f3e461a18111c6ebafd"
+  },
+  "compatibility": "Opt-in new envelope; existing abacus-binary-bridge/v1 output and CLI are unchanged. Consumers must explicitly recognize the new schema.",
+  "identity": {
+    "content_id": "sha256:<exact input byte hash>; deduplication key only",
+    "occurrence_id": "sha256 of byte hash plus receipt_id, ordered container chain, exact member path and member index",
+    "source_id": "occurrence_id in this schema",
+    "legacy_source_id": "Old basename, retained as a label only; never a unique join key",
+    "member_index": "Actual zero-based archive central-directory occurrence index, or 0 for a non-archive source within a unique receipt",
+    "container_chain": "Outermost to innermost. Each entry carries exact bytes SHA256, original member_path and member_index. No path/case normalization."
+  },
+  "fallback_pdf": {
+    "pages": [],
+    "text_location": "unlocated_fragments[].anchor=document:unlocated:<n>",
+    "page_citations_allowed": false,
+    "unverified_page_marker_estimate": "Legacy marker-based estimate only, never a validated page count",
+    "coverage_stage": "SCOUT"
+  },
+  "coverage": {
+    "structured_upstream_stage": "STRUCTURAL",
+    "completeness": "PARTIAL",
+    "deep_read_complete": false,
+    "rule": "Requested depth is not evidence of completed depth. Every existing upstream family has explicit uncovered surfaces."
+  },
+  "authority": {
+    "authority_state": "DERIVED_UNREVIEWED",
+    "owner_disposition": "PENDING",
+    "ssot_promotion_allowed": false,
+    "rule": "Source authority/lifecycle strings remain claims. Caller supersedes values become unverified lineage candidates. No parsing or confidence score approves source authority."
+  },
+  "preconditions": [
+    "Archive admission and source custody are upstream responsibilities",
+    "Exact upstream source bytes must pass the pin before import",
+    "Source file size must not exceed 256 MiB",
+    "Caller supplies an actual occurrence context; no context is inferred from basename",
+    "CLI output must not alias the source, occurrence-context file or upstream bridge; resolved paths and existing-file identity are checked before parsing or writing"
+  ],
+  "verification": "tests/test_qps_binary_bridge_lane_adapter.py",
+  "integration_residuals": [
+    "The adapter does not write repositories, create branches or PRs, publish releases or dispatch federation work",
+    "The adapter is not a deep parser, OCR engine or archive scanner",
+    "Upstream pin changes require explicit source review and targeted verification",
+    "Final accepted namespace must align with the parent's common intake/navigation contract"
+  ]
+}
