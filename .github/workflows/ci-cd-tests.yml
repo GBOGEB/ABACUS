@@ -765,9 +765,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install --upgrade "setuptools>=83.0.0"
-          python -m pip install "bandit==1.9.4" safety
+          # Exact-head Safety 3.8.1 found three CVEs in transitive filelock
+          # 3.32.7. The reported affected ranges end at 4.2.0.
+          # Keep Safety enforcement unchanged; pin and verify the scanned
+          # environment instead of suppressing or ignoring findings.
+          python -m pip install "bandit==1.9.4" safety "filelock==4.2.12"
           python -m pip check
-          python -m pip show setuptools nltk
+          python -m pip show setuptools nltk filelock
 
       - name: Run Bandit
         id: bandit
