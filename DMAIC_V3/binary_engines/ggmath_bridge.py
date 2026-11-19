@@ -35,16 +35,16 @@ from estate_spec import ESTATE  # noqa: E402
 REPO = "GBOGEB/gg_MATH"
 PINS = {
     "set_similarity": {
-        "commit": "198ec510dc0b929c28fee41c29ab3f9da8affada",
+        "commit": "4a9a56518f1db9c2f3a59c268e816c6cfa9b482a",
         "path": "kernels/set_similarity.py",
-        "blob": "6a7050917991378fecc061fd1629c980808a4e8e",
-        "sha256": "d9189b63bb9bedf2de4233fd07f4b4429efb53e6a2338716363de562a9caa60a",
+        "blob": "5ed96705291a5be5f0200398c2272c2cb8e859c1",
+        "sha256": "209356c43720e430abfb41adca7c41bdaddbea6999e32c91d27fb6e6c8409a0c",
     },
     "plane_geometry": {
-        "commit": "198ec510dc0b929c28fee41c29ab3f9da8affada",
+        "commit": "4a9a56518f1db9c2f3a59c268e816c6cfa9b482a",
         "path": "kernels/plane_geometry.py",
-        "blob": "93ac2bbd9faff963ddd373dc0b797642e06ede96",
-        "sha256": "cbb2eda89fd4a2389b944e6aab0dec6c81d0dcaf8da4396dfd9d72211175b7df",
+        "blob": "47b313d46eeb3254363e4423b29610d6a2ed9a40",
+        "sha256": "2d6836868e0c113d987bcc521fd686a9e71990b37f9180f55873b6e963865a02",
     },
 }
 CACHE = ESTATE / "_ggmath"
