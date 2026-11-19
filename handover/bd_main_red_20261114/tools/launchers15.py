@@ -2,9 +2,12 @@ import yaml,json,os,re,sys,glob
 S=sys.argv[1]
 out=[]
 for repo,root in [("abacus","/home/claude/abacus"),("codex","/home/claude/codex")]:
-    cls={x["path"].split("/")[-1]:x for x in json.load(open(f"{S}/wf_{repo}.json"))}
+    with open(f"{S}/wf_{repo}.json", encoding="utf-8", errors="replace") as _wf_f:
+        cls={x["path"].split("/")[-1]:x for x in json.load(_wf_f)}
     for p in sorted(glob.glob(f"{root}/.github/workflows/*.y*ml")):
-        f=os.path.basename(p); txt=open(p,encoding="utf-8",errors="replace").read()
+        f=os.path.basename(p)
+        with open(p,encoding="utf-8",errors="replace") as _wf_txt_f:
+            txt=_wf_txt_f.read()
         try: d=yaml.safe_load(txt) or {}
         except Exception as e: out.append((repo,f,"YAML_ERROR","","",""));continue
         on=d.get(True,d.get("on")) if isinstance(d,dict) else None
@@ -15,7 +18,8 @@ for repo,root in [("abacus","/home/claude/abacus"),("codex","/home/claude/codex"
         missing=[r for r in refs if not r.startswith(("-","$","/","http")) and "${" not in r and not os.path.exists(os.path.join(root,r))]
         c=cls.get(f,{})
         out.append((repo,f,c.get("cls","?"),",".join(auto),c.get("seq",""),";".join(sorted(missing))[:160]))
-json.dump(out,open(f"{S}/launchers.json","w"))
+with open(f"{S}/launchers.json","w", encoding="utf-8") as _launchers_out_f:
+    json.dump(out,_launchers_out_f)
 from collections import Counter
 for repo in ["abacus","codex"]:
     rows=[r for r in out if r[0]==repo]
