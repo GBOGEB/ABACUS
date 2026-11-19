@@ -74,12 +74,15 @@ def test_main_writes_blocked_receipt_and_returns_nonzero(monkeypatch, tmp_path):
     monkeypatch.setattr(p05j, "OUT", tmp_path / "P05J_QUANTITATIVE_RECEIPT.json")
     monkeypatch.setattr(p05j, "q1_vlp", lambda: {"known": "q1"})
     monkeypatch.setattr(p05j, "q2_ts_residual", lambda: {"known": "q2"})
+
     def depleted():
         raise VesselInventoryDepletedError("P05J Q3 Line-S inventory depleted: test")
+
     monkeypatch.setattr(p05j, "q3_line_s", depleted)
     monkeypatch.setattr(p05j, "q4_decision", lambda *args: pytest.fail("Q4 must not run"))
     assert p05j.main() == 2
     import json
+
     receipt = json.loads(p05j.OUT.read_text(encoding="utf-8"))
     assert receipt["status"] == "FAIL_CLOSED_VESSEL_INVENTORY_DEPLETED"
     assert receipt["Q1_VLP"] == {"known": "q1"}
