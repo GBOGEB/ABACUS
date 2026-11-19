@@ -27,7 +27,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from models.helium_properties.provider import state_tp
+from models.helium_properties.provider import require_above_lambda, state_tp
 
 R_HE = 2077.0
 MDOT_KG_S = 326.0 / 1000.0
@@ -43,6 +43,11 @@ def main() -> None:
     p2 = P2_BARA * 1e5
     st1 = state_tp(T1_K, p1)
     props = __import__("CoolProp.CoolProp", fromlist=["PropsSI"])
+    # The P-S flash bypasses state_tp, so check the outlet temperature it reaches.
+    require_above_lambda(
+        props.PropsSI("T", "P", p2, "S", st1.entropy_J_kgK, "Helium"),
+        context="W52-P2T isentropic outlet",
+    )
     h2s = float(props.PropsSI("H", "P", p2, "S", st1.entropy_J_kgK, "Helium"))
 
     w_iso = R_HE * T1_K * math.log(p2 / p1)
