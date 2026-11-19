@@ -71,6 +71,7 @@ L=dict(schema="bd-main-red-ledger-delta/1.0",as_of=NOW.isoformat().replace("+00:
   live_red_now=sum(r["status"] in("OPEN","NEW") for r in rows),
   prs_opened=[{"pr":2761,"root":"BD-26b"},{"pr":2762,"root":"BD-26a"}],
   rows=rows)
-json.dump(L,open(OUT,"w"),indent=1)
+with open(OUT,"w") as f:
+    json.dump(L,f,indent=1)
 print(L["counts"],"live",L["live_red_now"])
 for r in rows: print(f'{r["status"]:6} {r["repo"]:6} {r["workflow"]:40} {r["root"]:14} {r["state"]:7} red_age={r.get("red_age_d")}{"+" if r.get("red_age_is_floor") else ""}d ledger_age={r["ledger_age_d"]}d')
