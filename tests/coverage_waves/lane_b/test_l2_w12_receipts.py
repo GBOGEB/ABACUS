@@ -13,6 +13,8 @@ import types
 
 import pytest
 
+from models.helium_properties import provider as real_provider
+
 from ._l2_loader import REPO_ROOT, load
 
 CP_HE = 5193.0
@@ -39,7 +41,13 @@ class _Provider:
 
 
 def _provider_module(provider):
-    return types.SimpleNamespace(state_tp=provider.state_tp)
+    return types.SimpleNamespace(
+        state_tp=provider.state_tp,
+        LAMBDA_K=real_provider.LAMBDA_K,
+        SUB_LAMBDA_EXTRAPOLATED=real_provider.SUB_LAMBDA_EXTRAPOLATED,
+        SubLambdaOutOfRangeError=real_provider.SubLambdaOutOfRangeError,
+        require_above_lambda=real_provider.require_above_lambda,
+    )
 
 
 PROV = _Provider()
@@ -181,12 +189,12 @@ def test_p2r_report_crosscheck_pass(monkeypatch):
 # ------------------------------------------------------------------ W52-P2T
 
 
-def _coolprop_stub(h2s):
+def _coolprop_stub(h2s, t2s=840.0):
     calls = []
 
     def props(out, k1, v1, k2, v2, fluid):
         calls.append((out, k1, v1, k2, v2, fluid))
-        return h2s
+        return t2s if out == "T" else h2s
 
     inner = types.SimpleNamespace(PropsSI=props)
     outer = types.ModuleType("CoolProp")
@@ -225,7 +233,10 @@ def test_p2t_main_payload(monkeypatch, capsys):
     monkeypatch.setitem(sys.modules, "CoolProp.CoolProp", inner)
     mod.main()
     payload = json.loads(capsys.readouterr().out)
-    assert calls == [("H", "P", 14e5, "S", st1.entropy_J_kgK, "Helium")]
+    assert calls == [
+        ("T", "P", 14e5, "S", st1.entropy_J_kgK, "Helium"),
+        ("H", "P", 14e5, "S", st1.entropy_J_kgK, "Helium"),
+    ]
     w_iso = 2077.0 * 298.0 * math.log(14.0 / 1.05)
     p_iso = 0.326 * w_iso / 1000.0
     model = payload["independent_model"]
@@ -241,6 +252,18 @@ def test_p2t_main_payload(monkeypatch, capsys):
     assert res["within_tolerance"] is False
     assert payload["strict_gate"]["status"] == "DEFER_EXACT_NOMINAL_HP_BOUNDARY"
     assert payload["execution_guard"]["repo_root_injected"] == str(REPO_ROOT)
+
+
+def test_p2t_fails_closed_on_sub_lambda_isentropic_outlet(monkeypatch, capsys):
+    mod = _load_p2t(monkeypatch, True)
+    monkeypatch.setattr(mod, "state_tp", _Provider().state_tp)
+    outer, inner, calls = _coolprop_stub(0.0, t2s=2.0)
+    monkeypatch.setitem(sys.modules, "CoolProp", outer)
+    monkeypatch.setitem(sys.modules, "CoolProp.CoolProp", inner)
+    with pytest.raises(real_provider.SubLambdaOutOfRangeError, match="P2T"):
+        mod.main()
+    assert [c[0] for c in calls] == ["T"]
+    assert capsys.readouterr().out == ""
 
 
 def test_p2t_candidate_pass_when_efficiency_matches(monkeypatch, capsys):
@@ -389,7 +412,7 @@ def _load_p05s(h_a, t_sat, h_f, h_g):
 
 
 def test_p05s_flash_receipt(capsys):
-    mod, calls = _load_p05s(h_a=10000.0, t_sat=1.8, h_f=3000.0, h_g=23000.0)
+    mod, calls = _load_p05s(h_a=10000.0, t_sat=2.5, h_f=3000.0, h_g=23000.0)
     mod.main()
     out = json.loads(capsys.readouterr().out)
     assert calls == [
@@ -408,7 +431,7 @@ def test_p05s_flash_receipt(capsys):
     bnd = out["boundary"]
     assert bnd["inlet_A"]["P_bara"] == 3.0
     assert bnd["outlet_local_QCELL"]["P_mbar_abs"] == 31.0
-    assert bnd["outlet_local_QCELL"]["T_sat_K"] == 1.8
+    assert bnd["outlet_local_QCELL"]["T_sat_K"] == 2.5
     cases = out["A_flow_cases"]
     assert [c["A_g_s"] for c in cases] == [39.18, 43.10, 47.0, 50.0, 60.0]
     for case in cases:
@@ -420,8 +443,51 @@ def test_p05s_flash_receipt(capsys):
 
 
 def test_p05s_subcooled_inlet_gives_negative_quality(capsys):
-    mod, _ = _load_p05s(h_a=1000.0, t_sat=1.8, h_f=3000.0, h_g=23000.0)
+    mod, _ = _load_p05s(h_a=1000.0, t_sat=2.5, h_f=3000.0, h_g=23000.0)
     mod.main()
     out = json.loads(capsys.readouterr().out)
     assert out["flash_quality_mass_fraction"] == pytest.approx(-0.1)
     assert out["A_flow_cases"][3]["post_flash_liquid_g_s"] == pytest.approx(55.0)
+
+
+# T_sat(31 mbar) from CoolProp 7.2.0, as published by CI run 41708844975.
+_PUBLISHED_T_SAT_31_MBAR = 1.9933593735176762
+
+
+def test_p05s_refuses_sub_lambda_qcell_outlet(capsys):
+    mod, calls = _load_p05s(
+        h_a=10000.0, t_sat=_PUBLISHED_T_SAT_31_MBAR, h_f=3000.0, h_g=23000.0
+    )
+    with pytest.raises(real_provider.SubLambdaOutOfRangeError, match="QCELL outlet"):
+        mod.main()
+    # Refused before the saturated-liquid and -vapour enthalpy flashes.
+    assert [c[:2] for c in calls] == [("H", "T"), ("T", "P")]
+    assert capsys.readouterr().out == ""
+
+
+def test_p05s_opt_in_extrapolation_is_tagged_not_physical(capsys):
+    mod, _ = _load_p05s(
+        h_a=10000.0, t_sat=_PUBLISHED_T_SAT_31_MBAR, h_f=3000.0, h_g=23000.0
+    )
+    mod.main(allow_sub_lambda_extrapolation=True)
+    out = json.loads(capsys.readouterr().out)
+    assert out["validation"] == real_provider.SUB_LAMBDA_EXTRAPOLATED
+    assert out["flash_quality_mass_fraction"] == pytest.approx(0.35)
+
+
+def test_p05s_he_i_outlet_keeps_hepak_validation_tag(capsys):
+    mod, _ = _load_p05s(h_a=10000.0, t_sat=2.5, h_f=3000.0, h_g=23000.0)
+    mod.main(allow_sub_lambda_extrapolation=True)
+    out = json.loads(capsys.readouterr().out)
+    assert out["validation"] == "HEPAK_OR_INDEPENDENT_LOWT_REFERENCE_REQUIRED"
+
+
+def test_p05s_cli_flag_parses():
+    mod, _ = _load_p05s(h_a=0.0, t_sat=2.5, h_f=0.0, h_g=1.0)
+    assert mod._parse_args([]).allow_sub_lambda_extrapolation is False
+    assert (
+        mod._parse_args(
+            ["--allow-sub-lambda-extrapolation"]
+        ).allow_sub_lambda_extrapolation
+        is True
+    )
