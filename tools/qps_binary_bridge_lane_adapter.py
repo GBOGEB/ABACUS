@@ -24,7 +24,9 @@ SCHEMA = "abacus-binary-bridge-lane/v1"
 VERSION = "0.1.0-proposal"
 UPSTREAM_REPOSITORY = "GBOGEB/ABACUS"
 UPSTREAM_REF = "ecc601294ffdc5e1ba167071581921bf09939d00"
-UPSTREAM_SOURCE_SHA256 = "daf90d0df06e18caaa4262bf99543cd986def26245c88f3e461a18111c6ebafd"
+UPSTREAM_SOURCE_SHA256 = (
+    "daf90d0df06e18caaa4262bf99543cd986def26245c88f3e461a18111c6ebafd"
+)
 UPSTREAM_GIT_BLOB_SHA1 = "31b8f1826251949f18350f9c86856b6b7b1be6ba"
 UPSTREAM_PATH = Path(__file__).with_name("qps_binary_bridge.py")
 MAX_SOURCE_BYTES = 256 * 1024 * 1024
@@ -32,9 +34,7 @@ MAX_SOURCE_BYTES = 256 * 1024 * 1024
 
 def canonical_hash(value: object) -> str:
     """Hash a stable UTF-8 JSON representation."""
-    data = json.dumps(
-        value, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-    )
+    data = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(data.encode("utf-8")).hexdigest()
 
 
@@ -97,7 +97,7 @@ def load_pinned_bridge(path: Path = UPSTREAM_PATH) -> ModuleType:
         )
     module_name = "qps_binary_bridge_pinned_lane"
     loader = _PinnedBytesLoader(module_name, path, raw)
-    spec = importlib.util.spec_from_loader(module_name, loader, origin=str(path))
+    spec = importlib.util.spec_from_file_location(module_name, path, loader=loader)
     if spec is None:
         raise RuntimeError("cannot import pinned upstream bridge")
     module = importlib.util.module_from_spec(spec)
@@ -179,9 +179,7 @@ def adapt_source(
         SCOPES.get(kind, {"covered": [], "uncovered": ["unknown parser scope"]})
     )
     page_citations_allowed = (
-        kind == "pdf"
-        and not is_fallback
-        and quality.get("parser") == "pypdf"
+        kind == "pdf" and not is_fallback and quality.get("parser") == "pypdf"
     )
     if kind == "pdf" and is_fallback:
         # V1 aggregates unassigned literals into page:1. Preserve text without
@@ -225,9 +223,7 @@ def adapt_source(
         }
     stage = "SCOUT" if is_fallback else "STRUCTURAL"
     semantic_hash = canonical_hash(hierarchy)
-    occurrence_hash = canonical_hash(
-        {"context": context, "source_sha256": byte_hash}
-    )
+    occurrence_hash = canonical_hash({"context": context, "source_sha256": byte_hash})
     producer = {
         "repository": UPSTREAM_REPOSITORY,
         "ref": UPSTREAM_REF,
