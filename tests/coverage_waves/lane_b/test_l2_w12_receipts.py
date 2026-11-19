@@ -491,3 +491,82 @@ def test_p05s_cli_flag_parses():
         ).allow_sub_lambda_extrapolation
         is True
     )
+
+
+# W53-P05S NIST TN1334 reference: valid in He II, no CoolProp call.
+_P05V_FLASH_FRACTION = 0.43643131189448126  # cryoplant-project P05V crosscheck
+
+
+def test_p05s_nist_tn1334_receipt_matches_p05v_without_coolprop():
+    mod, calls = _load_p05s(h_a=0.0, t_sat=2.5, h_f=0.0, h_g=1.0)
+    r = mod.nist_tn1334_receipt()
+    assert calls == []
+    assert r["flash_quality_mass_fraction"] == pytest.approx(
+        _P05V_FLASH_FRACTION, abs=1e-12
+    )
+    assert r["validation"] == "NIST_TN1334_INDEPENDENT_REFERENCE_HEPAK_GOVERNING"
+    assert r["backend"]["name"] == "NIST_TN1334"
+    assert r["backend"]["reference_file"] == (
+        "qplant/data/w53_p05s_nist_tn1334_qcell_reference_v0.1.json"
+    )
+    bnd = r["boundary"]
+    assert bnd["inlet_A"]["h_J_kg"] == pytest.approx(11780.0)
+    out = bnd["outlet_local_QCELL"]
+    assert out["P_mbar_abs"] == 31.0
+    assert out["T_sat_K"] < real_provider.LAMBDA_K  # the outlet is He II
+    # Latent heat of He-4 at 2 K is about 23 J/g; this pins the J/mol reading.
+    assert (out["h_g_J_kg"] - out["h_f_J_kg"]) / 1000.0 == pytest.approx(
+        23.26, abs=0.01
+    )
+    assert r["reference_row"]["offset_from_boundary_mbar"] == pytest.approx(0.23)
+    assert r["transcription_status"].startswith("TRANSCRIBED_FROM_CRYOPLANT")
+    for case in r["A_flow_cases"]:
+        assert case["JT_flash_g_s"] == pytest.approx(
+            case["A_g_s"] * _P05V_FLASH_FRACTION
+        )
+
+
+def test_p05s_nist_reference_state_check_reproduces():
+    ref = json.loads(
+        (
+            REPO_ROOT / "qplant/data/w53_p05s_nist_tn1334_qcell_reference_v0.1.json"
+        ).read_text(encoding="utf-8")
+    )
+    chk = ref["same_reference_state_check"]
+    h_vap = ref["qcell_saturation"]["h_vapor_J_mol"] / ref["molar_mass_g_per_mol"]
+    assert h_vap == pytest.approx(chk["h_vapor_2K_J_g"], abs=1e-4)
+    rise = CP_HE / 1000.0 * (3.6 - ref["qcell_saturation"]["T_K"])
+    assert rise == pytest.approx(chk["ideal_gas_rise_2K_to_3p6K_J_g"], abs=1e-4)
+    assert abs(h_vap + rise - chk["TN1334_3p6K_10kPa_J_g"]) < 0.15
+
+
+def test_p05s_main_nist_reference_prints_receipt(capsys):
+    mod, calls = _load_p05s(h_a=0.0, t_sat=2.5, h_f=0.0, h_g=1.0)
+    mod.main(reference="nist-tn1334")
+    out = json.loads(capsys.readouterr().out)
+    assert out["flash_percent_of_A"] == pytest.approx(100 * _P05V_FLASH_FRACTION)
+    assert calls == []
+
+
+def test_p05s_unknown_reference_is_refused():
+    mod, _ = _load_p05s(h_a=0.0, t_sat=2.5, h_f=0.0, h_g=1.0)
+    with pytest.raises(ValueError, match="unknown reference"):
+        mod.main(reference="refprop")
+
+
+def test_p05s_nist_reference_refuses_mismatched_inlet_row(tmp_path):
+    mod, _ = _load_p05s(h_a=0.0, t_sat=2.5, h_f=0.0, h_g=1.0)
+    ref = json.loads(mod.NIST_TN1334_REFERENCE.read_text(encoding="utf-8"))
+    ref["inlet_A"]["T_K"] = 4.4
+    bad = tmp_path / "ref.json"
+    bad.write_text(json.dumps(ref), encoding="utf-8")
+    with pytest.raises(ValueError, match="does not match boundary A"):
+        mod.nist_tn1334_receipt(bad)
+
+
+def test_p05s_cli_reference_choice():
+    mod, _ = _load_p05s(h_a=0.0, t_sat=2.5, h_f=0.0, h_g=1.0)
+    assert mod._parse_args([]).reference == "coolprop"
+    assert mod._parse_args(["--reference", "nist-tn1334"]).reference == "nist-tn1334"
+    with pytest.raises(SystemExit):
+        mod._parse_args(["--reference", "hepak"])

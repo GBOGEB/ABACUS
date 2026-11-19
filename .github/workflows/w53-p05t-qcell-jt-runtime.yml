@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'qplant/w53_p05s_qcell_jt_flash_receipt.py'
+      - 'qplant/data/w53_p05s_nist_tn1334_qcell_reference_v0.1.json'
+      - 'models/helium_properties/provider.py'
       - '.github/workflows/w53-p05t-qcell-jt-runtime.yml'
   workflow_dispatch:
 permissions:
@@ -19,10 +21,18 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install CoolProp==7.2.0
-      - name: Execute canonical receipt
+      - name: Execute canonical receipt (NIST TN1334; the 31 mbar outlet is He II)
         run: |
           mkdir -p artifacts/w53_p05t
-          python qplant/w53_p05s_qcell_jt_flash_receipt.py | tee artifacts/w53_p05t/qcell_jt_flash_receipt.json
+          python qplant/w53_p05s_qcell_jt_flash_receipt.py --reference nist-tn1334 | tee artifacts/w53_p05t/qcell_jt_flash_receipt.json
+      - name: CoolProp default must refuse the sub-lambda outlet
+        run: |
+          if python qplant/w53_p05s_qcell_jt_flash_receipt.py > /dev/null 2> coolprop_err.txt; then
+            echo "CoolProp receipt was produced below the lambda point; the He II guard did not fire" >&2
+            exit 1
+          fi
+          grep -q HE_II_SUB_LAMBDA_OUT_OF_COOLPROP_RANGE coolprop_err.txt
+          tail -n 1 coolprop_err.txt
       - name: Validate and summarize
         run: |
           python - <<'PY'
@@ -32,6 +42,9 @@ jobs:
           x=r['flash_quality_mass_fraction']
           assert 0.0 <= x <= 1.0
           assert abs(r['boundary']['outlet_local_QCELL']['P_mbar_abs']-31.0) < 1e-12
+          assert r['validation'] == 'NIST_TN1334_INDEPENDENT_REFERENCE_HEPAK_GOVERNING'
+          assert r['boundary']['outlet_local_QCELL']['T_sat_K'] < 2.1768  # He II outlet
+          assert abs(x - 0.43643131189448126) < 1e-12  # cryoplant P05V
           print('flash_percent=', r['flash_percent_of_A'])
           print('Tsat_K=', r['boundary']['outlet_local_QCELL']['T_sat_K'])
           print('hA_J_kg=', r['boundary']['inlet_A']['h_J_kg'])
