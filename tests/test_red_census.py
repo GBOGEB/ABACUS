@@ -115,7 +115,6 @@ def fixture(workflow_total=None):
 
 class LiveTransportTests(unittest.TestCase):
     def test_https_origin_and_headers_are_pinned(self):
-        from unittest import mock
         response = mock.Mock(status=200)
         response.read.return_value = b'{"ok":true}'
         conn = mock.Mock()
@@ -156,15 +155,14 @@ class LiveTransportTests(unittest.TestCase):
         conn.close.assert_called_once()
 
     def test_429_retries_then_succeeds(self):
-        from unittest import mock
-        first = mock.Mock(status=429, reason="Rate Limited", headers={})
-        second = mock.Mock(status=200)
+        first = unittest.mock.Mock(status=429, reason="Rate Limited", headers={})
+        second = unittest.mock.Mock(status=200)
         second.read.return_value = b'{"ok":true}'
-        conn1, conn2 = mock.Mock(), mock.Mock()
+        conn1, conn2 = unittest.mock.Mock(), unittest.mock.Mock()
         conn1.getresponse.return_value = first
         conn2.getresponse.return_value = second
-        with mock.patch.object(rc.http.client, "HTTPSConnection", side_effect=[conn1, conn2]) as conn_factory, \
-             mock.patch.object(rc.time, "sleep") as sleep:
+        with unittest.mock.patch.object(rc.http.client, "HTTPSConnection", side_effect=[conn1, conn2]) as conn_factory, \
+             unittest.mock.patch.object(rc.time, "sleep") as sleep:
             self.assertEqual(rc.LiveClient(None).get("/health"), {"ok": True})
         sleep.assert_called_once_with(5)
         conn1.close.assert_called_once()
