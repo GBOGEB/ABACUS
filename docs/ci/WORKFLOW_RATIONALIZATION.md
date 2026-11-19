@@ -142,7 +142,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `dow` | `w259-p4-method-cards-independent-dow.yml` | pull_request, push | 1 | `keep` | — |
 | 20 | `pr_domain` | `dow` | `w285-dow-depth-recompute.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `dow` | `w306-dow-typed-findings-proof.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
-| 20 | `pr_domain` | `full_regression` | `ci-cd-tests.yml` | push, pull_request, schedule, workflow_dispatch | 12 | `canonical` | — |
+| 20 | `pr_domain` | `full_regression` | `ci-cd-tests.yml` | push, pull_request, schedule, workflow_dispatch | 11 | `canonical` | — |
 | 20 | `pr_domain` | `runtime_governance` | `cbd-w38-route-yield.yml` | none | 1 | `keep` | — |
 | 20 | `pr_domain` | `runtime_governance` | `code-purple-dashboard-v31.yml` | pull_request, workflow_dispatch | 2 | `keep` | — |
 | 20 | `pr_domain` | `runtime_governance` | `code-purple-sut-gui.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
