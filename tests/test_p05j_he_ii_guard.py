@@ -79,7 +79,9 @@ def test_main_writes_blocked_receipt_and_returns_nonzero(monkeypatch, tmp_path):
         raise VesselInventoryDepletedError("P05J Q3 Line-S inventory depleted: test")
 
     monkeypatch.setattr(p05j, "q3_line_s", depleted)
-    monkeypatch.setattr(p05j, "q4_decision", lambda *args: pytest.fail("Q4 must not run"))
+    monkeypatch.setattr(
+        p05j, "q4_decision", lambda *args: pytest.fail("Q4 must not run")
+    )
     assert p05j.main() == 2
     import json
 
