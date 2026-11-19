@@ -34,6 +34,24 @@ class SubLambdaOutOfRangeError(ValueError):
     """T is below the lambda point (He II), outside the range of the CoolProp helium EOS."""
 
 
+def require_above_lambda(temperature_K: float, *, context: str = "") -> float:
+    """Return T as a float, or raise ``SubLambdaOutOfRangeError`` if T < LAMBDA_K.
+
+    For modules that call CoolProp directly (saturation and flash calls that
+    ``state_tp`` does not cover). Wrap every temperature they pass to, or get back
+    from, CoolProp. A NaN temperature is refused too.
+    """
+    T = float(temperature_K)
+    if not T >= LAMBDA_K:
+        where = f" [{context}]" if context else ""
+        raise SubLambdaOutOfRangeError(
+            f"HE_II_SUB_LAMBDA_OUT_OF_COOLPROP_RANGE{where}: T={T} K is below the "
+            f"lambda point ({LAMBDA_K} K), the lower limit of the CoolProp helium EOS. "
+            "Use the HEPAK receipt (qplant_provider) for He II states."
+        )
+    return T
+
+
 @dataclass(frozen=True)
 class HeliumState:
     temperature_K: float
