@@ -1,7 +1,8 @@
 import sys
 import json,subprocess
 from concurrent.futures import ThreadPoolExecutor
-H=json.load(open(sys.argv[1]))
+with open(sys.argv[1]) as f:
+    H=json.load(f)
 prev={(x["repo"],x["workflow"]):x for x in H["live_red"]}
 RED=("EVERRED","GREEN_TO_RED")
 def gh(p):
@@ -9,10 +10,11 @@ def gh(p):
 out=[]
 for r in ["abacus","codex"]:
     tree=set((subprocess.run(["gh","api",f"repos/GBOGEB/{r}/git/trees/main?recursive=1","--jq",'.tree[]|select(.path|startswith(".github/workflows/"))|.path'],capture_output=True,text=True).stdout).split())
-    for x in json.load(open(f"{sys.argv[2]}/wf_{r}.json")):
-        if x["cls"] not in RED: continue
-        x["ghost"]=x["path"] not in tree
-        out.append(x)
+    with open(f"{sys.argv[2]}/wf_{r}.json") as f:
+        for x in json.load(f):
+            if x["cls"] not in RED: continue
+            x["ghost"]=x["path"] not in tree
+            out.append(x)
 def enrich(x):
     c=gh(f"repos/GBOGEB/{x['repo']}/commits?path={x['path']}&sha=main&per_page=1")
     x["file_edit"]=c[0]["commit"]["committer"]["date"] if c else "?"
@@ -30,7 +32,8 @@ def enrich(x):
     x["red_since_bounded"]= lastgreen is None and len((rr or {}).get("workflow_runs",[]))==100
     return x
 with ThreadPoolExecutor(8) as ex: out=list(ex.map(enrich,out))
-json.dump(out,open(f"{sys.argv[2]}/reds_now.json","w"),indent=1)
+with open(f"{sys.argv[2]}/reds_now.json","w") as f:
+    json.dump(out,f,indent=1)
 now={(x["repo"],x["path"].split("/")[-1]):x for x in out}
 for k,x in sorted(now.items()):
     p=prev.get(k)
