@@ -173,6 +173,28 @@ class LaneAdapterTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "pin mismatch"):
             adapter.load_pinned_bridge(path)
 
+    def test_pinned_loader_does_not_reopen_source_or_bytecode(self) -> None:
+        """Load the checked snapshot even if its path later changes."""
+        path = self.root / "upstream_copy.py"
+        original = UPSTREAM.read_bytes()
+        path.write_bytes(original)
+        loader_class = adapter._PinnedBytesLoader
+        real_exec = loader_class.exec_module
+
+        def replace_path_before_import(loader, module):
+            path.write_bytes(b"raise RuntimeError('unverified source executed')\n")
+            return real_exec(loader, module)
+
+        with patch.object(loader_class, "exec_module", replace_path_before_import):
+            with patch.object(
+                loader_class,
+                "get_data",
+                side_effect=AssertionError("source or pycache re-read"),
+            ):
+                bridge = adapter.load_pinned_bridge(path)
+        self.assertTrue(callable(bridge.normalize_source))
+        self.assertNotEqual(path.read_bytes(), original)
+
     def test_pdf_literal_fallback_never_mints_page_one(self) -> None:
         path = self.root / "six.pdf"
         path.write_bytes(six_page_pdf())
