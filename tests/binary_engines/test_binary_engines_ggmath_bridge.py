@@ -45,6 +45,20 @@ class Pins(unittest.TestCase):
         refs = set(re.findall(r"GG_MATH_COMMIT:\s*([0-9a-f]{40})", workflow))
         self.assertEqual(refs, {pin["commit"] for pin in self.bridge.PINS.values()})
 
+    def test_b0_and_matrix_provision_the_exact_merged_math_provider(self):
+        commits = {pin["commit"] for pin in self.bridge.PINS.values()}
+        self.assertEqual(len(commits), 1)
+        commit = next(iter(commits))
+        for workflow_name in ("mip-coverage-evidence.yml", "ci-abacus.yml"):
+            with self.subTest(workflow=workflow_name):
+                text = (
+                    _env.REPO / ".github" / "workflows" / workflow_name
+                ).read_text("utf-8")
+                self.assertIn("pinned_commit=" + commit, text)
+                self.assertIn("requirements-binary-engines.txt", text)
+                self.assertIn("GG_MATH_HOME=", text)
+                self.assertIn("rev-parse HEAD", text)
+
     def test_blob_id_is_git_object_id(self):
         # git hash-object of an empty file and of "hello\n" (well-known values)
         self.assertEqual(
