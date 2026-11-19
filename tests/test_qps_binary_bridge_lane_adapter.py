@@ -12,6 +12,7 @@ import sys
 import tempfile
 import types
 import unittest
+from contextlib import chdir
 from pathlib import Path
 from typing import Any
 from unittest.mock import patch
@@ -200,14 +201,16 @@ class LaneAdapterTests(unittest.TestCase):
         """The verified upstream requires __file__ while its source executes."""
         path = self.root / "upstream_copy.py"
         path.write_bytes(UPSTREAM.read_bytes())
-        relative_path = Path(os.path.relpath(path, Path.cwd()))
-        for source_path in (path, relative_path):
-            with self.subTest(source_path=source_path):
-                bridge = adapter.load_pinned_bridge(source_path)
-                self.assertTrue(bridge.__spec__.has_location)
-                self.assertEqual(bridge.__spec__.origin, bridge.__file__)
-                self.assertEqual(Path(bridge.__file__).resolve(), path.resolve())
-                self.assertTrue(callable(bridge.normalize_source))
+        # The runner checkout and temporary directory can be on different
+        # Windows drives. Make relative-path coverage independent of that.
+        with chdir(self.root):
+            for source_path in (path, Path(path.name)):
+                with self.subTest(source_path=source_path):
+                    bridge = adapter.load_pinned_bridge(source_path)
+                    self.assertTrue(bridge.__spec__.has_location)
+                    self.assertEqual(bridge.__spec__.origin, bridge.__file__)
+                    self.assertEqual(Path(bridge.__file__).resolve(), path.resolve())
+                    self.assertTrue(callable(bridge.normalize_source))
 
     def test_pinned_loader_ignores_and_preserves_unchecked_bytecode_cache(self) -> None:
         """A valid unchecked cache cannot replace the hash-verified source."""
