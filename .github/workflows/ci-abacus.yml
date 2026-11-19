@@ -275,6 +275,17 @@ jobs:
           python -m pip install -r requirements-dev.txt
           python -m pip install .
 
+      - name: Provision pinned binary-engine dependencies and gg_MATH kernels
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -r requirements-binary-engines.txt
+          pinned_commit=4a9a56518f1db9c2f3a59c268e816c6cfa9b482a
+          git clone --quiet --no-checkout https://github.com/GBOGEB/gg_MATH.git "$RUNNER_TEMP/gg_math"
+          git -C "$RUNNER_TEMP/gg_math" checkout --quiet --detach "$pinned_commit"
+          test "$(git -C "$RUNNER_TEMP/gg_math" rev-parse HEAD)" = "$pinned_commit"
+          echo "GG_MATH_HOME=$RUNNER_TEMP/gg_math" >> "$GITHUB_ENV"
+
       - name: Run pre-commit hooks
         shell: bash
         run: |
