@@ -6,6 +6,11 @@ its XLSX semantic identity. A workbook with unchanged cell text and a changed
 filter criterion is a different semantic input. Parser version 1.2.0 identifies
 the expanded fingerprint. Rebuild derived fingerprints when changing from 1.1.0.
 
+The bridge retains its existing cell-value interpretation and shared-string
+fallback. Its feature-only read retains raw shared indices and captures formula
+attributes. Preservation and repair snapshots resolve shared strings and reject
+invalid references by default.
+
 ## Owned-engine repair evaluation
 
 `tools/qps_xlsx_native_features.py` extends the existing openpyxl engine used by
@@ -36,15 +41,22 @@ scoped identities fail before any output workbook can be produced.
 
 ## Supported restoration and independent checks
 
-| Feature | Public openpyxl API | Independent serialized check |
-|---|---|---|
-| Complete worksheet AutoFilter and active criteria | `AutoFilter.from_tree`, `Worksheet.auto_filter` | Complete behavior tree, including each criterion |
-| Sheet visibility | `Worksheet.sheet_state` | Source visibility for every sheet |
-| Explicit calculation settings | `Workbook.calculation` and `CalcProperties` | Every source-explicit setting must remain explicit |
-| Scoped filter names | Writer-generated names for filters; `Worksheet.defined_names.add` for orphan names | Scope, name, hidden flag and formula text |
-| Print areas and titles | `Worksheet.print_area`, `print_title_rows`, `print_title_cols` | Scoped name and range preserved verbatim |
-| Existing values, formula text, formula attributes and caches | Retained candidate model | Full candidate-to-trial comparison |
-| Existing hidden rows and columns | Retained candidate model | Exact source hidden-row/column sets |
+- Worksheet AutoFilters and active criteria use `AutoFilter.from_tree` and
+  `Worksheet.auto_filter`. The serialized check compares the complete behavior
+  tree, including each criterion.
+- Sheet visibility uses `Worksheet.sheet_state`. The serialized check compares
+  source visibility for every sheet.
+- Explicit calculation settings use `Workbook.calculation` and `CalcProperties`.
+  Every source-explicit setting must remain explicit after serialization.
+- Scoped filter names use writer-generated names for filters and
+  `Worksheet.defined_names.add` for orphan names. The check compares scope,
+  name, hidden flag and formula text.
+- Print areas and titles use `Worksheet.print_area`, `print_title_rows` and
+  `print_title_cols`. Scoped names and ranges must remain verbatim.
+- Existing values, formula text, formula attributes and caches remain in the
+  candidate model. The check compares all candidate and serialized-trial cells.
+- Existing hidden rows and columns remain in the candidate model. Their sets
+  must match the source exactly.
 
 Do not manufacture an AutoFilter for a source sheet that only has a scoped
 filter name. Do not add a second reserved name when the writer generates one.
@@ -54,7 +66,8 @@ The native comparison is intentionally strict. Equivalent quoting of a sheet
 name can still fail a verbatim source contract. Such a difference may be
 classified by a reviewer, but the evaluator does not silently relax the rule.
 Likewise, missing formula caches are losses even when formula text is retained.
-The evaluator never fabricates a cache or relabels a stale result as recalculated.
+The evaluator never fabricates a cache or relabels a stale result as
+recalculated.
 
 ## Acceptance boundaries
 
@@ -71,18 +84,23 @@ engine must prove filter-aware results on the final bytes. The artifact-tool
 authoring route remains a separate capability; this implementation does not
 patch that managed package or substitute an unqualified output for its result.
 
-References: [openpyxl filters](https://openpyxl.readthedocs.io/en/stable/filters.html),
-[defined names](https://openpyxl.readthedocs.io/en/stable/defined_names.html),
-[filter API](https://openpyxl.readthedocs.io/en/stable/api/openpyxl.worksheet.filters.html).
+References: [openpyxl filters][filters], [defined names][names], and
+[filter API][api].
+
+[filters]: https://openpyxl.readthedocs.io/en/stable/filters.html
+[names]: https://openpyxl.readthedocs.io/en/stable/defined_names.html
+[api]:
+  https://openpyxl.readthedocs.io/en/stable/api/openpyxl.worksheet.filters.html
 
 ## Verification
 
 ```bash
-python -m pytest tests/test_qps_binary_bridge.py tests/test_qps_xlsx_native_features.py
+python -m pytest tests/test_qps_binary_bridge.py \
+  tests/test_qps_xlsx_native_features.py
 ```
 
 The new tests also run with `python -m unittest discover -s tests -p
 test_qps_xlsx_native_features.py`. Fixtures are generic and contain no project
-evidence. They cover equal-count criterion changes, changed scope and visibility,
+evidence. They cover equal-count criterion changes, scope and visibility,
 explicit-false settings, hidden rows/columns, lost formula caches, wrong hashes,
 malformed XML declarations and preservation of both input byte streams.

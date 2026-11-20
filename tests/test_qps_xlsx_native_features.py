@@ -63,6 +63,65 @@ def check_snapshot_captures_meaning_and_explicit_false():
     assert compare_features(result, result) == []
 
 
+def worksheet_target_fixture(target, external=False):
+    output = io.BytesIO()
+    with zipfile.ZipFile(io.BytesIO(fixture_bytes())) as source, zipfile.ZipFile(
+        output, "w"
+    ) as destination:
+        for name in source.namelist():
+            data = source.read(name)
+            if name == "xl/_rels/workbook.xml.rels":
+                replacement = f'Target="{target}"'
+                if external:
+                    replacement += ' TargetMode="External"'
+                data = data.replace(
+                    b'Target="worksheets/sheet1.xml"', replacement.encode(), 1
+                )
+            destination.writestr(name, data)
+    return output.getvalue()
+
+
+def check_supported_worksheet_targets_share_native_identity(target):
+    expected = snapshot_xlsx(fixture_bytes())
+    observed = snapshot_xlsx(worksheet_target_fixture(target))
+    assert native_features(observed) == native_features(expected)
+    assert observed["cells"] == expected["cells"]
+
+
+def check_worksheet_target_cannot_escape_or_be_external(target):
+    with raises(ValueError, match="INVALID_WORKSHEET_MEMBER"):
+        snapshot_xlsx(worksheet_target_fixture(target))
+
+
+def check_external_worksheet_target_is_rejected():
+    with raises(ValueError, match="EXTERNAL_WORKSHEET_RELATIONSHIP"):
+        snapshot_xlsx(
+            worksheet_target_fixture("xl/worksheets/sheet1.xml", external=True)
+        )
+
+
+def check_feature_only_read_does_not_weaken_repair_shared_string_guard():
+    output = io.BytesIO()
+    with zipfile.ZipFile(io.BytesIO(fixture_bytes())) as source, zipfile.ZipFile(
+        output, "w"
+    ) as destination:
+        for name in source.namelist():
+            data = source.read(name)
+            if name == "xl/worksheets/sheet1.xml":
+                data = data.replace(
+                    b'<c r="A2" t="inlineStr"><is><t>Open</t></is></c>',
+                    b'<c r="A2" t="s"><v>999</v></c>',
+                ).replace(b"<f>1+1</f>", b'<f aca="1">1+1</f>')
+            destination.writestr(name, data)
+    raw = output.getvalue()
+    with raises(ValueError, match="INVALID_SHARED_STRING_INDEX"):
+        snapshot_xlsx(raw)
+    observed = snapshot_xlsx(raw, resolve_shared_string_values=False)
+    assert observed["cells"]["Data!A2"]["value"] == "999"
+    assert observed["cells"]["Data!A2"]["type"] == "s"
+    assert native_features(observed)["formula_attributes"]["Data!B3"] == {"aca": "1"}
+
+
 def check_sort_custom_list_keeps_string_identity():
     def make(value):
         result = io.BytesIO()
@@ -234,6 +293,22 @@ for _name, _function in list(globals().items()):
         ],
         "check_invalid_scope_is_rejected": ["-1", "9", "not-an-index"],
         "check_wrong_source_or_candidate_hash_is_rejected": ["source", "candidate"],
+        "check_supported_worksheet_targets_share_native_identity": [
+            "worksheets/sheet1.xml",
+            "xl/worksheets/sheet1.xml",
+            "/xl/worksheets/sheet1.xml",
+        ],
+        "check_worksheet_target_cannot_escape_or_be_external": [
+            "../../outside.xml",
+            "xl/../../outside.xml",
+            "/outside.xml",
+            "//remote/xl/worksheets/sheet1.xml",
+            "https://example.invalid/sheet1.xml",
+            "..\\outside.xml",
+            "worksheets/sheet1.xml#fragment",
+            "worksheets/sheet1.xml?query=1",
+            "",
+        ],
     }.get(_name, [None])
     for _index, _argument in enumerate(_parameters):
         setattr(

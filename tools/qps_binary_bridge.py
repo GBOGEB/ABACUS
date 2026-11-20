@@ -223,7 +223,7 @@ def extract_xlsx(path: Path) -> dict[str, Any]:
     except ModuleNotFoundError:
         from qps_xlsx_native_features import native_features, snapshot_xlsx
 
-    native = native_features(snapshot_xlsx(path))
+    native = native_features(snapshot_xlsx(path, resolve_shared_string_values=False))
     with zipfile.ZipFile(path) as archive:
         shared = _xlsx_shared_strings(archive)
         sheets_out: list[dict[str, Any]] = []

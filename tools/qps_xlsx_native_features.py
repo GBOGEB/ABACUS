@@ -87,8 +87,15 @@ def _bytes(source: Path | bytes) -> bytes:
     return source if isinstance(source, bytes) else Path(source).read_bytes()
 
 
-def snapshot_xlsx(source: Path | bytes) -> dict[str, Any]:
-    """Read native features and exact cell meanings without normalizing text."""
+def snapshot_xlsx(
+    source: Path | bytes, *, resolve_shared_string_values: bool = True
+) -> dict[str, Any]:
+    """Read native features and cell meanings without normalizing text.
+
+    Repair snapshots resolve and validate shared-string references by default.
+    A feature-only caller can retain raw indices when its existing cell reader
+    owns value interpretation. Formula attributes are captured in either mode.
+    """
     raw = _bytes(source)
     with zipfile.ZipFile(io.BytesIO(raw)) as package:
         infos = package.infolist()
@@ -120,8 +127,17 @@ def snapshot_xlsx(source: Path | bytes) -> dict[str, Any]:
             if link.get("TargetMode") == "External":
                 raise ValueError("EXTERNAL_WORKSHEET_RELATIONSHIP")
             target = link["Target"]
+            if (
+                not target
+                or target.startswith("//")
+                or any(char in target for char in ("\\", ":", "?", "#", "\0"))
+            ):
+                raise ValueError("INVALID_WORKSHEET_MEMBER")
+            # Retain the bridge's package-rooted relative-target compatibility.
+            # A target already beginning with xl/ must not acquire a second xl/.
+            rooted = target.startswith(("/", "xl/"))
             member = posixpath.normpath(
-                target.lstrip("/") if target.startswith("/") else "xl/" + target
+                target.lstrip("/") if rooted else "xl/" + target
             )
             if not member.startswith("xl/") or ".." in member.split("/"):
                 raise ValueError("INVALID_WORKSHEET_MEMBER")
@@ -154,7 +170,11 @@ def snapshot_xlsx(source: Path | bytes) -> dict[str, Any]:
                 formula, value = cell.find("s:f", NS), cell.find("s:v", NS)
                 kind = cell.attrib.get("t", "n")
                 raw_value = None if value is None else value.text
-                if kind == "s" and raw_value is not None:
+                if (
+                    kind == "s"
+                    and raw_value is not None
+                    and resolve_shared_string_values
+                ):
                     index = int(raw_value)
                     if index < 0 or index >= len(shared):
                         raise ValueError("INVALID_SHARED_STRING_INDEX")
