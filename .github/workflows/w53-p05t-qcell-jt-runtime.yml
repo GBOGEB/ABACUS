@@ -9,26 +9,33 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+env:
+  SCRIPT: qplant/w53_p05s_qcell_jt_flash_receipt.py
+  RECEIPT: artifacts/w53_p05t/qcell_jt_flash_receipt.json
 jobs:
   jt-flash-runtime:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      # actions/checkout v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      # actions/setup-python v7.1.0
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: '3.14'
       - name: Install governed helium runtime
         run: |
           python -m pip install --upgrade pip
           python -m pip install CoolProp==7.2.0
-      - name: Execute canonical receipt (NIST TN1334; the 31 mbar outlet is He II)
+      # The 31 mbar QCELL outlet is He II, so the canonical receipt uses
+      # NIST TN1334 (valid from 0.8 K); HEPAK still governs.
+      - name: Execute canonical receipt (NIST TN1334)
         run: |
-          mkdir -p artifacts/w53_p05t
-          python qplant/w53_p05s_qcell_jt_flash_receipt.py --reference nist-tn1334 | tee artifacts/w53_p05t/qcell_jt_flash_receipt.json
+          mkdir -p "$(dirname "$RECEIPT")"
+          python "$SCRIPT" --reference nist-tn1334 | tee "$RECEIPT"
       - name: CoolProp default must refuse the sub-lambda outlet
         run: |
-          if python qplant/w53_p05s_qcell_jt_flash_receipt.py > /dev/null 2> coolprop_err.txt; then
-            echo "CoolProp receipt was produced below the lambda point; the He II guard did not fire" >&2
+          if python "$SCRIPT" > /dev/null 2> coolprop_err.txt; then
+            echo "CoolProp receipt made below lambda; guard did not fire" >&2
             exit 1
           fi
           grep -q HE_II_SUB_LAMBDA_OUT_OF_COOLPROP_RANGE coolprop_err.txt
@@ -36,25 +43,29 @@ jobs:
       - name: Validate and summarize
         run: |
           python - <<'PY'
-          import json
-          p='artifacts/w53_p05t/qcell_jt_flash_receipt.json'
-          with open(p, encoding='utf-8') as f: r=json.load(f)
-          x=r['flash_quality_mass_fraction']
+          import json, os
+          with open(os.environ['RECEIPT'], encoding='utf-8') as f:
+              r = json.load(f)
+          x = r['flash_quality_mass_fraction']
+          o = r['boundary']['outlet_local_QCELL']
           assert 0.0 <= x <= 1.0
-          assert abs(r['boundary']['outlet_local_QCELL']['P_mbar_abs']-31.0) < 1e-12
-          assert r['validation'] == 'NIST_TN1334_INDEPENDENT_REFERENCE_HEPAK_GOVERNING'
-          assert r['boundary']['outlet_local_QCELL']['T_sat_K'] < 2.1768  # He II outlet
+          assert abs(o['P_mbar_abs'] - 31.0) < 1e-12
+          assert r['validation'] == (
+              'NIST_TN1334_INDEPENDENT_REFERENCE_HEPAK_GOVERNING')
+          assert o['T_sat_K'] < 2.1768  # He II outlet
           assert abs(x - 0.43643131189448126) < 1e-12  # cryoplant P05V
           print('flash_percent=', r['flash_percent_of_A'])
-          print('Tsat_K=', r['boundary']['outlet_local_QCELL']['T_sat_K'])
+          print('Tsat_K=', o['T_sat_K'])
           print('hA_J_kg=', r['boundary']['inlet_A']['h_J_kg'])
-          print('hf_J_kg=', r['boundary']['outlet_local_QCELL']['h_f_J_kg'])
-          print('hg_J_kg=', r['boundary']['outlet_local_QCELL']['h_g_J_kg'])
+          print('hf_J_kg=', o['h_f_J_kg'])
+          print('hg_J_kg=', o['h_g_J_kg'])
           for row in r['A_flow_cases']:
-              print('A=', row['A_g_s'], 'flash=', row['JT_flash_g_s'], 'liquid=', row['post_flash_liquid_g_s'])
+              print('A=', row['A_g_s'], 'flash=', row['JT_flash_g_s'],
+                    'liquid=', row['post_flash_liquid_g_s'])
           PY
       - name: Upload receipt
-        uses: actions/upload-artifact@v7
+        # actions/upload-artifact v7.0.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: w53-p05t-qcell-jt-flash-receipt
           path: artifacts/w53_p05t/qcell_jt_flash_receipt.json
