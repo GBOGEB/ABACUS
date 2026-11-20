@@ -374,7 +374,7 @@ def test_bridge_payload_is_json_serializable(tmp_path: Path, monkeypatch) -> Non
 
     payload = json.dumps(result, sort_keys=True)
     assert result["schema"] == "abacus-binary-bridge/v1"
-    assert result["parser_version"] == "1.1.0"
+    assert result["parser_version"] == "1.2.0"
     assert result["sources"][0]["trace_links"] == ["OFFER-01"]
     assert result["bridge_semantic_sha256"] in payload
 
