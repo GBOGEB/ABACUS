@@ -11,10 +11,7 @@ markdown>=3.3.0,<3.11; python_version < '3.11'
 markdown>=3.11; python_version >= '3.11'
 
 # PDF handling
-# OSV BD-24b: PyPDF2 never released 3.9.0 (last release 3.0.1, project deprecated), so the
-# previous floor made OSV resolution impossible and nothing was scanned. Nothing in the repo
-# imports PyPDF2; PDF reading uses its maintained successor pypdf (tools/qps_binary_bridge.py).
-pypdf>=7.1.0
+pypdf>=3.9.0  # OSV BD-24: migrated from PyPDF2; PYSEC-2026-1835 fixed
 reportlab>=5.0.1
 
 # Image handling (transitive via python-docx / python-pptx / reportlab).
