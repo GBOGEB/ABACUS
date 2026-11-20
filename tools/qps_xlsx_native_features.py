@@ -221,6 +221,21 @@ def snapshot_xlsx(
             raise ValueError("DUPLICATE_SCOPED_DEFINED_NAME")
         calc = workbook.find("s:calcPr", NS)
         calc_attrs = {} if calc is None else calc.attrib
+        table_filters = []
+        for name in sorted(
+            part
+            for part in names
+            if part.startswith("xl/tables/") and part.endswith(".xml")
+        ):
+            table = _xml(package.read(name))
+            table_filters.append(
+                {
+                    "name": table.attrib.get("name", ""),
+                    "ref": table.attrib.get("ref", ""),
+                    "auto_filter": xml_node(table.find("s:autoFilter", NS)),
+                    "sort_state": xml_node(table.find("s:sortState", NS)),
+                }
+            )
         return {
             "schema": "abacus-xlsx-native-snapshot/v2",
             "sha256": digest(raw),
@@ -236,6 +251,9 @@ def snapshot_xlsx(
                 k: _attr(k, v) for k, v in calc_attrs.items() if k in CALC_KEYS
             },
             "cells": cells,
+            "table_filters": sorted(
+                table_filters, key=lambda table: (table["name"], table["ref"])
+            ),
         }
 
 
@@ -249,6 +267,7 @@ def native_features(snapshot: dict[str, Any]) -> dict[str, Any]:
         ],
         "defined_names": snapshot["defined_names"],
         "explicit_calculation_settings": snapshot["explicit_calculation_settings"],
+        "table_filters": snapshot["table_filters"],
         "formula_attributes": {
             locator: cell["formula_attributes"]
             for locator, cell in snapshot["cells"].items()
@@ -269,6 +288,12 @@ def compare_features(
                 {"code": code, "locator": locator, "source": before, "candidate": after}
             )
 
+    check(
+        "NATIVE_TABLE_FILTERS_CHANGED",
+        "workbook/table_filters",
+        source["table_filters"],
+        candidate["table_filters"],
+    )
     check(
         "SHEET_SET_OR_ORDER_CHANGED",
         "workbook/sheets",

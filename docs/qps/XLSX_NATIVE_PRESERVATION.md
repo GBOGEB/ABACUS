@@ -11,6 +11,16 @@ Retain older receipts as version-bound history; do not relabel their hashes.
 Candidate-only calculation settings are differences, including an added manual
 calculation mode when the source did not record one.
 
+The controlled v2 contract also includes table-level AutoFilter trees and table
+sort state, keyed by table name and range. A table criterion change with unchanged
+cells and table range changes native semantic identity. Removed or added table
+filters are differences. The package preservation engine preserves candidate
+table parts byte-for-byte and rejects differing source table filter state; it
+does not claim to restore table filters. Worksheet and table filter trees share
+the same boolean normalization, while literal criterion strings remain exact.
+Retain receipts produced before this v2 qualification extension as source-bound
+history and regenerate fingerprints for the final admitted helper hash.
+
 The bridge retains its existing cell-value interpretation and shared-string
 fallback. Its feature-only read retains raw shared indices and captures formula
 attributes. Preservation and repair snapshots resolve shared strings and reject
@@ -138,6 +148,12 @@ python tools/qps_xlsx_package_repair.py \
 The path reads both inputs immutably and requires exact hashes. It rejects
 reordered sheets, duplicate names, signed candidate packages, changed external
 link parts, unsupported filter extensions and hidden-row/column differences.
+Package engine 1.0.1 also requires identical ordered `externalReferences`
+bindings and workbook relationship attributes before transferring source names.
+An unchanged external-link part is insufficient: changing reference order can
+make `[1]` name a different external workbook. A changed target, unresolved or
+duplicate relationship, unsupported relationship type or external target mode
+fails closed. This engine does not remap external indexes or fetch external data.
 A scoped filter name without a source AutoFilter remains name-only. Namespace
 bindings travel with transferred elements; scoped-name formula text is kept
 verbatim. The original candidate's other parts, comments, relationships and

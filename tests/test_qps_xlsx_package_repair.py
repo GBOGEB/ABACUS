@@ -15,6 +15,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 fixture_bytes = importlib.import_module("test_qps_xlsx_native_features").fixture_bytes
+table_fixture_bytes = importlib.import_module(
+    "test_qps_xlsx_native_features"
+).table_fixture_bytes
 engine = importlib.import_module("tools.qps_xlsx_package_repair")
 native = importlib.import_module("tools.qps_xlsx_native_features")
 compare_content = native.compare_content
@@ -53,7 +56,150 @@ def call(source, candidate):
     )
 
 
+def external_fixture():
+    """Two different external books with an index-bound source defined name."""
+    rel = native.REL.encode()
+    return mutate(
+        fixture_bytes(),
+        {
+            "xl/workbook.xml": [
+                (
+                    b"<definedNames>",
+                    b'<externalReferences><externalReference r:id="ext1"/>'
+                    b'<externalReference r:id="ext2"/></externalReferences>'
+                    b'<definedNames><definedName name="ExternalValue">'
+                    b"[1]Sheet1!$A$1</definedName>",
+                )
+            ],
+            "xl/_rels/workbook.xml.rels": [
+                (
+                    b"</Relationships>",
+                    b'<Relationship Id="ext1" Type="'
+                    + rel
+                    + b'/externalLink" Target="externalLinks/externalLink1.xml"/>'
+                    b'<Relationship Id="ext2" Type="'
+                    + rel
+                    + b'/externalLink" Target="externalLinks/externalLink2.xml"/>'
+                    b"</Relationships>",
+                )
+            ],
+        },
+        {
+            "xl/externalLinks/externalLink1.xml": b'<externalLink book="A"/>',
+            "xl/externalLinks/externalLink2.xml": b'<externalLink book="B"/>',
+        },
+    )
+
+
 class PackageRepairTests(unittest.TestCase):
+    def test_table_filter_loss_is_rejected_without_unsupported_restoration(self):
+        source = table_fixture_bytes(criterion="Open")
+        candidate = table_fixture_bytes(criterion="Closed")
+        with self.assertRaisesRegex(ValueError, "NATIVE_TABLE_FILTERS_CHANGED"):
+            call(source, candidate)
+
+    def test_unchanged_table_filter_part_is_byte_preserved(self):
+        source = table_fixture_bytes()
+        final, receipt = call(source, source)
+        with zipfile.ZipFile(io.BytesIO(source)) as before, zipfile.ZipFile(
+            io.BytesIO(final)
+        ) as after:
+            self.assertEqual(
+                before.read("xl/tables/table1.xml"), after.read("xl/tables/table1.xml")
+            )
+        self.assertEqual(receipt["remaining_native_losses"], [])
+
+    def test_identical_ordered_external_bindings_preserved(self):
+        source = external_fixture()
+        final, receipt = call(source, source)
+        self.assertEqual(receipt["external_reference_count"], 2)
+        self.assertEqual(
+            engine._external_reference_bindings(engine._parts(source)),
+            engine._external_reference_bindings(engine._parts(final)),
+        )
+        self.assertEqual(receipt["remaining_native_losses"], [])
+        self.assertEqual(receipt["content_losses"], [])
+
+    def test_external_index_reorder_rejected_with_identical_link_parts(self):
+        source = external_fixture()
+        candidate = mutate(
+            source,
+            {
+                "xl/workbook.xml": [
+                    (
+                        b'<externalReference r:id="ext1"/>'
+                        b'<externalReference r:id="ext2"/>',
+                        b'<externalReference r:id="ext2"/>'
+                        b'<externalReference r:id="ext1"/>',
+                    )
+                ]
+            },
+        )
+        # The old feature/content gate could not detect this binding loss.
+        self.assertEqual(
+            compare_features(snapshot_xlsx(source), snapshot_xlsx(candidate)), []
+        )
+        self.assertEqual(
+            compare_content(snapshot_xlsx(source), snapshot_xlsx(candidate)), []
+        )
+        with self.assertRaisesRegex(
+            ValueError, "UNSUPPORTED_EXTERNAL_REFERENCE_BINDING_CHANGE"
+        ):
+            call(source, candidate)
+
+    def test_external_relationship_target_change_rejected(self):
+        source = external_fixture()
+        candidate = mutate(
+            source,
+            {
+                "xl/_rels/workbook.xml.rels": [
+                    (
+                        b'Target="externalLinks/externalLink1.xml"',
+                        b'Target="externalLinks/externalLink2.xml"',
+                    )
+                ]
+            },
+        )
+        with self.assertRaisesRegex(
+            ValueError, "UNSUPPORTED_EXTERNAL_REFERENCE_BINDING_CHANGE"
+        ):
+            call(source, candidate)
+
+    def test_unresolved_or_unsupported_external_binding_rejected(self):
+        source = external_fixture()
+        cases = [
+            (
+                "xl/workbook.xml",
+                b'<externalReference r:id="ext1"/>',
+                b'<externalReference r:id="absent"/>',
+            ),
+            (
+                "xl/_rels/workbook.xml.rels",
+                b'Target="externalLinks/externalLink1.xml"',
+                b'Target="externalLinks/externalLink1.xml" TargetMode="External"',
+            ),
+            (
+                "xl/_rels/workbook.xml.rels",
+                b'/externalLink" Target="externalLinks/externalLink1.xml"',
+                b'/worksheet" Target="externalLinks/externalLink1.xml"',
+            ),
+        ]
+        for part, before, after in cases:
+            candidate = mutate(source, {part: [(before, after)]})
+            with self.subTest(after=after), self.assertRaisesRegex(
+                ValueError, "UNSUPPORTED_EXTERNAL_REFERENCE_BINDING"
+            ):
+                call(source, candidate)
+
+    def test_duplicate_relationship_id_rejected_for_external_binding(self):
+        source = external_fixture()
+        candidate = mutate(
+            source,
+            {"xl/_rels/workbook.xml.rels": [(b'Id="ext2"', b'Id="ext1"')]},
+        )
+        with self.assertRaisesRegex(ValueError, "AMBIGUOUS_WORKBOOK_RELATIONSHIP"):
+            call(source, candidate)
+
     def test_cli_refuses_input_alias_and_existing_output(self):
         raw = fixture_bytes()
         with tempfile.TemporaryDirectory() as directory:

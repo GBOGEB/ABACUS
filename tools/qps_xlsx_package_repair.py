@@ -13,6 +13,7 @@ import argparse
 import copy
 import io
 import json
+import posixpath
 import re
 import sys
 import zipfile
@@ -32,7 +33,8 @@ compare_features = native.compare_features
 digest = native.digest
 snapshot_xlsx = native.snapshot_xlsx
 
-ENGINE_VERSION = "1.0.0"
+ENGINE_VERSION = "1.0.1"
+PACKAGE_REL = "http://schemas.openxmlformats.org/package/2006/relationships"
 WORKBOOK_ORDER = (
     "fileVersion fileSharing workbookPr workbookProtection bookViews sheets "
     "functionGroups externalReferences definedNames calcPr oleSize "
@@ -263,6 +265,57 @@ def _parts(raw: bytes) -> dict[str, bytes]:
         return {name: package.read(name) for name in package.namelist()}
 
 
+def _external_reference_bindings(parts: dict[str, bytes]) -> list[dict]:
+    """Bind external formula indexes to ordered workbook relationship targets.
+
+    Unchanged externalLink part bytes alone do not preserve [1], [2], ...:
+    their positions are defined by workbook/externalReferences. Reject an
+    unsupported or ambiguous binding before transplanting source names.
+    """
+    references = _child(_index(parts["xl/workbook.xml"]), "externalReferences")
+    if references is None:
+        return []
+    rels = _index(parts["xl/_rels/workbook.xml.rels"])
+    if rels.name != PACKAGE_REL + "|Relationships":
+        raise ValueError("UNSUPPORTED_EXTERNAL_REFERENCE_BINDING")
+    relationships = {}
+    for node in rels.children:
+        identifier = node.attributes.get("Id")
+        if (
+            node.name != PACKAGE_REL + "|Relationship"
+            or not identifier
+            or identifier in relationships
+        ):
+            raise ValueError("AMBIGUOUS_WORKBOOK_RELATIONSHIP")
+        relationships[identifier] = node.attributes
+    bindings = []
+    for reference in references.children:
+        identifier = reference.attributes.get(native.REL + "|id")
+        relationship = relationships.get(identifier)
+        if reference.name != MAIN + "|externalReference" or not relationship:
+            raise ValueError("UNSUPPORTED_EXTERNAL_REFERENCE_BINDING")
+        target = relationship.get("Target", "")
+        resolved = posixpath.normpath(
+            target.lstrip("/") if target.startswith("/") else "xl/" + target
+        )
+        if (
+            relationship.get("Type") != native.REL + "/externalLink"
+            or relationship.get("TargetMode", "Internal") != "Internal"
+            or any(char in target for char in ("\\", ":", "?", "#", "%"))
+            or not resolved.startswith("xl/externalLinks/")
+            or resolved not in parts
+        ):
+            raise ValueError("UNSUPPORTED_EXTERNAL_REFERENCE_BINDING")
+        bindings.append(
+            {
+                "reference_attributes": reference.attributes,
+                "relationship_attributes": relationship,
+                "resolved_part": resolved,
+            }
+        )
+    return bindings
+
+
 def _repack(candidate: bytes, parts: dict[str, bytes]) -> bytes:
     output = io.BytesIO()
     with zipfile.ZipFile(io.BytesIO(candidate)) as source, zipfile.ZipFile(
@@ -333,6 +386,9 @@ def repair_native_package(
 
     if external(source_parts) != external(candidate_parts):
         raise ValueError("UNSUPPORTED_EXTERNAL_LINK_CHANGE")
+    external_bindings = _external_reference_bindings(source_parts)
+    if external_bindings != _external_reference_bindings(candidate_parts):
+        raise ValueError("UNSUPPORTED_EXTERNAL_REFERENCE_BINDING_CHANGE")
     parts = dict(candidate_parts)
     workbook = parts["xl/workbook.xml"]
     source_workbook = source_parts["xl/workbook.xml"]
@@ -419,6 +475,10 @@ def repair_native_package(
         "changed_package_parts": changed,
         "unchanged_package_parts": len(parts) - len(changed),
         "sheet_data_byte_preservation": preserved_sheet_data,
+        "external_reference_binding_policy": (
+            "ORDERED_REFERENCE_RELATIONSHIPS_AND_EXTERNAL_PART_BYTES_IDENTICAL"
+        ),
+        "external_reference_count": len(external_bindings),
         "formula_cache_policy": "PRESERVED_FROM_CANDIDATE_WITHOUT_CALCULATION",
         "state": "PRESERVATION_PASS_NATIVE_RUNTIME_UNQUALIFIED",
         "native_excel_qualification": "NOT_PERFORMED",

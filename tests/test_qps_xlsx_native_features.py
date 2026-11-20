@@ -355,6 +355,99 @@ def check_bridge_semantic_identity_includes_same_count_filter_change(tmp_path):
     assert module.canonical_sha256(first) != module.canonical_sha256(second)
 
 
+def table_fixture_bytes(*, criterion="Open", blank="0", descending="0"):
+    """Real table part and worksheet relationship; cells stay identical."""
+    output = io.BytesIO()
+    main, rel = native.MAIN, native.REL
+    with zipfile.ZipFile(io.BytesIO(fixture_bytes())) as source, zipfile.ZipFile(
+        output, "w"
+    ) as destination:
+        for name in source.namelist():
+            data = source.read(name)
+            if name == "xl/worksheets/sheet1.xml":
+                data = data.replace(
+                    b"<worksheet xmlns=", f'<worksheet xmlns:r="{rel}" xmlns='.encode()
+                ).replace(
+                    b"</worksheet>",
+                    b'<tableParts count="1"><tablePart r:id="table1"/>'
+                    b"</tableParts></worksheet>",
+                )
+            elif name == "[Content_Types].xml":
+                data = data.replace(
+                    b"</Types>",
+                    b'<Override PartName="/xl/tables/table1.xml" ContentType="'
+                    b'application/vnd.openxmlformats-officedocument.spreadsheetml.table+xml"/>'
+                    b"</Types>",
+                )
+            destination.writestr(name, data)
+        destination.writestr(
+            "xl/worksheets/_rels/sheet1.xml.rels",
+            '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+            f'<Relationship Id="table1" Type="{rel}/table" Target="../tables/table1.xml"/>'
+            "</Relationships>",
+        )
+        destination.writestr(
+            "xl/tables/table1.xml",
+            f'<table xmlns="{main}" id="1" name="StatusTable" displayName="StatusTable" '
+            f'ref="A1:B3"><autoFilter ref="A1:B3"><filterColumn colId="0">'
+            f'<filters blank="{blank}"><filter val="{criterion}"/></filters></filterColumn>'
+            f'</autoFilter><sortState ref="A2:B3"><sortCondition ref="A2:A3" descending="{descending}"/>'
+            '</sortState><tableColumns count="2"><tableColumn id="1" name="Status"/>'
+            '<tableColumn id="2" name="Value"/></tableColumns></table>',
+        )
+    return output.getvalue()
+
+
+def check_table_filter_change_is_native_loss_with_same_cells():
+    before, after = (
+        snapshot_xlsx(table_fixture_bytes(criterion=criterion))
+        for criterion in ("Open", "Closed")
+    )
+    assert before["cells"] == after["cells"]
+    assert before["sheets"] == after["sheets"]
+    assert [row["code"] for row in compare_features(before, after)] == [
+        "NATIVE_TABLE_FILTERS_CHANGED"
+    ]
+    assert native_features(before) != native_features(after)
+
+
+def check_table_filter_and_sort_booleans_keep_meaning():
+    first, equivalent, different = (
+        native_features(
+            snapshot_xlsx(table_fixture_bytes(blank=value, descending=value))
+        )
+        for value in ("1", "true", "false")
+    )
+    assert first == equivalent
+    assert first != different
+
+
+def check_table_addition_is_native_difference():
+    before, after = snapshot_xlsx(fixture_bytes()), snapshot_xlsx(table_fixture_bytes())
+    assert any(
+        row["code"] == "NATIVE_TABLE_FILTERS_CHANGED"
+        for row in compare_features(before, after)
+    )
+    assert any(
+        row["code"] == "NATIVE_TABLE_FILTERS_CHANGED"
+        for row in compare_features(after, before)
+    )
+
+
+def check_bridge_semantic_identity_includes_table_filter_change(tmp_path):
+    spec = importlib.util.spec_from_file_location(
+        "bridge_table_test", ROOT / "tools/qps_binary_bridge.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    paths = [tmp_path / "open.xlsx", tmp_path / "closed.xlsx"]
+    for path, criterion in zip(paths, ("Open", "Closed")):
+        path.write_bytes(table_fixture_bytes(criterion=criterion))
+    before, after = (module.extract_xlsx(path) for path in paths)
+    assert before["sheets"] == after["sheets"]
+    assert module.canonical_sha256(before) != module.canonical_sha256(after)
+
+
 class NativeFeatureTests(unittest.TestCase):
     pass
 
