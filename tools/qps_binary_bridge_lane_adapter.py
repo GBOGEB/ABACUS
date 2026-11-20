@@ -12,18 +12,21 @@ from __future__ import annotations
 import argparse
 import copy
 import hashlib
+import importlib.machinery
 import importlib.util
 import json
 import re
 from pathlib import Path
-from types import ModuleType
+from types import CodeType, ModuleType
 from typing import Any
 
 SCHEMA = "abacus-binary-bridge-lane/v1"
 VERSION = "0.1.0-proposal"
 UPSTREAM_REPOSITORY = "GBOGEB/ABACUS"
 UPSTREAM_REF = "ecc601294ffdc5e1ba167071581921bf09939d00"
-UPSTREAM_SOURCE_SHA256 = "daf90d0df06e18caaa4262bf99543cd986def26245c88f3e461a18111c6ebafd"
+UPSTREAM_SOURCE_SHA256 = (
+    "daf90d0df06e18caaa4262bf99543cd986def26245c88f3e461a18111c6ebafd"
+)
 UPSTREAM_GIT_BLOB_SHA1 = "31b8f1826251949f18350f9c86856b6b7b1be6ba"
 UPSTREAM_PATH = Path(__file__).with_name("qps_binary_bridge.py")
 MAX_SOURCE_BYTES = 256 * 1024 * 1024
@@ -31,9 +34,7 @@ MAX_SOURCE_BYTES = 256 * 1024 * 1024
 
 def canonical_hash(value: object) -> str:
     """Hash a stable UTF-8 JSON representation."""
-    data = json.dumps(
-        value, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-    )
+    data = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(data.encode("utf-8")).hexdigest()
 
 
@@ -73,21 +74,34 @@ def validate_context(context: dict[str, Any]) -> dict[str, Any]:
     return copy.deepcopy(context)
 
 
+class _PinnedBytesLoader(importlib.machinery.SourceFileLoader):
+    """Import only the checked bytes; never reread a mutable source or pycache."""
+
+    def __init__(self, fullname: str, path: Path, verified_bytes: bytes) -> None:
+        super().__init__(fullname, str(path))
+        self._verified_bytes = verified_bytes
+
+    def get_code(self, fullname: str) -> CodeType:
+        """Compile the verified in-memory bytes instead of a path lookup."""
+        if fullname != self.name:
+            raise ImportError("pinned bridge loader module identity mismatch")
+        return self.source_to_code(self._verified_bytes, self.path)
+
+
 def load_pinned_bridge(path: Path = UPSTREAM_PATH) -> ModuleType:
-    """Verify exact imported source bytes rather than trusting a ref label."""
+    """Verify exact upstream bytes and execute only that immutable snapshot."""
     raw = path.read_bytes()
     if hashlib.sha256(raw).hexdigest() != UPSTREAM_SOURCE_SHA256:
         raise ValueError(
             "upstream source pin mismatch; review and repin before importing"
         )
-    spec = importlib.util.spec_from_file_location(
-        "qps_binary_bridge_pinned_lane", path
-    )
-    if spec is None or spec.loader is None:
+    module_name = "qps_binary_bridge_pinned_lane"
+    loader = _PinnedBytesLoader(module_name, path, raw)
+    spec = importlib.util.spec_from_file_location(module_name, path, loader=loader)
+    if spec is None:
         raise RuntimeError("cannot import pinned upstream bridge")
     module = importlib.util.module_from_spec(spec)
-    # Execute the verified bytes rather than reopening a mutable import path.
-    exec(compile(raw, str(path), "exec"), module.__dict__)
+    loader.exec_module(module)
     return module
 
 
@@ -165,9 +179,7 @@ def adapt_source(
         SCOPES.get(kind, {"covered": [], "uncovered": ["unknown parser scope"]})
     )
     page_citations_allowed = (
-        kind == "pdf"
-        and not is_fallback
-        and quality.get("parser") == "pypdf"
+        kind == "pdf" and not is_fallback and quality.get("parser") == "pypdf"
     )
     if kind == "pdf" and is_fallback:
         # V1 aggregates unassigned literals into page:1. Preserve text without
@@ -211,9 +223,7 @@ def adapt_source(
         }
     stage = "SCOUT" if is_fallback else "STRUCTURAL"
     semantic_hash = canonical_hash(hierarchy)
-    occurrence_hash = canonical_hash(
-        {"context": context, "source_sha256": byte_hash}
-    )
+    occurrence_hash = canonical_hash({"context": context, "source_sha256": byte_hash})
     producer = {
         "repository": UPSTREAM_REPOSITORY,
         "ref": UPSTREAM_REF,

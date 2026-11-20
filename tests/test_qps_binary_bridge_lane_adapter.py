@@ -7,10 +7,12 @@ import importlib.util
 import io
 import json
 import os
+import py_compile
 import sys
 import tempfile
 import types
 import unittest
+from contextlib import chdir
 from pathlib import Path
 from typing import Any
 from unittest.mock import patch
@@ -24,9 +26,7 @@ if SPEC is None or SPEC.loader is None:
 adapter = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(adapter)
 UPSTREAM = Path(
-    os.environ.get(
-        "QPS_BRIDGE_UPSTREAM_PATH", str(ROOT / "tools/qps_binary_bridge.py")
-    )
+    os.environ.get("QPS_BRIDGE_UPSTREAM_PATH", str(ROOT / "tools/qps_binary_bridge.py"))
 )
 
 
@@ -173,6 +173,64 @@ class LaneAdapterTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "pin mismatch"):
             adapter.load_pinned_bridge(path)
 
+    def test_pinned_loader_does_not_reopen_source_or_bytecode(self) -> None:
+        """Load the checked snapshot even if its path later changes."""
+        path = self.root / "upstream_copy.py"
+        original = UPSTREAM.read_bytes()
+        path.write_bytes(original)
+        loader_class = adapter._PinnedBytesLoader
+        real_exec = loader_class.exec_module
+
+        def replace_path_before_import(loader, module):
+            path.write_bytes(b"raise RuntimeError('unverified source executed')\n")
+            return real_exec(loader, module)
+
+        with patch.object(loader_class, "exec_module", replace_path_before_import):
+            with patch.object(
+                loader_class,
+                "get_data",
+                side_effect=AssertionError("source or pycache re-read"),
+            ):
+                bridge = adapter.load_pinned_bridge(path)
+        self.assertTrue(callable(bridge.normalize_source))
+        self.assertNotEqual(path.read_bytes(), original)
+
+    def test_pinned_module_has_file_location_for_absolute_and_relative_paths(
+        self,
+    ) -> None:
+        """The verified upstream requires __file__ while its source executes."""
+        path = self.root / "upstream_copy.py"
+        path.write_bytes(UPSTREAM.read_bytes())
+        # The runner checkout and temporary directory can be on different
+        # Windows drives. Make relative-path coverage independent of that.
+        with chdir(self.root):
+            for source_path in (path, Path(path.name)):
+                with self.subTest(source_path=source_path):
+                    bridge = adapter.load_pinned_bridge(source_path)
+                    self.assertTrue(bridge.__spec__.has_location)
+                    self.assertEqual(bridge.__spec__.origin, bridge.__file__)
+                    self.assertEqual(Path(bridge.__file__).resolve(), path.resolve())
+                    self.assertTrue(callable(bridge.normalize_source))
+
+    def test_pinned_loader_ignores_and_preserves_unchecked_bytecode_cache(self) -> None:
+        """A valid unchecked cache cannot replace the hash-verified source."""
+        path = self.root / "bridge.py"
+        path.write_bytes(b"raise RuntimeError('cache must never execute')\n")
+        cached = Path(importlib.util.cache_from_source(str(path)))
+        py_compile.compile(
+            str(path),
+            cfile=str(cached),
+            doraise=True,
+            invalidation_mode=py_compile.PycInvalidationMode.UNCHECKED_HASH,
+        )
+        cache_before = cached.read_bytes()
+        pinned_source = UPSTREAM.read_bytes()
+        path.write_bytes(pinned_source)
+        bridge = adapter.load_pinned_bridge(path)
+        self.assertTrue(callable(bridge.normalize_source))
+        self.assertEqual(cached.read_bytes(), cache_before)
+        self.assertEqual(path.read_bytes(), pinned_source)
+
     def test_pdf_literal_fallback_never_mints_page_one(self) -> None:
         path = self.root / "six.pdf"
         path.write_bytes(six_page_pdf())
@@ -302,15 +360,21 @@ class LaneAdapterTests(unittest.TestCase):
             arguments = [
                 "qps_binary_bridge_lane_adapter.py",
                 str(source),
-                "--occurrence-context", str(context_path),
-                "--source-authority", "OWNER_ASSERTED",
-                "--upstream-path", str(upstream),
-                "--output", str(output),
+                "--occurrence-context",
+                str(context_path),
+                "--source-authority",
+                "OWNER_ASSERTED",
+                "--upstream-path",
+                str(upstream),
+                "--output",
+                str(output),
             ]
             with self.subTest(input=label, alias=alias_kind):
                 with patch.object(sys, "argv", arguments):
                     with patch.object(sys, "stderr", io.StringIO()) as stderr:
-                        with patch.object(adapter, "normalize_lane_source") as normalize:
+                        with patch.object(
+                            adapter, "normalize_lane_source"
+                        ) as normalize:
                             with self.assertRaises(SystemExit) as rejected:
                                 adapter.main()
                 self.assertEqual(rejected.exception.code, 2)
