@@ -191,6 +191,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^svg-engine\\.yml$",
+      "cluster": "specialised",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^everred-v3-validation\\.yml$",
       "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
