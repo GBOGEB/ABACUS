@@ -13,6 +13,7 @@ pytest.importorskip("numpy", reason="TEST_BLOCKED_DEPENDENCY: numpy is unavailab
 
 from models.helium_properties.provider import LAMBDA_K, SubLambdaOutOfRangeError
 from models.qps_quantitative import p05j_quantitative as p05j
+from models.qps_quantitative.p05j_quantitative import VesselInventoryDepletedError
 
 
 def _ideal_gas_props(cv=3116.0, cp=5193.0):
@@ -49,9 +50,10 @@ def test_q3_fails_closed_when_volume_is_pumped_empty(monkeypatch):
         return base(out, *args)
 
     monkeypatch.setattr(p05j, "PropsSI", props)
-    with pytest.raises(SubLambdaOutOfRangeError, match="P05J Q3") as err:
+    with pytest.raises(VesselInventoryDepletedError, match="inventory depleted") as err:
         p05j.q3_line_s()
-    assert "T=-" in str(err.value)
+    assert "time_s=" in str(err.value)
+    assert "pre_HP_112_100_delay180s" in str(err.value)
     assert min(t_passed) >= LAMBDA_K
 
 
@@ -60,9 +62,9 @@ def test_q3_real_backend_divergence_fails_closed():
 
     On CoolProp 7.2.0 the published receipt (CI run 41708839723) reports
     max_T_K = 4.28e7 K for this case and ends clamped at 2.0 K. The guard
-    refuses at t = 434 s instead.
+    refuses physical mass depletion around t = 434 s instead.
     """
-    with pytest.raises(SubLambdaOutOfRangeError, match="P05J Q3"):
+    with pytest.raises(VesselInventoryDepletedError, match="inventory depleted"):
         p05j.q3_line_s()
 
 
