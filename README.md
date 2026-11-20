@@ -2,6 +2,65 @@
 
 <!-- markdownlint-disable MD001 MD013 MD022 MD029 MD031 MD032 MD033 MD040 MD060 -->
 
+<!-- OG5_VISUAL_FRONTDOOR_BEGIN -->
+## Visual front door · DMAIC execution forest, SIPOC and OID
+
+> **Declared source and process model, not a live execution or approval claim.** Solid arrows represent local source/process relationships; dashed arrows identify proposed cross-repository handoffs or admission-dependent publication. Git OIDs identify immutable file objects rather than successful workflows.
+
+```mermaid
+flowchart LR
+  subgraph S["S · Suppliers / forest roots"]
+    S1["DMAIC_V3 · 12 clusters"]
+    S2["CI and source-failure evidence"]
+    S3["Federated candidate receipts"]
+  end
+  I["I · Shared input envelope<br/>source SHA · blob OID · tests/runs"]
+  subgraph P["P · Parallel process stack"]
+    P1["P1 · DMAIC runtime"]
+    P2["P2 · First-red / EVERRED"]
+    P3["P3 · Coverage and security"]
+    P4["P4 · Binary ENGINE family"]
+  end
+  subgraph O["O · Output stack"]
+    O1["Analysis and diagnostic receipts"]
+    O2["Source repair candidate and tests"]
+    O3["Typed engine artefact candidates"]
+    O4["Mermaid / HTML review views"]
+  end
+  G{"Exact-head CI + independent review"}
+  subgraph C["C · Consumers"]
+    C1["Engineer / source owner"]
+    C2["CODEX / Hub federation"]
+    C3["Reviewer / docs reader"]
+  end
+  OID["Git blob OID · f23738da05…<br/>.jade/repo.yaml"]
+  S1 --> I
+  S2 --> I
+  S3 -.-> I
+  I --> P1
+  I --> P2
+  I --> P3
+  I -.-> P4
+  P1 --> O1
+  P2 --> O2
+  P3 --> G
+  P4 -.-> O3
+  O2 --> G
+  G -.-> O4
+  O1 --> C1
+  O2 --> C1
+  O3 -.-> C2
+  O4 --> C3
+  OID --> O4
+  classDef violet fill:#ede1f7,stroke:#683b8c,color:#2b1740
+  class I,G,OID violet
+```
+
+**Forest, OID and lane drill-down:** [JADE repo pointer](.jade/repo.yaml) (blob `f23738da050246ff4c838dd73b84611e5983ad08`) · [native 12-cluster orchestrator](DMAIC_V3/core/twelve_cluster_orchestrator.py) · [CODE PURPLE execution HTML](docs/code_purple_execution_graph.html) · [repo structure HTML](docs/repo-structure/index.html) · [existing GitHub Pages](https://gbogeb.github.io/ABACUS/) · [Hub canonical 7-lane × 10-stage matrix](https://github.com/GBOGEB/pipeline-automation-hub/blob/master/tools/metric-atlas/docs/LANE_PROCESS_GRAPH_W380.md) · [Hub linked OID DAG](https://github.com/GBOGEB/pipeline-automation-hub/blob/master/mission-control/jade_temple/diagrams/CICD_DAG_TOTAL_OID.mmd). The binary-engine family is a development lane: an output candidate is **not** a verified native artifact or engineering acceptance.
+
+<!-- OG5_VISUAL_FRONTDOOR_END -->
+
+
 [![main version](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2FGBOGEB%2FABACUS%2Fmain%2Fpyproject.toml&query=%24.project.version&prefix=v&label=main%20version&color=blue&style=flat-square)](pyproject.toml)
 [![last release](https://img.shields.io/github/v/release/GBOGEB/ABACUS?label=last%20release&style=flat-square)](https://github.com/GBOGEB/ABACUS/releases/latest)
 [![Enhanced CI](https://img.shields.io/github/actions/workflow/status/GBOGEB/ABACUS/ci-enhanced.yml?branch=main&style=flat-square&label=Enhanced%20CI)](https://github.com/GBOGEB/ABACUS/actions/workflows/ci-enhanced.yml)
