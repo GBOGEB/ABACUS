@@ -13,10 +13,11 @@ import io
 import json
 import posixpath
 import re
-import xml.etree.ElementTree as ET
 import zipfile
 from pathlib import Path
 from typing import Any
+
+from defusedxml import ElementTree as ET
 
 MAIN = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
 REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
@@ -35,6 +36,9 @@ BOOLS = {
     "fullPrecision",
     "calcOnSave",
     "concurrentCalc",
+    "descending",
+    "ca",
+    "aca",
 }
 CALC_KEYS = {
     "calcMode",
@@ -60,7 +64,7 @@ def _attr(key: str, value: str) -> Any:
     return value
 
 
-def xml_node(element: ET.Element | None) -> dict[str, Any] | None:
+def xml_node(element: Any | None) -> dict[str, Any] | None:
     """Keep the complete behavior tree, excluding nonfunctional revision UIDs."""
     if element is None:
         return None
@@ -74,13 +78,15 @@ def xml_node(element: ET.Element | None) -> dict[str, Any] | None:
     }
 
 
-def _xml(data: bytes) -> ET.Element:
+def _xml(data: bytes) -> Any:
     # OOXML has no need for DTDs or entity definitions. Reject before parsing.
     if re.search(
         rb"<!\s*(?:DOCTYPE|ENTITY)\b", data.replace(b"\x00", b""), re.IGNORECASE
     ):
         raise ValueError("UNSUPPORTED_XML_DECLARATION")
-    return ET.fromstring(data)
+    return ET.fromstring(
+        data, forbid_dtd=True, forbid_entities=True, forbid_external=True
+    )
 
 
 def _bytes(source: Path | bytes) -> bytes:
@@ -193,7 +199,9 @@ def snapshot_xlsx(
                     "value": raw_value,
                     "formula": formula.text if formula is not None else None,
                     "formula_attributes": (
-                        dict(formula.attrib) if formula is not None else {}
+                        {k: _attr(k, v) for k, v in formula.attrib.items()}
+                        if formula is not None
+                        else {}
                     ),
                 }
         defined = []
@@ -214,7 +222,7 @@ def snapshot_xlsx(
         calc = workbook.find("s:calcPr", NS)
         calc_attrs = {} if calc is None else calc.attrib
         return {
-            "schema": "abacus-xlsx-native-snapshot/v1",
+            "schema": "abacus-xlsx-native-snapshot/v2",
             "sha256": digest(raw),
             "sheets": sheets,
             "defined_names": sorted(
@@ -234,7 +242,7 @@ def snapshot_xlsx(
 def native_features(snapshot: dict[str, Any]) -> dict[str, Any]:
     """Return native semantics only for the binary bridge's semantic identity."""
     return {
-        "schema": "abacus-xlsx-native-features/v1",
+        "schema": "abacus-xlsx-native-features/v2",
         "sheets": [
             {k: v for k, v in sheet.items() if k not in {"part", "auto_filter_xml"}}
             for sheet in snapshot["sheets"]
@@ -295,12 +303,14 @@ def compare_features(
             prior_names.get(key),
             now_names.get(key),
         )
-    for key, value in source["explicit_calculation_settings"].items():
+    source_calc = source["explicit_calculation_settings"]
+    candidate_calc = candidate["explicit_calculation_settings"]
+    for key in sorted(set(source_calc) | set(candidate_calc)):
         check(
             "EXPLICIT_CALC_SETTING_CHANGED",
             "calcPr/" + key,
-            value,
-            candidate["explicit_calculation_settings"].get(key, "UNRECORDED"),
+            source_calc.get(key, "UNRECORDED"),
+            candidate_calc.get(key, "UNRECORDED"),
         )
     return changes
 
@@ -356,9 +366,9 @@ def restore_supported_features(workbook: Any, source: dict[str, Any]) -> dict[st
     No save or acceptance is performed here. The serializer must be checked with
     evaluate_repair; openpyxl does not evaluate filters or spreadsheet formulas.
     """
-    from openpyxl.worksheet.filters import AutoFilter
     from openpyxl.workbook.defined_name import DefinedName
     from openpyxl.workbook.properties import CalcProperties
+    from openpyxl.worksheet.filters import AutoFilter
 
     expected = [s["name"] for s in source["sheets"]]
     if workbook.sheetnames != expected:
@@ -467,8 +477,8 @@ def evaluate_repair(
     Returns a receipt only, never a workbook. Private source values remain in the
     caller-owned receipt. No source path is written and no caches are fabricated.
     """
-    from openpyxl import load_workbook
     import openpyxl
+    from openpyxl import load_workbook
 
     source_raw, candidate_raw = source.read_bytes(), candidate.read_bytes()
     if digest(source_raw) != expected_source_sha:

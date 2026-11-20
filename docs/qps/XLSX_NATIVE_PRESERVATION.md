@@ -3,8 +3,13 @@
 The binary bridge now includes worksheet filter trees, scoped defined names,
 sheet visibility, hidden rows and columns, and explicit calculation settings in
 its XLSX semantic identity. A workbook with unchanged cell text and a changed
-filter criterion is a different semantic input. Parser version 1.2.0 identifies
-the expanded fingerprint. Rebuild derived fingerprints when changing from 1.1.0.
+filter criterion is a different semantic input. Parser version 1.2.1 identifies
+the current fingerprint. Rebuild derived fingerprints when changing from 1.1.0
+or 1.2.0. Native snapshot and feature schemas now use v2: formula `ca`/`aca`
+and sort `descending` booleans normalize true/1 and false/0 consistently.
+Retain older receipts as version-bound history; do not relabel their hashes.
+Candidate-only calculation settings are differences, including an added manual
+calculation mode when the source did not record one.
 
 The bridge retains its existing cell-value interpretation and shared-string
 fallback. Its feature-only read retains raw shared indices and captures formula
@@ -104,3 +109,62 @@ test_qps_xlsx_native_features.py`. Fixtures are generic and contain no project
 evidence. They cover equal-count criterion changes, scope and visibility,
 explicit-false settings, hidden rows/columns, lost formula caches, wrong hashes,
 malformed XML declarations and preservation of both input byte streams.
+
+
+## Owned package preservation path
+
+`tools/qps_xlsx_package_repair.py` provides a separate supported repair path
+for an already authored candidate. It copies source-native AutoFilters, scoped
+names, calculation properties and sheet states into a candidate package. It
+keeps candidate cell XML, including formula attributes and cached results,
+byte-for-byte. It does not use an openpyxl writer or modify a managed authoring
+library.
+
+This is an explicit engine-capability extension. A contract that requires only
+a particular authoring tool must authorize this path separately. The original
+native-feature and candidate-content comparisons remain unchanged. Authoring,
+package preservation, calculation and application qualification are distinct.
+
+```bash
+python tools/qps_xlsx_package_repair.py \
+  --source /private/source.xlsx \
+  --candidate /private/candidate.xlsx \
+  --expected-source-sha SOURCE_SHA256 \
+  --expected-candidate-sha CANDIDATE_SHA256 \
+  --trial-output /private/preservation-trial.xlsx \
+  --receipt /private/preservation-trial.json
+```
+
+The path reads both inputs immutably and requires exact hashes. It rejects
+reordered sheets, duplicate names, signed candidate packages, changed external
+link parts, unsupported filter extensions and hidden-row/column differences.
+A scoped filter name without a source AutoFilter remains name-only. Namespace
+bindings travel with transferred elements; scoped-name formula text is kept
+verbatim. The original candidate's other parts, comments, relationships and
+sheet-data bytes remain unchanged.
+
+The final gate compares the complete native features and all candidate cells.
+It also masks only the authorized native XML fields and checks every remaining
+byte against the candidate. An injected cache, formula-attribute, noncell
+metadata or opaque-part change fails. Output files use exclusive creation and
+cannot overwrite either input or an existing receipt.
+
+`PRESERVATION_PASS_NATIVE_RUNTIME_UNQUALIFIED` is a qualification candidate,
+not a calculation or engineering-acceptance claim. Cache retention does not
+establish cache validity. Names, filters and calculation settings can affect
+results even when the cell formula text is unchanged. Qualify those results on
+the exact final input hash; use disposable input perturbations to force affected
+calculations and verify restoration. If a calculation engine's resave changes
+required native features, keep that resave rejected and retain its calculation
+receipt separately. Never copy its caches into the qualified package by hand.
+
+The native-feature reader and lexical span index use the declared `defusedxml`
+parser, with DTDs, entities and external references forbidden. No insecure
+fallback is used. The span index locates validated XML without normalizing
+untouched bytes.
+
+Run the native-feature and package suites together:
+
+```bash
+python -m unittest discover -s tests -p 'test_qps_xlsx*.py'
+```

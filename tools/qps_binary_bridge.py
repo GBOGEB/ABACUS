@@ -26,7 +26,7 @@ from pathlib import Path
 from typing import Any
 
 SCHEMA = "abacus-binary-bridge/v1"
-PARSER_VERSION = "1.2.0"
+PARSER_VERSION = "1.2.1"
 PRODUCER_REPOSITORY = "GBOGEB/ABACUS"
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 

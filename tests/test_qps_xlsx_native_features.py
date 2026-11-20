@@ -6,11 +6,10 @@ import copy
 import importlib.util
 import io
 import sys
-import zipfile
-from pathlib import Path
-
 import tempfile
 import unittest
+import zipfile
+from pathlib import Path
 
 
 def raises(error, *, match):
@@ -19,15 +18,14 @@ def raises(error, *, match):
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from tools.qps_xlsx_native_features import (
-    compare_content,
-    compare_features,
-    digest,
-    evaluate_repair,
-    native_features,
-    restore_supported_features,
-    snapshot_xlsx,
-)
+native = importlib.import_module("tools.qps_xlsx_native_features")
+compare_content = native.compare_content
+compare_features = native.compare_features
+digest = native.digest
+evaluate_repair = native.evaluate_repair
+native_features = native.native_features
+restore_supported_features = native.restore_supported_features
+snapshot_xlsx = native.snapshot_xlsx
 
 
 def fixture_bytes(
@@ -36,14 +34,60 @@ def fixture_bytes(
     """Create a minimal generic OOXML test fixture with a real formula cache."""
     main = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
     rel = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
-    entry = f'<definedName name="_xlnm._FilterDatabase" localSheetId="{scope}" hidden="1">Data!$A$1:$B$3</definedName>'
+    entry = (
+        '<definedName name="_xlnm._FilterDatabase" '
+        f'localSheetId="{scope}" hidden="1">Data!$A$1:$B$3</definedName>'
+    )
     content = {
-        "[Content_Types].xml": '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>',
-        "_rels/.rels": f'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="{rel}/officeDocument" Target="xl/workbook.xml"/></Relationships>',
-        "xl/workbook.xml": f'<workbook xmlns="{main}" xmlns:r="{rel}"><sheets><sheet name="Data" sheetId="1" r:id="rId1"/><sheet name="Support" sheetId="2" state="{hidden}" r:id="rId2"/></sheets><definedNames>{entry}{entry if duplicate_name else ""}</definedNames><calcPr forceFullCalc="{calc}"/></workbook>',
-        "xl/_rels/workbook.xml.rels": f'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="{rel}/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="{rel}/worksheet" Target="worksheets/sheet2.xml"/></Relationships>',
-        "xl/worksheets/sheet1.xml": f'<worksheet xmlns="{main}"><cols><col min="3" max="3" hidden="1"/></cols><sheetData><row r="1"><c r="A1" t="inlineStr"><is><t>Status</t></is></c></row><row r="2" hidden="1"><c r="A2" t="inlineStr"><is><t>Open</t></is></c></row><row r="3"><c r="A3" t="inlineStr"><is><t>Closed</t></is></c><c r="B3"><f>1+1</f><v>2</v></c></row></sheetData><autoFilter ref="A1:B3"><filterColumn colId="0"><filters><filter val="{criterion}"/></filters></filterColumn></autoFilter></worksheet>',
-        "xl/worksheets/sheet2.xml": f'<worksheet xmlns="{main}"><sheetData/></worksheet>',
+        "[Content_Types].xml": (
+            '<Types xmlns="http://schemas.openxmlformats.org/package/2006/'
+            'content-types"><Default Extension="rels" '
+            'ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+            '<Default Extension="xml" ContentType="application/xml"/>'
+            '<Override PartName="/xl/workbook.xml" '
+            'ContentType="application/vnd.openxmlformats-officedocument.'
+            'spreadsheetml.sheet.main+xml"/>'
+            '<Override PartName="/xl/worksheets/sheet1.xml" '
+            'ContentType="application/vnd.openxmlformats-officedocument.'
+            'spreadsheetml.worksheet+xml"/>'
+            '<Override PartName="/xl/worksheets/sheet2.xml" '
+            'ContentType="application/vnd.openxmlformats-officedocument.'
+            'spreadsheetml.worksheet+xml"/></Types>'
+        ),
+        "_rels/.rels": (
+            '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/'
+            f'relationships"><Relationship Id="rId1" Type="{rel}/officeDocument" '
+            'Target="xl/workbook.xml"/></Relationships>'
+        ),
+        "xl/workbook.xml": (
+            f'<workbook xmlns="{main}" xmlns:r="{rel}"><sheets>'
+            '<sheet name="Data" sheetId="1" r:id="rId1"/>'
+            f'<sheet name="Support" sheetId="2" state="{hidden}" r:id="rId2"/>'
+            f'</sheets><definedNames>{entry}{entry if duplicate_name else ""}'
+            f'</definedNames><calcPr forceFullCalc="{calc}"/></workbook>'
+        ),
+        "xl/_rels/workbook.xml.rels": (
+            '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/'
+            f'relationships"><Relationship Id="rId1" Type="{rel}/worksheet" '
+            'Target="worksheets/sheet1.xml"/>'
+            f'<Relationship Id="rId2" Type="{rel}/worksheet" '
+            'Target="worksheets/sheet2.xml"/></Relationships>'
+        ),
+        "xl/worksheets/sheet1.xml": (
+            f'<worksheet xmlns="{main}"><cols>'
+            '<col min="3" max="3" hidden="1"/></cols><sheetData>'
+            '<row r="1"><c r="A1" t="inlineStr"><is><t>Status</t></is></c></row>'
+            '<row r="2" hidden="1"><c r="A2" t="inlineStr">'
+            "<is><t>Open</t></is></c></row>"
+            '<row r="3"><c r="A3" t="inlineStr"><is><t>Closed</t></is></c>'
+            '<c r="B3"><f>1+1</f><v>2</v></c></row></sheetData>'
+            '<autoFilter ref="A1:B3"><filterColumn colId="0"><filters>'
+            f'<filter val="{criterion}"/>'
+            "</filters></filterColumn></autoFilter></worksheet>"
+        ),
+        "xl/worksheets/sheet2.xml": (
+            f'<worksheet xmlns="{main}"><sheetData/></worksheet>'
+        ),
     }
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w") as package:
@@ -119,7 +163,53 @@ def check_feature_only_read_does_not_weaken_repair_shared_string_guard():
     observed = snapshot_xlsx(raw, resolve_shared_string_values=False)
     assert observed["cells"]["Data!A2"]["value"] == "999"
     assert observed["cells"]["Data!A2"]["type"] == "s"
-    assert native_features(observed)["formula_attributes"]["Data!B3"] == {"aca": "1"}
+    assert native_features(observed)["formula_attributes"]["Data!B3"] == {"aca": True}
+
+
+def check_candidate_only_manual_calculation_cannot_pass():
+    source = snapshot_xlsx(fixture_bytes())
+    candidate = copy.deepcopy(source)
+    candidate["explicit_calculation_settings"]["calcMode"] = "manual"
+    losses = compare_features(source, candidate)
+    assert losses == [
+        {
+            "code": "EXPLICIT_CALC_SETTING_CHANGED",
+            "locator": "calcPr/calcMode",
+            "source": "UNRECORDED",
+            "candidate": "manual",
+        }
+    ]
+
+
+def check_formula_and_sort_boolean_spellings_keep_semantic_identity():
+    def variant(spelling):
+        output = io.BytesIO()
+        with zipfile.ZipFile(io.BytesIO(fixture_bytes())) as source, zipfile.ZipFile(
+            output, "w"
+        ) as target:
+            for name in source.namelist():
+                data = source.read(name)
+                if name == "xl/worksheets/sheet1.xml":
+                    data = data.replace(
+                        b"<f>1+1</f>",
+                        f'<f ca="{spelling}" aca="{spelling}">1+1</f>'.encode(),
+                    )
+                    data = data.replace(
+                        b"</autoFilter>",
+                        (
+                            '<sortState ref="A2:B3"><sortCondition ref="A2:A3" '
+                            f'descending="{spelling}"/></sortState></autoFilter>'
+                        ).encode(),
+                    )
+                target.writestr(name, data)
+        return snapshot_xlsx(output.getvalue())
+
+    one, true = variant("1"), variant("true")
+    zero, false = variant("0"), variant("false")
+    assert native_features(one) == native_features(true)
+    assert compare_content(one, true) == []
+    assert native_features(zero) == native_features(false)
+    assert native_features(one) != native_features(false)
 
 
 def check_sort_custom_list_keeps_string_identity():
@@ -133,7 +223,10 @@ def check_sort_custom_list_keeps_string_identity():
                 if name == "xl/worksheets/sheet1.xml":
                     data = data.replace(
                         b"</autoFilter>",
-                        f'<sortState ref="A2:B3"><sortCondition ref="A2:A3" customList="{value}"/></sortState></autoFilter>'.encode(),
+                        (
+                            '<sortState ref="A2:B3"><sortCondition ref="A2:A3" '
+                            f'customList="{value}"/></sortState></autoFilter>'
+                        ).encode(),
                     )
                 target.writestr(name, data)
         return snapshot_xlsx(result.getvalue())
