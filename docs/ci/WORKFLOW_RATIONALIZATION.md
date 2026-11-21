@@ -4,11 +4,11 @@
 
 Policy: `ABACUS-CI-SSOT-001`
 
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `67e311721bf897fd937903af9a550ceaa9bbdd478d142aac8b0f26a387298228`
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `19812072f5aad235900af4a301c8e7b8ded63bd2448ec7dc65d7e67524b7fac7`
 
 ## Outcome
 
-The repository currently contains **224 workflow definitions**. All **224** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **226 workflow definitions**. All **226** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -33,7 +33,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `bridge_federation` | `bridge-ci.yml` | 22 | CODEX/ABACUS bridge contract and federation smoke evidence. |
 | `dmaic` | `dmaic-enterprise-ci.yml` | 9 | DMAIC phase, convergence and maturity execution. |
 | `dow` | `dow-integration.yml` | 22 | DOW parent mechanics, integration, monitoring and warm-up. |
-| `runtime_governance` | `governance.yml` | 31 | Runtime evidence, governance, review artifacts and schema validation. |
+| `runtime_governance` | `governance.yml` | 33 | Runtime evidence, governance, review artifacts and schema validation. |
 | `security` | `security-scan.yml` | 14 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 7 | Documentation validation, rendering, export and Pages. |
@@ -142,7 +142,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `dow` | `w259-p4-method-cards-independent-dow.yml` | pull_request, push | 1 | `keep` | — |
 | 20 | `pr_domain` | `dow` | `w285-dow-depth-recompute.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `dow` | `w306-dow-typed-findings-proof.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
-| 20 | `pr_domain` | `full_regression` | `ci-cd-tests.yml` | push, pull_request, schedule, workflow_dispatch | 12 | `canonical` | — |
+| 20 | `pr_domain` | `full_regression` | `ci-cd-tests.yml` | push, pull_request, schedule, workflow_dispatch | 11 | `canonical` | — |
 | 20 | `pr_domain` | `runtime_governance` | `cbd-w38-route-yield.yml` | none | 1 | `keep` | — |
 | 20 | `pr_domain` | `runtime_governance` | `code-purple-dashboard-v31.yml` | pull_request, workflow_dispatch | 2 | `keep` | — |
 | 20 | `pr_domain` | `runtime_governance` | `code-purple-sut-gui.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
@@ -154,6 +154,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `runtime_governance` | `governance-drift-detection.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `runtime_governance` | `governance.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `runtime_governance` | `inventory.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
+| 20 | `pr_domain` | `runtime_governance` | `launcher-gate.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `runtime_governance` | `leg5-federation-dashboard-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `runtime_governance` | `mesh-status-runtime.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `runtime_governance` | `mip-bminus1-worker-contract.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
@@ -276,6 +277,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 40 | `scheduled` | `automation` | `post-merge-pr-summary.yml` | pull_request | 1 | `keep` | — |
 | 40 | `scheduled` | `ci_governance` | `python-next-canary.yml` | schedule, workflow_dispatch, pull_request | 1 | `keep` | — |
 | 40 | `scheduled` | `runtime_governance` | `cbd-scheduled-gated-pulse.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
+| 40 | `scheduled` | `runtime_governance` | `red-census.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 40 | `scheduled` | `security` | `bandit.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 40 | `scheduled` | `security` | `code-quality-pilot.yml` | workflow_dispatch, pull_request, schedule | 3 | `keep` | — |
 | 40 | `scheduled` | `specialised` | `coolprop-next-shadow.yml` | schedule, workflow_dispatch, pull_request | 4 | `keep` | — |
