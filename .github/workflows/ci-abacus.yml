@@ -324,8 +324,11 @@ jobs:
             --max-xfails 0 \
             || census_rc=$?
 
+          # The isort-base-tree fixture's deleted /tmp/localpkg is not repo source.
+          # Exclude only that transient binary path; all other NoSource stays red.
           python -m coverage json \
             --show-contexts \
+            --omit='/tmp/tmp*/localpkg/__init__.py' \
             -o "${evidence_dir}/coverage-contexts.json"
 
           python scripts/coverage_dab_census.py \
