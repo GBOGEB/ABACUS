@@ -127,8 +127,11 @@ jobs:
             --max-skips 5 \
             --max-xfails 0
 
+          # The isort-base-tree fixture's deleted /tmp/localpkg is not repo source.
+          # Exclude only that transient binary path; all other NoSource stays red.
           python -m coverage json \
             --show-contexts \
+            --omit='/tmp/tmp*/localpkg/__init__.py' \
             -o test_reports/post-b0/canonical-contexts.json
 
       - name: Upload canonical coverage producer evidence
