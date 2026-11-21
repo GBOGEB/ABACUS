@@ -51,7 +51,9 @@ def test_omission_does_not_hide_other_missing_source():
         root = Path(td)
         cov, _, transient = coverage_with_deleted_fixture(root, extra_missing=True)
         with pytest.raises(NoSource, match="otherpkg"):
-            cov.json_report(outfile=str(root / "must-stay-red.json"), omit=[str(transient)])
+            cov.json_report(
+                outfile=str(root / "must-stay-red.json"), omit=[str(transient)]
+            )
 
 
 def test_native_workflows_keep_narrow_scope_without_ignore_errors():
