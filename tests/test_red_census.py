@@ -6,7 +6,7 @@ import importlib.util
 import json
 import tempfile
 import unittest
-from unittest import mock
+import unittest.mock as mock
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -132,7 +132,6 @@ class LiveTransportTests(unittest.TestCase):
         conn.close.assert_called_once()
 
     def test_redirect_is_rejected_without_following_location(self):
-        from unittest import mock
         response = mock.Mock(status=302, reason="Found", headers={"Location": "http://evil.invalid"})
         conn = mock.Mock()
         conn.getresponse.return_value = response
@@ -144,7 +143,6 @@ class LiveTransportTests(unittest.TestCase):
         conn.close.assert_called_once()
 
     def test_404_retains_offline_not_found_contract(self):
-        from unittest import mock
         response = mock.Mock(status=404, reason="Not Found", headers={})
         conn = mock.Mock()
         conn.getresponse.return_value = response
