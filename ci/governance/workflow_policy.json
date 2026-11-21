@@ -167,6 +167,18 @@
       "disposition": "canonical"
     },
     {
+      "pattern": "^launcher-gate\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^red-census\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "scheduled",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^bd-workflow-frequency-telemetry\\.yml$",
       "cluster": "ci_governance",
       "lifecycle": "pr_domain",
