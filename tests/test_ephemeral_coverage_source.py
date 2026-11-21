@@ -27,7 +27,7 @@ def coverage_with_deleted_fixture(root: Path, extra_missing: bool = False):
     missing = {str(transient): {1}}
     if extra_missing:
         missing[str(root / "otherpkg" / "__init__.py")] = {1}
-    cov = Coverage(data_file=str(root / ".coverage"))
+    cov = Coverage(data_file=str(root / ".coverage"), config_file=False)
     cov.get_data().add_lines({str(source): {1}, **missing})
     cov.save()
     return cov, source, transient
