@@ -7,19 +7,19 @@ ledger here is a seed, not an authority.
 Everything below is report-only: nothing fails a PR, nothing writes to the
 repository from CI, and no workflow has `contents: write`.
 
--  **Census** — `scripts/red_census.py` : Classifies every active workflow by
+- **Census** — `scripts/red_census.py` : Classifies every active workflow by
   its default-branch history
--  **Ledger** — `ledger/bd_ledger.jsonl` : Append-only, hash-chained BD root
+- **Ledger** — `ledger/bd_ledger.jsonl` : Append-only, hash-chained BD root
   rows
--  **Ledger verify** — `scripts/red_census.py --verify-ledger` : Chain +
+- **Ledger verify** — `scripts/red_census.py --verify-ledger` : Chain +
   root_id + member-uniqueness check
--  **Launcher gate** — `scripts/launcher_gate.py` : Flags workflow steps
+- **Launcher gate** — `scripts/launcher_gate.py` : Flags workflow steps
   launching local paths that do not exist
--  **Gate exceptions** — `ledger/launcher_exceptions.yaml` : Owner-approved,
+- **Gate exceptions** — `ledger/launcher_exceptions.yaml` : Owner-approved,
   expiring suppressions (empty)
--  **Workflows** — `.github/workflows/red-census.yml` ,
+- **Workflows** — `.github/workflows/red-census.yml` ,
   `.github/workflows/launcher-gate.yml` : Native, read-only runners
--  **Tests** — `tests/test_red_census.py` , `tests/test_launcher_gate.py` :
+- **Tests** — `tests/test_red_census.py` , `tests/test_launcher_gate.py` :
   Offline, inline fixtures, no network
 
 ## 1. RED census
@@ -34,17 +34,17 @@ last 10 completed runs on the default branch (PR events excluded) are reduced
 to decisive conclusions (`success` = green; `failure`, `timed_out` = red;
 `cancelled`, `skipped`, `neutral`, … ignored):
 
--  **`EVERRED`** — every decisive run in the window is red
--  **`GREEN_TO_RED`** — exactly one transition, newest red; `first_red_sha` /
+- **`EVERRED`** — every decisive run in the window is red
+- **`GREEN_TO_RED`** — exactly one transition, newest red; `first_red_sha` /
   `first_red_run_id` = oldest red of the current streak
--  **`FLAKY`** — two or more red/green transitions
--  **`GREEN`** — all green, or recovered (one red→green transition)
--  **`NO_MAIN_RUNS`** — no decisive default-branch run in the window
--  **`STARTUP_FAILURE`** — the only failures are runs that failed **with zero
+- **`FLAKY`** — two or more red/green transitions
+- **`GREEN`** — all green, or recovered (one red→green transition)
+- **`NO_MAIN_RUNS`** — no decisive default-branch run in the window
+- **`STARTUP_FAILURE`** — the only failures are runs that failed **with zero
   jobs** (native `startup_failure` , or `failure` whose job list is empty,
   e.g. GitHub "Internal server error" at startup). Such runs are non-decisive
   everywhere; a workflow with some of them carries the `STARTUP_FAILURES` flag
--  **`GHOST`** — GitHub lists the workflow as active, but its path does not
+- **`GHOST`** — GitHub lists the workflow as active, but its path does not
   exist at the default-branch HEAD. Example: `dow-integration-ci-cd.yml` ,
   deleted in #1375 (f3f6ff10, 2026-09-26), successor `dow-integration.yml`
   green. Reported separately, never counted as EVERRED / GREEN_TO_RED
@@ -207,18 +207,18 @@ listed and no longer applied.
 
 ## 6. DMAIC Control mapping
 
--  **Control plan / what is monitored** — every active workflow, last 10
+- **Control plan / what is monitored** — every active workflow, last 10
   default-branch runs
--  **Measurement system** — native REST, deterministic JSON, offline replay
+- **Measurement system** — native REST, deterministic JSON, offline replay
   (`--record` / `--from-json` )
--  **Reaction plan trigger** — new `EVERRED` / `GREEN_TO_RED` rows marked
+- **Reaction plan trigger** — new `EVERRED` / `GREEN_TO_RED` rows marked
   `UNROOTED` , or a BURNED root whose workflow is red again
--  **Ownership / single writer** — ledger append by the designated writer
+- **Ownership / single writer** — ledger append by the designated writer
   only; runners attach evidence to existing root_ids
--  **Audit trail** — hash-chained ledger, `--verify-ledger`
--  **Leading indicator** — `STALE` (fix landed, not yet re-run), launcher-gate
+- **Audit trail** — hash-chained ledger, `--verify-ledger`
+- **Leading indicator** — `STALE` (fix landed, not yet re-run), launcher-gate
   findings
--  **Noise separation** — `GHOST` , `STARTUP_FAILURE` , `FLAKY` reported apart
+- **Noise separation** — `GHOST` , `STARTUP_FAILURE` , `FLAKY` reported apart
   from red
 
 QA:
