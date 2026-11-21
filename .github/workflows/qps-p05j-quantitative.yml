@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'models/qps_quantitative/**'
+      - 'tests/test_p05j_he_ii_guard.py'
       - '.github/workflows/qps-p05j-quantitative.yml'
 permissions:
   contents: read
