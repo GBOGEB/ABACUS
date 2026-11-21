@@ -166,6 +166,10 @@ class LineSCase:
     duration_s: float = 600.0
 
 
+class VesselInventoryDepletedError(ValueError):
+    """Diagnostic volume has no physical gas mass remaining; refuse continuation."""
+
+
 def q3_line_s() -> dict:
     # Diagnostic well-mixed gas-volume transient. Source-bound replacement remains required.
     R = PropsSI("GAS_CONSTANT", FLUID) / PropsSI("MOLAR_MASS", FLUID)
@@ -199,8 +203,14 @@ def q3_line_s() -> dict:
             hi = PropsSI("H", "T", 300.0, "P", max(p, 1e4), FLUID)
             ho = PropsSI("H", "T", T, "P", max(p, 1e4), FLUID)
             dm = (mi - mo) * dt
+            next_mass = m + dm
+            if next_mass <= 0.0:
+                raise VesselInventoryDepletedError(
+                    f"P05J Q3 Line-S inventory depleted: case={case.name} "
+                    f"time_s={time_s} mass_before_kg={m} requested_dm_kg={dm}"
+                )
             u += (mi * hi - mo * ho) * dt
-            m = max(m + dm, 1e-6)
+            m = next_mass
             # fixed-point update of T using local Cv. This used to clamp T at 2.0 K,
             # which is below the lambda point, where CoolProp only extrapolates.
             # Fail closed there instead.
