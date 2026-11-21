@@ -5,8 +5,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import tempfile
-import unittest
-import unittest.mock as mock
+from unittest import TestCase, main, mock
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -114,7 +113,7 @@ def fixture(workflow_total=None):
     return r
 
 
-class LiveTransportTests(unittest.TestCase):
+class LiveTransportTests(TestCase):
     def test_https_origin_and_headers_are_pinned(self):
         response = mock.Mock(status=200)
         response.read.return_value = b'{"ok":true}'
@@ -154,21 +153,21 @@ class LiveTransportTests(unittest.TestCase):
         conn.close.assert_called_once()
 
     def test_429_retries_then_succeeds(self):
-        first = unittest.mock.Mock(status=429, reason="Rate Limited", headers={})
-        second = unittest.mock.Mock(status=200)
+        first = mock.Mock(status=429, reason="Rate Limited", headers={})
+        second = mock.Mock(status=200)
         second.read.return_value = b'{"ok":true}'
-        conn1, conn2 = unittest.mock.Mock(), unittest.mock.Mock()
+        conn1, conn2 = mock.Mock(), mock.Mock()
         conn1.getresponse.return_value = first
         conn2.getresponse.return_value = second
-        with unittest.mock.patch.object(rc.http.client, "HTTPSConnection", side_effect=[conn1, conn2]) as conn_factory, \
-             unittest.mock.patch.object(rc.time, "sleep") as sleep:
+        with mock.patch.object(rc.http.client, "HTTPSConnection", side_effect=[conn1, conn2]) as conn_factory, \
+             mock.patch.object(rc.time, "sleep") as sleep:
             self.assertEqual(rc.LiveClient(None).get("/health"), {"ok": True})
         sleep.assert_called_once_with(5)
         conn1.close.assert_called_once()
         conn2.close.assert_called_once()
 
 
-class ClassifyTests(unittest.TestCase):
+class ClassifyTests(TestCase):
     def test_classes(self):
         self.assertEqual(rc.classify([]), ("NO_MAIN_RUNS", None))
         self.assertEqual(rc.classify(["cancelled", "skipped"]), ("NO_MAIN_RUNS", None))
@@ -182,7 +181,7 @@ class ClassifyTests(unittest.TestCase):
         self.assertEqual(rc.classify(["STARTUP_FAILURE", "cancelled"]), ("STARTUP_FAILURE", None))
 
 
-class CensusTests(unittest.TestCase):
+class CensusTests(TestCase):
     def setUp(self):
         self.report = rc.build_report(rc.OfflineClient(fixture()), [REPO])
         self.rows = {w["path"].rsplit("/", 1)[-1]: w for w in self.report["repos"][0]["workflows"]}
@@ -276,7 +275,7 @@ class CensusTests(unittest.TestCase):
             self.assertIn("GHOST", md.read_text())
 
 
-class LedgerTests(unittest.TestCase):
+class LedgerTests(TestCase):
     def _ledger(self, d):
         path = Path(d, "bd.jsonl")
         rc.append_row(path, {"family": "F4", "title": "BD-17", "repo": REPO, "state": "HOLD", "evidence": ["x"],
@@ -372,4 +371,4 @@ class LedgerTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    main()
