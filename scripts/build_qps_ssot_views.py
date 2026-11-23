@@ -92,6 +92,28 @@ LONG_TEXT = {
 }
 
 
+def evaluate_native_feature_repair(
+    source: Path,
+    candidate: Path,
+    expected_source_sha: str,
+    expected_candidate_sha: str,
+) -> dict[str, Any]:
+    """Qualify a source-bound repair with this builder's openpyxl engine.
+
+    The evaluation serializes to disposable memory and compares native features,
+    all cell meanings, formulas and caches. It returns a receipt, never an
+    accepted workbook. Existing derivative generation remains a separate route.
+    """
+    from tools.qps_xlsx_native_features import evaluate_repair
+
+    return evaluate_repair(
+        source,
+        candidate,
+        expected_source_sha=expected_source_sha,
+        expected_candidate_sha=expected_candidate_sha,
+    )
+
+
 def load_rows(path: Path) -> list[dict[str, Any]]:
     data = json.loads(path.read_text(encoding="utf-8"))
     rows = data.get("rows", []) if isinstance(data, dict) else data
