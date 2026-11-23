@@ -72,22 +72,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/core@npm:^3.979.0":
-  version: 3.979.0
-  resolution: "@aws-sdk/core@npm:3.979.0"
-  dependencies:
-    "@aws-sdk/types": "npm:^3.975.0"
-    "@aws-sdk/xml-builder": "npm:^3.972.42"
-    "@aws/lambda-invoke-store": "npm:^0.3.0"
-    "@smithy/core": "npm:^3.37.0"
-    "@smithy/signature-v4": "npm:^5.7.4"
-    "@smithy/types": "npm:^4.19.0"
-    bowser: "npm:^2.11.0"
-    tslib: "npm:^2.6.2"
-  checksum: 10c0/736cba335681c1d707ccc8e8a1896fa36ffd604af014fb26ea82b5ed0c6c4069c9bdea63802a3d40a72516b2b38d62fa2ecfcdc6e641c651584d995681a5dff8
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/core@npm:^3.981.0":
   version: 3.981.0
   resolution: "@aws-sdk/core@npm:3.981.0"
@@ -258,29 +242,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/s3-request-presigner@npm:3.1160.0":
-  version: 3.1160.0
-  resolution: "@aws-sdk/s3-request-presigner@npm:3.1160.0"
+"@aws-sdk/s3-request-presigner@npm:3.1173.0":
+  version: 3.1173.0
+  resolution: "@aws-sdk/s3-request-presigner@npm:3.1173.0"
   dependencies:
-    "@aws-sdk/core": "npm:^3.979.0"
-    "@aws-sdk/signature-v4-multi-region": "npm:^3.996.50"
-    "@aws-sdk/types": "npm:^3.975.0"
-    "@smithy/core": "npm:^3.37.0"
-    "@smithy/types": "npm:^4.19.0"
+    "@aws-sdk/core": "npm:^3.981.0"
+    "@aws-sdk/signature-v4-multi-region": "npm:^3.996.52"
+    "@aws-sdk/types": "npm:^3.975.1"
+    "@smithy/core": "npm:^3.40.0"
+    "@smithy/types": "npm:^4.20.0"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/06171733aa271434f9ecaa6356847f91ba1f3aee7189bbe6281795fe8d11b859f9c784a73d344813db87082b4b5f083a610eba064bd8e3d6b6d964f8f2a2e184
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/signature-v4-multi-region@npm:^3.996.50":
-  version: 3.996.50
-  resolution: "@aws-sdk/signature-v4-multi-region@npm:3.996.50"
-  dependencies:
-    "@aws-sdk/types": "npm:^3.975.0"
-    "@smithy/signature-v4": "npm:^5.7.4"
-    "@smithy/types": "npm:^4.19.0"
-    tslib: "npm:^2.6.2"
-  checksum: 10c0/7c467bb7ff5400f4de1d4e66646e4e58039d09c72f0c740408a262c0543fd87d8e5bcfa8674963899f8e1ddbe7186abd83ae1cd8a8cefdcdd6829de14d00418e
+  checksum: 10c0/7015dad99a67929915a60c2b4159794ebcc699bd7a6e574fd9010932b9a44db88892095a2d4c3eda85b8da346bd88fbce1f4cd917971b8f789a4e3ded6e074b9
   languageName: node
   linkType: hard
 
@@ -310,16 +282,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/types@npm:^3.975.0":
-  version: 3.975.0
-  resolution: "@aws-sdk/types@npm:3.975.0"
-  dependencies:
-    "@smithy/types": "npm:^4.19.0"
-    tslib: "npm:^2.6.2"
-  checksum: 10c0/8f4acf197a9609b0139b36eb19c827654e7618c67c633f30d57ccae1dc63e6964548771ceb605296a4ed56812edb8b93e7507c7155ff631cae1f281723b011b6
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/types@npm:^3.975.1":
   version: 3.975.1
   resolution: "@aws-sdk/types@npm:3.975.1"
@@ -327,16 +289,6 @@ __metadata:
     "@smithy/types": "npm:^4.20.0"
     tslib: "npm:^2.6.2"
   checksum: 10c0/74075c70c528f64af375e69361bf2b04886e1c23de3fac2be1e15b6fc048f2873c3d8fa00ec01ba0d36210e4db0037ea6feabec641e80377a9741a8118290333
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/xml-builder@npm:^3.972.42":
-  version: 3.972.42
-  resolution: "@aws-sdk/xml-builder@npm:3.972.42"
-  dependencies:
-    "@smithy/types": "npm:^4.19.0"
-    tslib: "npm:^2.6.2"
-  checksum: 10c0/f6d3e827f5c19c97a61217940bb99e8dde6dfa6f9c6dba02cecf8155a5579a4191e1b74a0c3cd266830afe34ca5a039864aabd85db5adbaf0c8b7e035839c21b
   languageName: node
   linkType: hard
 
@@ -4007,7 +3959,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/core@npm:^3.37.0, @smithy/core@npm:^3.38.0":
+"@smithy/core@npm:^3.38.0":
   version: 3.38.0
   resolution: "@smithy/core@npm:3.38.0"
   dependencies:
@@ -4050,7 +4002,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/signature-v4@npm:^5.7.4, @smithy/signature-v4@npm:^5.7.5":
+"@smithy/signature-v4@npm:^5.7.5":
   version: 5.7.5
   resolution: "@smithy/signature-v4@npm:5.7.5"
   dependencies:
@@ -5259,7 +5211,7 @@ __metadata:
   dependencies:
     "@auth/prisma-adapter": "npm:2.11.3"
     "@aws-sdk/client-s3": "npm:3.1168.0"
-    "@aws-sdk/s3-request-presigner": "npm:3.1160.0"
+    "@aws-sdk/s3-request-presigner": "npm:3.1173.0"
     "@azure/storage-blob": "npm:12.33.0"
     "@floating-ui/react": "npm:0.26.0"
     "@headlessui/react": "npm:2.2.10"
