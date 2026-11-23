@@ -9,3 +9,6 @@ defusedxml>=0.7.1,<1.0
 # PYSEC-2026-215 is fixed in idna 3.15. Not a scanner suppression.
 idna>=3.15
 -r DMAIC_V3/requirements.txt
+
+# Owned XLSX preservation evaluator and its real serializer regressions.
+openpyxl>=3.1.5,<4.0.0
