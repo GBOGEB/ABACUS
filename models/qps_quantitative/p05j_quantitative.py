@@ -408,7 +408,28 @@ def main() -> int:
         raise RuntimeError(f"CoolProp 7.2.0 required, got {CoolProp.__version__}")
     q1 = q1_vlp()
     q2 = q2_ts_residual()
-    q3 = q3_line_s()
+    try:
+        q3 = q3_line_s()
+    except VesselInventoryDepletedError as exc:
+        # Preserve the physical failure and write diagnostic provenance for the
+        # reviewer. Do NOT run Q4 with incomplete/fictional Q3 observations.
+        receipt = {
+            "wave": "W53/P05J",
+            "classification": "QUANTITATIVE_DIAGNOSTIC_BLOCKED",
+            "status": "FAIL_CLOSED_VESSEL_INVENTORY_DEPLETED",
+            "blocking_root": "P05J_Q3_LINE_S_PHYSICAL_DEPLETION",
+            "reason": str(exc),
+            "Q1_VLP": q1,
+            "Q2_TS_RESIDUAL": q2,
+            "Q3_LINE_S": None,
+            "Q4_PCA_BT": None,
+            "independent_engineering_acceptance": False,
+            "formal_credit_delta": 0,
+        }
+        OUT.parent.mkdir(parents=True, exist_ok=True)
+        OUT.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+        print(json.dumps(receipt, indent=2))
+        return 2  # FAIL remains nonzero until independent engineering disposition.
     q4 = q4_decision(q1, q2, q3)
     receipt = {
         "wave": "W53/P05J",
