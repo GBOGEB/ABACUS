@@ -1,0 +1,58 @@
+name: svg-engine
+
+on:
+  pull_request:
+    paths:
+      - "DMAIC_V3/svg_engine/**"
+      - "tests/svg_engine/**"
+      - "requirements-svg-engine.txt"
+      - ".github/workflows/svg-engine.yml"
+  push:
+    branches: [main]
+    paths:
+      - "DMAIC_V3/svg_engine/**"
+      - "tests/svg_engine/**"
+      - "requirements-svg-engine.txt"
+      - ".github/workflows/svg-engine.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: svg-engine-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: svg-engine (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        # Oldest and newest of the numpy-2.3-pin lane in
+        # ssot/python_versions.yaml (managed by tools/ci/python_versions.py).
+        python-version: ["3.11", "3.14"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
+      # yamllint disable-line rule:line-length
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: System cairo for CairoSVG
+        run: sudo apt-get update -q && sudo apt-get install -y -q libcairo2
+      - name: Install engine dependencies
+        # numpy is named here so the Python-version SSOT guard applies its
+        # numpy-2.3-pin cap (wheels cp311-cp314).
+        run: >-
+          python -m pip install "numpy==2.3.4"
+          -r requirements-svg-engine.txt
+      - name: Run engine tests (dependency skips are failures here)
+        env:
+          SVG_ENGINE_REQUIRE_DEPS: "1"
+        run: >-
+          python -m pytest tests/svg_engine -p no:cacheprovider
+          -o addopts="" -q -ra
