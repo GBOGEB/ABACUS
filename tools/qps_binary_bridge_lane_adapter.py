@@ -12,11 +12,12 @@ from __future__ import annotations
 import argparse
 import copy
 import hashlib
+import importlib.machinery
 import importlib.util
 import json
 import re
 from pathlib import Path
-from types import ModuleType
+from types import CodeType, ModuleType
 from typing import Any
 
 SCHEMA = "abacus-binary-bridge-lane/v1"
@@ -73,19 +74,34 @@ def validate_context(context: dict[str, Any]) -> dict[str, Any]:
     return copy.deepcopy(context)
 
 
+class _PinnedBytesLoader(importlib.machinery.SourceFileLoader):
+    """Import only the checked bytes; never reread a mutable source or pycache."""
+
+    def __init__(self, fullname: str, path: Path, verified_bytes: bytes) -> None:
+        super().__init__(fullname, str(path))
+        self._verified_bytes = verified_bytes
+
+    def get_code(self, fullname: str) -> CodeType:
+        """Compile the verified in-memory bytes instead of a path lookup."""
+        if fullname != self.name:
+            raise ImportError("pinned bridge loader module identity mismatch")
+        return self.source_to_code(self._verified_bytes, self.path)
+
+
 def load_pinned_bridge(path: Path = UPSTREAM_PATH) -> ModuleType:
-    """Verify exact imported source bytes rather than trusting a ref label."""
+    """Verify exact upstream bytes and execute only that immutable snapshot."""
     raw = path.read_bytes()
     if hashlib.sha256(raw).hexdigest() != UPSTREAM_SOURCE_SHA256:
         raise ValueError(
             "upstream source pin mismatch; review and repin before importing"
         )
-    spec = importlib.util.spec_from_file_location("qps_binary_bridge_pinned_lane", path)
-    if spec is None or spec.loader is None:
+    module_name = "qps_binary_bridge_pinned_lane"
+    loader = _PinnedBytesLoader(module_name, path, raw)
+    spec = importlib.util.spec_from_file_location(module_name, path, loader=loader)
+    if spec is None:
         raise RuntimeError("cannot import pinned upstream bridge")
     module = importlib.util.module_from_spec(spec)
-    # Execute the verified bytes rather than reopening a mutable import path.
-    exec(compile(raw, str(path), "exec"), module.__dict__)
+    loader.exec_module(module)
     return module
 
 
