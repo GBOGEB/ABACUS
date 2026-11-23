@@ -33,7 +33,7 @@ permissions:
 jobs:
   native-check-census:
     if: inputs.selector == 'all' || inputs.selector == 'native_checks'
-    uses: "GBOGEB/pipeline-automation-hub/.github/workflows/qps-metric-census-receiver.yml@c8690058b0d0db55b67e5fa639bff2e4ea368e16"
+    uses: "GBOGEB/pipeline-automation-hub/.github/workflows/qps-metric-census-receiver.yml@26277220f16cf213250eb9b42d1909fa66961aff"
     with:
       route: native_checks
       wave: ${{ inputs.wave }}
@@ -44,7 +44,7 @@ jobs:
 
   coverage-catalog:
     if: inputs.selector == 'all' || inputs.selector == 'coverage_catalog'
-    uses: "GBOGEB/pipeline-automation-hub/.github/workflows/qps-metric-census-receiver.yml@c8690058b0d0db55b67e5fa639bff2e4ea368e16"
+    uses: "GBOGEB/pipeline-automation-hub/.github/workflows/qps-metric-census-receiver.yml@26277220f16cf213250eb9b42d1909fa66961aff"
     with:
       route: coverage_catalog
       wave: ${{ inputs.wave }}
