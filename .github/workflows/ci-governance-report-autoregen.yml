@@ -1,0 +1,149 @@
+name: CI Governance Report Autoregen
+
+# PR-time counterpart of ci-governance.yml's inventory --check. When a pull
+# request changes a workflow or the governance policy, rerun the canonical
+# generator (ci/governance/audit_ci_workflows.py) on the PR head. If
+# docs/ci/WORKFLOW_RATIONALIZATION.md drifted:
+#   - same-repo PR branch (not Dependabot): commit the refreshed report to the
+#     PR branch and dispatch CI Workflow Governance on it, so its inventory
+#     --check passes on the new head before merge;
+#   - fork or Dependabot PR (no write token): fail with the exact command.
+#
+# Why: the report went stale on main twice in a week after workflow edits
+# merged with policy-and-inventory red (#2704 -> BD-26b, #2758 -> BD-28).
+#
+# Loop analysis: this workflow reacts only to pull_request events. The
+# report commit is pushed with GITHUB_TOKEN, and GitHub creates no workflow
+# runs for GITHUB_TOKEN pushes, so it raises no synchronize run of this or
+# any other workflow. CI Workflow Governance is started explicitly with
+# `gh workflow run` (workflow_dispatch), which is not a trigger of this
+# workflow. A rerun on the bot commit regenerates identical bytes and pushes
+# nothing; the "Skip bot report commits" guard stops it before that.
+#
+# ci-governance.yml keeps its own fail-closed --check, so a stale head (fork
+# PR, failed push) still shows red.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - ".github/workflows/**"
+      - "ci/governance/workflow_policy.json"
+      - "ci/governance/audit_ci_workflows.py"
+      - "docs/ci/WORKFLOW_RATIONALIZATION.md"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-governance-report-autoregen-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  autoregen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: write
+      pull-requests: read
+    env:
+      SAME_REPO: >-
+        ${{ github.event.pull_request.head.repo.full_name == github.repository
+        && github.actor != 'dependabot[bot]' }}
+      HEAD_REF: ${{ github.event.pull_request.head.ref }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      REPORT: docs/ci/WORKFLOW_RATIONALIZATION.md
+    steps:
+      - name: Checkout PR head
+        # actions/checkout v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          # Only same-repo branches get a token that can push back.
+          persist-credentials: >-
+            ${{ github.event.pull_request.head.repo.full_name
+            == github.repository }}
+
+      - name: Skip bot report commits
+        id: guard
+        run: |
+          subject='^ci-governance: autoregen WORKFLOW_RATIONALIZATION.md'
+          if [ "$(git log -1 --format=%an)" = "github-actions[bot]" ] && \
+             git log -1 --format=%s | grep -q "$subject"; then
+            echo "Head is already an autoregen report commit; nothing to do."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Python
+        if: steps.guard.outputs.skip != 'true'
+        # actions/setup-python v7
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: "3.12"
+
+      - name: Regenerate the governed workflow inventory
+        id: regen
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          python ci/governance/audit_ci_workflows.py \
+            --json-output /tmp/workflow_rationalization.json \
+            --markdown-output "$REPORT"
+          if git diff --quiet -- "$REPORT"; then
+            echo "drift=false" >> "$GITHUB_OUTPUT"
+            echo "Report is current for ${HEAD_SHA}."
+          else
+            echo "drift=true" >> "$GITHUB_OUTPUT"
+            git diff --stat -- "$REPORT"
+            git diff -- "$REPORT" | head -60
+          fi
+
+      - name: Fail with instructions (fork or Dependabot PR)
+        if: steps.regen.outputs.drift == 'true' && env.SAME_REPO != 'true'
+        run: |
+          cmd="python ci/governance/audit_ci_workflows.py"
+          cmd="$cmd --json-output /tmp/gov.json --markdown-output $REPORT"
+          echo "::error::$REPORT is stale for this PR."
+          echo "::error::Run on the branch and commit the report: $cmd"
+          exit 1
+
+      - name: Commit refreshed report to the PR branch
+        id: push
+        if: steps.regen.outputs.drift == 'true' && env.SAME_REPO == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          # A PR merged or closed while this job ran has no open PR left to
+          # carry the commit; pushing would strand it on the branch.
+          state="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" \
+            --jq .state)"
+          if [ "$state" != "open" ]; then
+            echo "::notice::PR #${PR_NUMBER} is ${state}; not pushing."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -- "$REPORT"
+          git commit -m \
+            "ci-governance: autoregen WORKFLOW_RATIONALIZATION.md" \
+            -m "Regenerated for PR head ${HEAD_SHA}."
+          # Fast-forward only: if the author pushed meanwhile, the newer run
+          # (same concurrency group) regenerates on that head instead.
+          if git push origin "HEAD:refs/heads/${HEAD_REF}"; then
+            echo "pushed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::Push to ${HEAD_REF} rejected (branch moved)."
+            echo "The run for the newer head regenerates the report."
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Dispatch CI Workflow Governance on the refreshed head
+        if: steps.push.outputs.pushed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run ci-governance.yml --ref "${HEAD_REF}"
