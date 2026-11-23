@@ -26,7 +26,7 @@ from pathlib import Path
 from typing import Any
 
 SCHEMA = "abacus-binary-bridge/v1"
-PARSER_VERSION = "1.1.0"
+PARSER_VERSION = "1.2.1"
 PRODUCER_REPOSITORY = "GBOGEB/ABACUS"
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 
@@ -217,7 +217,13 @@ def _xlsx_sheet_map(archive: zipfile.ZipFile) -> list[tuple[str, str]]:
 
 
 def extract_xlsx(path: Path) -> dict[str, Any]:
-    """Extract sheet/cell values and formulas from XLSX."""
+    """Extract cells and meaning-bearing native features from XLSX."""
+    try:
+        from tools.qps_xlsx_native_features import native_features, snapshot_xlsx
+    except ModuleNotFoundError:
+        from qps_xlsx_native_features import native_features, snapshot_xlsx
+
+    native = native_features(snapshot_xlsx(path, resolve_shared_string_values=False))
     with zipfile.ZipFile(path) as archive:
         shared = _xlsx_shared_strings(archive)
         sheets_out: list[dict[str, Any]] = []
@@ -273,6 +279,7 @@ def extract_xlsx(path: Path) -> dict[str, Any]:
     return {
         "kind": "xlsx",
         "sheets": sheets_out,
+        "native_features": native,
         "extraction_quality": {
             "status": "STRUCTURED",
             "parser": "ooxml_xml",
