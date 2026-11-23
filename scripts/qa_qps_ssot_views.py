@@ -25,6 +25,26 @@ VISIBLE = [
 HIDDEN = ["LISTS_CONTROLS", "RAW_RELATIONS", "SOURCE_HASHES"]
 
 
+def check_source_native_preservation(
+    source: Path, candidate: Path, expected_source_sha: str
+) -> dict[str, object]:
+    """Evaluate full native behavior identity separately from layout QA."""
+    from tools.qps_xlsx_native_features import compare_features, snapshot_xlsx
+
+    before, after = snapshot_xlsx(source), snapshot_xlsx(candidate)
+    if before["sha256"] != expected_source_sha:
+        raise ValueError("SOURCE_HASH_MISMATCH")
+    changes = compare_features(before, after)
+    return {
+        "state": "PASS" if not changes else "HOLD_NATIVE_FEATURE_LOSS",
+        "source_sha256": before["sha256"],
+        "candidate_sha256": after["sha256"],
+        "differences": changes,
+        "native_application_qualification": False,
+        "formal_credit": 0,
+    }
+
+
 def check_xlsx(path: Path) -> list[dict[str, object]]:
     checks: list[dict[str, object]] = []
 
