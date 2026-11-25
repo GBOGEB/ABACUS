@@ -1,0 +1,547 @@
+[
+ {
+  "repo": "abacus",
+  "name": "DMAIC V3 Bridge Integration - Test System",
+  "path": ".github/workflows/bridge-ci.yml",
+  "cls": "EVERRED",
+  "nfail": 10,
+  "n": 10,
+  "seq": "RRRRRRRRRR",
+  "last_run": 43221717584,
+  "last_sha": "8ac23c39",
+  "last_at": "2026-11-12T12:51:11Z",
+  "first_red_sha": "",
+  "first_red_run": null,
+  "first_red_title": null,
+  "n_jobs": 6,
+  "n_failed_jobs": 1,
+  "failed": [
+   {
+    "job": "\ud83d\ude80 Full Deployment Test",
+    "steps": [
+     "Run full deployment cycle"
+    ],
+    "err": [
+     "Static Analysis: FAILED",
+     "##[error]Process completed with exit code 1."
+    ]
+   }
+  ]
+ },
+ {
+  "repo": "abacus",
+  "name": "DMAIC V3.3 - CD Pipeline",
+  "path": ".github/workflows/cd.yml",
+  "cls": "EVERRED",
+  "nfail": 10,
+  "n": 10,
+  "seq": "RRRRRRRRRR",
+  "last_run": 42549257692,
+  "last_sha": "99abac6e",
+  "last_at": "2026-11-09T02:08:31Z",
+  "first_red_sha": "",
+  "first_red_run": null,
+  "first_red_title": null,
+  "n_jobs": 1,
+  "n_failed_jobs": 1,
+  "failed": [
+   {
+    "job": "dmaic",
+    "steps": [
+     "Build handover PDF"
+    ],
+    "err": [
+     "[WARNING] Phase 4 output not found: DMAIC_V3_OUTPUT/iteration_1/phase4_improvements.json",
+     "[WARNING] Canonical directory not found: CANONICAL_KNOWLEDGE",
+     "[WARNING] Phase 4 output not found: DMAIC_V3_OUTPUT/iteration_1/phase4_improvements.json",
+     "Warning: config/maturity_config.yaml not found, using defaults",
+     "bash: scripts/build_handover_book.sh: No such file or directory",
+     "##[error]Process completed with exit code 127."
+    ]
+   }
+  ]
+ },
+ {
+  "repo": "abacus",
+  "name": "CI/CD Test Suite",
+  "path": ".github/workflows/ci-cd-tests.yml",
+  "cls": "EVERRED",
+  "nfail": 10,
+  "n": 10,
+  "seq": "RRRRRRRRRR",
+  "last_run": 43544960063,
+  "last_sha": "1b3a6a51",
+  "last_at": "2026-11-14T02:12:12Z",
+  "first_red_sha": "",
+  "first_red_run": null,
+  "first_red_title": null,
+  "n_jobs": 17,
+  "n_failed_jobs": 1,
+  "failed": [
+   {
+    "job": "Deploy Test Dashboard",
+    "steps": [
+     "Deploy to GitHub Pages"
+    ],
+    "err": [
+     "fatal: Remote branch gh-pages not found in upstream origin",
+     "[INFO] The process '/usr/bin/git' failed with exit code 128",
+     "[INFO] The process '/usr/bin/git' failed with exit code 2",
+     "remote: Permission to GBOGEB/ABACUS.git denied to github-actions[bot].",
+     "fatal: unable to access 'https://github.com/GBOGEB/ABACUS.git/': The requested URL returned error: 403",
+     "##[error]Action failed with \"The process '/usr/bin/git' failed with exit code 128\""
+    ]
+   }
+  ]
+ },
+ {
+  "repo": "abacus",
+  "name": "DMAIC V3 CI - Test System Bridge",
+  "path": ".github/workflows/ci.yml",
+  "cls": "EVERRED",
+  "nfail": 10,
+  "n": 10,
+  "seq": "RRRRRRRRRR",
+  "last_run": 42579653186,
+  "last_sha": "99abac6e",
+  "last_at": "2026-11-09T07:29:23Z",
+  "first_red_sha": "",
+  "first_red_run": null,
+  "first_red_title": null,
+  "n_jobs": 4,
+  "n_failed_jobs": 1,
+  "failed": [
+   {
+    "job": "lint-and-static-analysis",
+    "steps": [
+     "Run mypy"
+    ],
+    "err": [
+     "DMAIC_V3/core/state.py:403: error: Item \"None\" of \"datetime | None\" has no attribute \"isoformat\"  [union-attr]",
+     "##[error]Process completed with exit code 1."
+    ]
+   }
+  ]
+ },
+ {
+  "repo": "abacus",
+  "name": "CODE PURPLE quality-ratchet targeted regression",
+  "path": ".github/workflows/code-purple-quality-ratchet-proof.yml",
+  "cls": "EVERRED",
+  "nfail": 2,
+  "n": 2,
+  "seq": "RR",
+  "last_run": 42484038393,
+  "last_sha": "70d1cdb5",
+  "last_at": "2026-11-08T13:14:58Z",
+  "first_red_sha": "",
+  "first_red_run": null,
+  "first_red_title": null,
+  "n_jobs": 1,
+  "n_failed_jobs": 1,
+  "failed": [
+   {
+    "job": "ratchet-negative-proof",
+    "steps": [
+     "Verify exact-head and producer wiring"
+    ],
+    "err": [
+     "Traceback (most recent call last):",
+     "##[error]Process completed with exit code 1."
+    ]
+   }
+  ]
+ },
+ {
+  "repo": "abacus",
+  "name": "DMAIC V3 - Cognitive Loop CI/CD",
+  "path": ".github/workflows/dmaic-v3-cognitive-cicd.yml",
+  "cls": "EVERRED",
+  "nfail": 10,
+  "n": 10,
+  "seq": "RRRRRRRRRR",
+  "last_run": 42980368779,
+  "last_sha": "03f2857d",
+  "last_at": "2026-11-11T07:33:34Z",
+  "first_red_sha": "",
+  "first_red_run": null,
+  "first_red_title": null,
+  "n_jobs": 7,
+  "n_failed_jobs": 1,
+  "failed": [
+   {
+    "job": "SPEC (never built): P0 Cognitive Loop Integration",
+    "steps": [
+     "Integrate Cognitive Loop"
+    ],
+    "err": [
+     "\u001b[36;1m    print('[ERROR] Cognitive orchestrator not found')\u001b[0m",
+     "\u001b[36;1m    print('[ERROR] Injection registry not found')\u001b[0m",
+     "\u001b[36;1m    print('[ERROR] Sync system not found')\u001b[0m",
+     "[ERROR] Cognitive orchestrator not found",
+     "##[error]Process completed with exit code 1."
+    ]
+   }
+  ]
+ },
+ {
+  "repo": "abacus",
+  "name": "ABACUS DOW Integration CI/CD",
+  "path": ".github/workflows/dow-integration-ci-cd.yml",
+  "cls": "EVERRED",
+  "nfail": 10,
+  "n": 10,
+  "seq": "RRRRRRRRRR",
+  "last_run": 36226714033,
+  "last_sha": "2e29200f",
+  "last_at": "2026-09-26T07:25:09Z",
+  "first_red_sha": "",
+  "first_red_run": null,
+  "first_red_title": null,
+  "n_jobs": 8,
+  "n_failed_jobs": 1,
+  "failed": [
+   {
+    "job": "Test DOW Phases (DMAIC)",
+    "steps": [
+     "Run DOW Phase Tests"
+    ],
+    "err": [
+     "##[debug]Node Action run completed with exit code 0",
+     "##[debug]Node Action run completed with exit code 0",
+     "python: can't open file '/home/runner/work/ABACUS/ABACUS/ABACUS-v032/test_dow_phases.py': [Errno 2] No such file or directory",
+     "##[error]Process completed with exit code 2.",
+     "##[debug]Node Action run completed with exit code 0",
+     "##[debug]Node Action run completed with exit code 0"
+    ]
+   }
+  ]
+ },
+ {
+  "repo": "abacus",
+  "name": "DOW Sprint 6 - Cognitive Deployment CI/CD",
+  "path": ".github/workflows/dow-sprint6-cicd.yml",
+  "cls": "EVERRED",
+  "nfail": 10,
+  "n": 10,
+  "seq": "RRRRRRRRRR",
+  "last_run": 42484066592,
+  "last_sha": "70d1cdb5",
+  "last_at": "2026-11-08T13:15:17Z",
+  "first_red_sha": "",
+  "first_red_run": null,
+  "first_red_title": null,
+  "n_jobs": 7,
+  "n_failed_jobs": 1,
+  "failed": [
+   {
+    "job": "Step 1: Define - Initialize & Validate Structure",
+    "steps": [
+     "Define - Validate Repository Structure"
+    ],
+    "err": [
+     "\u001b[36;1m  echo \"\u274c Structure validation: FAILED\"\u001b[0m",
+     "\u274c Structure validation: FAILED",
+     "##[error]Process completed with exit code 1."
+    ]
+   }
+  ]
+ },
+ {
+  "repo": "abacus",
+  "name": "GBOGEB/ABACUS \u2194 DOW Integration CI/CD",
+  "path": ".github/workflows/gbogeb-abacus-integration-ci-cd.yml",
+  "cls": "EVERRED",
+  "nfail": 10,
+  "n": 10,
+  "seq": "RRRRRRRRRR",
+  "last_run": 42691515176,
+  "last_sha": "072899f8",
+  "last_at": "2026-11-09T20:17:18Z",
+  "first_red_sha": "",
+  "first_red_run": null,
+  "first_red_title": null,
+  "n_jobs": 12,
+  "n_failed_jobs": 2,
+  "failed": [
+   {
+    "job": "\ud83d\udce6 Test Handover Assimilation",
+    "steps": [
+     "Require DOW package (DOW package not present -> spec, stays red)"
+    ],
+    "err": [
+     "Traceback (most recent call last):",
+     "ModuleNotFoundError: No module named 'DOW'",
+     "##[error]GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py imports DOW.pipeline_runner and DOW.sut_config; no DOW package exists in this checkout. This job is spec until the DOW package is provided.",
+     "##[error]Process completed with exit code 1."
+    ]
+   },
+   {
+    "job": "\ud83e\uddea Test Integration Bridge (3.11)",
+    "steps": [
+     "Require DOW package (DOW package not present -> spec, stays red)"
+    ],
+    "err": [
+     "Traceback (most recent call last):",
+     "ModuleNotFoundError: No module named 'DOW'",
+     "##[error]GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py imports DOW.pipeline_runner and DOW.sut_config; no DOW package exists in this checkout. This job is spec until the DOW package is provided.",
+     "##[error]Process completed with exit code 1."
+    ]
+   }
+  ]
+ },
+ {
+  "repo": "abacus",
+  "name": "Inventory Scan",
+  "path": ".github/workflows/inventory.yml",
+  "cls": "EVERRED",
+  "nfail": 10,
+  "n": 10,
+  "seq": "RRRRRRRRRR",
+  "last_run": 42983522631,
+  "last_sha": "51e283fb",
+  "last_at": "2026-11-11T07:59:36Z",
+  "first_red_sha": "",
+  "first_red_run": null,
+  "first_red_title": null,
+  "n_jobs": 1,
+  "n_failed_jobs": 1,
+  "failed": [
+   {
+    "job": "scan",
+    "steps": [
+     "Run inventory scan (tools/root_refactor/inventory.py)"
+    ],
+    "err": [
+     "##[error]Process completed with exit code 1."
+    ]
+   }
+  ]
+ },
+ {
+  "repo": "abacus",
+  "name": "OSV-Scanner Scheduled",
+  "path": ".github/workflows/osv-scheduled.yml",
+  "cls": "GREEN_TO_RED",
+  "nfail": 9,
+  "n": 10,
+  "seq": "RRRRRRRRRG",
+  "last_run": 42983519001,
+  "last_sha": "51e283fb",
+  "last_at": "2026-11-11T07:59:34Z",
+  "first_red_sha": "d3db3141",
+  "first_red_run": 36385418595,
+  "first_red_title": "OSV-Scanner Scheduled",
+  "n_jobs": 1,
+  "n_failed_jobs": 1,
+  "failed": [
+   {
+    "job": "OSV Scan (schedule / manual) / osv-scan",
+    "steps": [
+     "Run osv-scanner-reporter"
+    ],
+    "err": [
+     "Error during extraction: (extracting as transitivedependency/requirements) failed resolution for github/workspace/DMAIC_V3/generators/requirements.txt: resolution impossible:"
+    ]
+   }
+  ]
+ },
+ {
+  "repo": "abacus",
+  "name": "QPS W04 DOW receipt contract",
+  "path": ".github/workflows/qps-w04-dow-receipt.yml",
+  "cls": "GREEN_TO_RED",
+  "nfail": 2,
+  "n": 10,
+  "seq": "RRGGGGGGGG",
+  "last_run": 41802773877,
+  "last_sha": "e744d506",
+  "last_at": "2026-11-04T08:51:52Z",
+  "first_red_sha": "7f433e72",
+  "first_red_run": 41242674121,
+  "first_red_title": "Merge pull request #2562 from GBOGEB/style/s2-f3-tools",
+  "n_jobs": 3,
+  "n_failed_jobs": 1,
+  "failed": [
+   {
+    "job": "execute-w04-dow-private-child-runtime",
+    "steps": [
+     "Produce private-child W04 DOW runtime receipt"
+    ],
+    "err": [
+     "##[error]Process completed with exit code 1."
+    ]
+   }
+  ]
+ },
+ {
+  "repo": "abacus",
+  "name": "Security Dashboard \u2014 REX Telemetry",
+  "path": ".github/workflows/security-dashboard.yml",
+  "cls": "GREEN_TO_RED",
+  "nfail": 6,
+  "n": 10,
+  "seq": "RRRRRRGGGG",
+  "last_run": 42583450587,
+  "last_sha": "99abac6e",
+  "last_at": "2026-11-09T08:05:24Z",
+  "first_red_sha": "53688f26",
+  "first_red_run": 38223058438,
+  "first_red_title": "Security Dashboard \u2014 REX Telemetry",
+  "n_jobs": 1,
+  "n_failed_jobs": 1,
+  "failed": [
+   {
+    "job": "Build Security Dashboard",
+    "steps": [
+     "Generate aggregate-only dashboard"
+    ],
+    "err": [
+     "Traceback (most recent call last):",
+     "RuntimeError: GitHub code-scanning API returned HTTP 403",
+     "##[error]Process completed with exit code 1."
+    ]
+   }
+  ]
+ },
+ {
+  "repo": "abacus",
+  "name": "Sprint Trigger",
+  "path": ".github/workflows/sprint-trigger.yml",
+  "cls": "EVERRED",
+  "nfail": 10,
+  "n": 10,
+  "seq": "RRRRRRRRRR",
+  "last_run": 42983526079,
+  "last_sha": "51e283fb",
+  "last_at": "2026-11-11T07:59:38Z",
+  "first_red_sha": "",
+  "first_red_run": null,
+  "first_red_title": null,
+  "n_jobs": 1,
+  "n_failed_jobs": 1,
+  "failed": [
+   {
+    "job": "execute",
+    "steps": [
+     "SPEC (never built): Generate report - scoring/iterative_scoring.py"
+    ],
+    "err": [
+     "[WARNING] Canonical directory not found: CANONICAL_KNOWLEDGE",
+     "python: can't open file '/home/runner/work/ABACUS/ABACUS/scoring/iterative_scoring.py': [Errno 2] No such file or directory",
+     "##[error]Process completed with exit code 2."
+    ]
+   }
+  ]
+ },
+ {
+  "repo": "codex",
+  "name": "Deploy GitHub Pages",
+  "path": ".github/workflows/pages.yml",
+  "cls": "EVERRED",
+  "nfail": 10,
+  "n": 10,
+  "seq": "RRRRRRRRRR",
+  "last_run": 43561342103,
+  "last_sha": "38831761",
+  "last_at": "2026-11-14T05:23:58Z",
+  "first_red_sha": "",
+  "first_red_run": null,
+  "first_red_title": null,
+  "n_jobs": 3,
+  "n_failed_jobs": 1,
+  "failed": [
+   {
+    "job": "build",
+    "steps": [
+     "Build verified Pages output"
+    ],
+    "err": [
+     "FAILED tests/test_mip_runner_os_compat.py::RunnerCompatibilityTests::test_security_python39_stays_on_supported_ubuntu2404 - AssertionError: 'ubuntu-latest' unexpectedly found in 'name: Security Scan\\n\\non:\\n  pull_reques",
+     "##[error]Process completed with exit code 1."
+    ]
+   }
+  ]
+ },
+ {
+  "repo": "codex",
+  "name": "QPS KEB W43 TRIAGE",
+  "path": ".github/workflows/qps-keb-w43-triage.yml",
+  "cls": "EVERRED",
+  "nfail": 10,
+  "n": 10,
+  "seq": "RRRRRRRRRR",
+  "last_run": 42672049201,
+  "last_sha": "78c4c6c0",
+  "last_at": "2026-11-09T18:12:56Z",
+  "first_red_sha": "",
+  "first_red_run": null,
+  "first_red_title": null,
+  "n_jobs": 0,
+  "n_failed_jobs": 0,
+  "failed": [
+   {
+    "job": "<none>",
+    "steps": [],
+    "err": [
+     "no jobs; run conclusion=failure"
+    ]
+   }
+  ]
+ },
+ {
+  "repo": "codex",
+  "name": "Release & Package",
+  "path": ".github/workflows/release.yml",
+  "cls": "EVERRED",
+  "nfail": 7,
+  "n": 7,
+  "seq": "RRRRRRR",
+  "last_run": 26691467836,
+  "last_sha": "72e86490",
+  "last_at": "2026-05-30T18:23:06Z",
+  "first_red_sha": "",
+  "first_red_run": null,
+  "first_red_title": null,
+  "n_jobs": 0,
+  "n_failed_jobs": 0,
+  "failed": [
+   {
+    "job": "<none>",
+    "steps": [],
+    "err": [
+     "no jobs; run conclusion=failure"
+    ]
+   }
+  ]
+ },
+ {
+  "repo": "codex",
+  "name": "SPINE Gate",
+  "path": ".github/workflows/spine-gate.yml",
+  "cls": "GREEN_TO_RED",
+  "nfail": 7,
+  "n": 10,
+  "seq": "RRRRRRGRGG",
+  "last_run": 42484055216,
+  "last_sha": "148b31d3",
+  "last_at": "2026-11-08T13:15:10Z",
+  "first_red_sha": "12c8137c",
+  "first_red_run": 40273296514,
+  "first_red_title": "Merge pull request #1204 from GBOGEB/feature/pca-engine-canonicalizat\u2026",
+  "n_jobs": 1,
+  "n_failed_jobs": 1,
+  "failed": [
+   {
+    "job": "spine-gate",
+    "steps": [
+     "Run SPINE gate (terms, secrets, import closure)"
+    ],
+    "err": [
+     "##[error]Process completed with exit code 1.",
+     "cp: cannot stat '/home/runner/work/_temp/spine-stage/STAGE_RECEIPT.json': No such file or directory"
+    ]
+   }
+  ]
+ }
+]
