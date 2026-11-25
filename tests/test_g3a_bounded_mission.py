@@ -33,7 +33,14 @@ class G3AContracts(unittest.TestCase):
             self.assertEqual((result['start_n'], result['target_n'], result['actual_n']), (12, 15, 15))
             self.assertEqual((result['attempted'], result['accepted_checkpoints']), (3, 3))
             self.assertEqual(result['status'], 'COMPLETE_LOCAL_3_OF_3')
+            self.assertEqual(result['evidence_scope'], 'LOCAL_CONTROL_ONLY')
+            self.assertIs(result['native_evidence_verified'], False)
+            self.assertIs(result['authority_transfer'], False)
             self.assertEqual(result['merge_admission'], 'HOLD')
+            self.assertEqual(
+                [s['status'] for s in result['steps']],
+                ['ACCEPTED_LOCAL_CHECKPOINT'] * 3,
+            )
             self.assertEqual([s['n_after'] for s in result['steps']], [13, 14, 15])
 
     def test_major_blocker_early_stop(self):

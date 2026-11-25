@@ -74,6 +74,27 @@ def test_three_accepted_waves_advance_contiguously():
     v = gca.validate_receipt(receipt("PASS", "PASS", "PASS"), REQ)
     assert v["full_n_plus_3_accepted"] is True
     assert v["accepted_contiguous_waves"] == 3
+    assert v["release_authority_not_inferred"] is True
+
+
+def test_three_pulses_do_not_create_three_accepted_waves():
+    data = receipt("PASS", "HOLD", "HOLD")
+    data["waves"][0]["pulses"] = [
+        {
+            "id": f"U{i}",
+            "status": "PASS",
+            "evidence": [f"fixture-pulse-{i}"],
+        }
+        for i in range(1, 4)
+    ]
+
+    result = gca.validate_receipt(data, REQ)
+
+    assert result["attempted_waves"] == 3
+    assert result["accepted_contiguous_waves"] == 1
+    assert result["accepted_n"] == REQ["baseline"]["accepted_n"] + 1
+    assert result["full_n_plus_3_accepted"] is False
+    assert result["release_authority_not_inferred"] is True
 
 
 def test_hold_cannot_inflate_n_plus_three():
