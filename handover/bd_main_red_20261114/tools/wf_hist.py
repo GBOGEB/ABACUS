@@ -17,15 +17,18 @@ def one(w):
     except Exception as e: return None
     runs=r["workflow_runs"]
     if not runs: return dict(repo=repo,name=w["name"],path=w["path"],cls="NO_MAIN_RUNS")
-    cs=[x["conclusion"] for x in runs]; nf=sum(c=="failure" for c in cs)
-    cls="GREEN"
-    if cs[0]=="failure": cls="EVERRED" if nf==len(cs) else "GREEN_TO_RED"
+    cs=[x["conclusion"] for x in runs]; nf=sum(c=="failure" for c in cs); ns=sum(c=="success" for c in cs)
+    # Only a success is evidence of green; neutral conclusions (cancelled,
+    # skipped, action_required, ...) are ignored, never counted as green.
+    if ns==0: cls="EVERRED" if nf else "NO_SUCCESS"
+    elif cs[0]=="failure": cls="GREEN_TO_RED"
     elif nf: cls="FLAKY"
+    else: cls="GREEN"
     first_red=None
     if cls=="GREEN_TO_RED":
         for x in runs:
+            if x["conclusion"]=="success": break
             if x["conclusion"]=="failure": first_red=x
-            else: break
     return dict(repo=repo,name=w["name"],path=w["path"],cls=cls,nfail=nf,n=len(cs),seq="".join("R" if c=="failure" else ("G" if c=="success" else "-") for c in cs),
         last_run=runs[0]["id"],last_sha=runs[0]["head_sha"][:8],last_at=runs[0]["created_at"],
         first_red_sha=(first_red or {}).get("head_sha","")[:8],first_red_run=(first_red or {}).get("id"),first_red_title=(first_red or {}).get("display_title"))

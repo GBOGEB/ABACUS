@@ -1,7 +1,13 @@
 import yaml,json,os,re,sys,glob
+# usage: launchers.py <census_dir> <abacus_checkout> <codex_checkout>
+if len(sys.argv)!=4: sys.exit("usage: launchers.py <census_dir> <abacus_checkout> <codex_checkout>")
 S=sys.argv[1]
+ROOTS=[("abacus",sys.argv[2]),("codex",sys.argv[3])]
+for repo,root in ROOTS:
+    if not glob.glob(f"{root}/.github/workflows/*.y*ml"):
+        sys.exit(f"{repo}: no workflows under {root}/.github/workflows; pass a checkout root")
 out=[]
-for repo,root in [("abacus","/home/claude/w2a3/abacus"),("codex","/home/claude/w1c1/codex")]:
+for repo,root in ROOTS:
     with open(f"{S}/wf_{repo}.json", encoding="utf-8") as wf_fp:
         cls={x["path"].split("/")[-1]:x for x in json.load(wf_fp)}
     for p in sorted(glob.glob(f"{root}/.github/workflows/*.y*ml")):

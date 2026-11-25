@@ -21,7 +21,7 @@ pipeline-automation-hub (#529) is out of scope: this session has no API access t
 
 | | Start 2026-11-08 10:00 | Now 2026-11-14 18:30 |
 |---|---|---|
-| Live red on main | 34 (23 ABACUS, 11 CODEX) | 17 (13 ABACUS, 4 CODEX) |
+| Live red on main | 34 (23 ABACUS, 11 CODEX) | 16 (13 ABACUS, 3 CODEX); codex `release.yml` moved to stale, see §5 and [ERRATA_20261125.md](ERRATA_20261125.md) |
 | Of the original 34, burned | — | 17 |
 | New reds found and burned on the way | — | 2 (ci-governance new, ci-pipeline relapse; both green again) |
 | PRs merged into this burndown | — | 17 by this session's workers, plus fixes by other sessions |
@@ -51,7 +51,7 @@ Live artifacts:
 - Group reds by **root**, not by workflow. One root can span workflows (pip flag in ci.yml and cd-unified.yml; SARIF pin in ci-governance and ci-pipeline).
 - Tools: `tools/wf_hist.py` (census), `tools/sig.py` (failing job/step/error tail), `tools/launchers.py` (auto-triggered workflows calling missing paths). REST only; explicit `page=` loops (Link-header pagination fails through the proxy).
 
-## 5. Live red ledger (17)
+## 5. Live red ledger (16)
 
 State: ACTIVE (worker/PR in flight) · READY (no decision needed) · HOLD (owner decision) · BLOCKED.
 
@@ -73,9 +73,10 @@ State: ACTIVE (worker/PR in flight) · READY (no decision needed) · HOLD (owner
 | 14 | codex `pages.yml` | BD-05 | F5 policy | Builds the newest push that passed `runtime_release_gate`, still dffac5f3 (pre ubuntu-24.04 pin fix) | HOLD | Owner: gate-path push, widen gate paths, or change commit selection |
 | 15 | codex `qps-keb-w43-triage.yml` | BD-15 | F6 | Fixture `adr_index` empty since 525809af; never passed. Last main run was a startup failure | HOLD | Owner: publish the 10 register rows to public CODEX (wave-02 precedent), keep private, or drop `adr_index_exchange`. Fix proven locally; patch in Drive `private/keb/` only |
 | 16 | codex `spine-gate.yml` | BD-18 | F5 | Earlier: BLOCKED `pca_engine/MATH_SSOT_BINDING.md [private_project]` (line 32 "QPS"). Latest run: `cp: cannot stat .../spine-stage/STAGE_RECEIPT.json` | READY → HOLD | Re-read latest run to confirm same root; owner: reword one line or allowlist |
-| 17 | codex `release.yml` | BD-07b | F7 | Only red runs are zero-job from May 2026 (invalid YAML then; file since repaired) | HOLD | Clears on next real release; not dispatched (publishes) |
 
 Ghost (not counted): abacus `dow-integration-ci-cd.yml`.
+
+Stale, pending validation (not counted, per the STARTUP_FAILURE rule in §4): codex `release.yml` (BD-07b, F7). Its only red runs are zero-job runs from May 2026 (invalid YAML then; file since repaired). HOLD: clears on the next real release; not dispatched (publishes). Was row 17 before the 2026-11-25 errata.
 
 ## 6. Burned (green on main), with evidence
 
@@ -128,7 +129,7 @@ Disjoint lanes, ≤2 workers per repo, staggered clones:
 4. BD-24b `osv-scheduled.yml`: unsatisfiable `DMAIC_V3/generators/requirements.txt`.
 5. BD-12b `qps-w04-dow-receipt.yml`: investigate with cryoplant read access; no private data into public PRs.
 6. Refresh #2708 ledger seed to this file's state.
-Expected: 17 → 13–14 if all land.
+Expected: 16 → 12–13 if all land (was 17 → 13–14 before release.yml moved to stale).
 
 ## 10. Lessons (fold into worker briefs)
 

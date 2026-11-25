@@ -21,6 +21,7 @@
    "GREEN_TO_RED",
    "FLAKY",
    "GREEN",
+   "NO_SUCCESS",
    "NO_MAIN_RUNS"
   ],
   "flags": [
@@ -65,7 +66,7 @@
  },
  "totals": {
   "live_red_start": 34,
-  "live_red_now": 17,
+  "live_red_now": 16,
   "original_burned": 17,
   "new_red_burned": 2,
   "prs_merged_by_session_workers": 17
@@ -214,15 +215,6 @@
    "state": "READY",
    "failure": "latest: STAGE_RECEIPT.json missing; earlier BLOCKED private term in MATH_SSOT_BINDING.md:32",
    "next": "re-read; owner: reword vs allowlist"
-  },
-  {
-   "repo": "codex",
-   "workflow": "release.yml",
-   "root": "BD-07b",
-   "family": "F7",
-   "state": "HOLD",
-   "failure": "zero-job runs from May only",
-   "next": "clears on next release"
   }
  ],
  "ghosts": [
@@ -447,5 +439,21 @@
   "new": 2,
   "closed": 1,
   "live_red": 19
+ },
+ "stale_pending_validation": [
+  {
+   "repo": "codex",
+   "workflow": "release.yml",
+   "root": "BD-07b",
+   "family": "F7",
+   "state": "HOLD",
+   "failure": "zero-job runs from May only",
+   "next": "clears on next release",
+   "reason": "only zero-job (STARTUP_FAILURE) red runs; never counted as red per census method"
+  }
+ ],
+ "errata": {
+  "file": "ERRATA_20261125.md",
+  "as_of": "2026-11-25"
  }
 }

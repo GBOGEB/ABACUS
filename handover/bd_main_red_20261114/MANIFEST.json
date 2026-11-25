@@ -6,9 +6,14 @@
  "machine_readable": "handover.json",
  "files": [
   {
+   "path": "ERRATA_20261125.md",
+   "bytes": 3045,
+   "sha256": "0f8100c018d513af10a14238ca2fadccc4b4bf18a23c34f47317137fbf58e965"
+  },
+  {
    "path": "HANDOVER.md",
-   "bytes": 16196,
-   "sha256": "848ef78088156e3f5eb1f50db976cc4586c64bc85a17a7bae3c49e9c5f2159fb"
+   "bytes": 16462,
+   "sha256": "f9723d9e5e7133d4ba3086d50a96878159bd3f2d9d1661a4c7e436f08e26d80b"
   },
   {
    "path": "LEDGER_20261115.md",
@@ -82,8 +87,8 @@
   },
   {
    "path": "handover.json",
-   "bytes": 10077,
-   "sha256": "35aadfc5610a4958a7f8a4a6bf7fffccb1e70b000de626c36be8af4cd641f493"
+   "bytes": 10298,
+   "sha256": "2e37c3e3220e768a5a399fd1788032b31cd336f97e4bcb85004f03fceabdd760"
   },
   {
    "path": "ledger_20261115.json",
@@ -92,33 +97,33 @@
   },
   {
    "path": "tools/diff15.py",
-   "bytes": 2420,
-   "sha256": "027d3765aa812f474b291caef780e5e3d27800642a6e8cb939a3b3731d40a8f2"
+   "bytes": 2487,
+   "sha256": "8ec91a5ab844c9ccd4d1208049bb42bfbe437a8b3dd3fda7dcd7de2275c4bcf8"
   },
   {
    "path": "tools/launchers.py",
-   "bytes": 1933,
-   "sha256": "293e84db204f2229581170ece2e9a973fe3c7d2dc012164b526b7997426b9bf4"
+   "bytes": 2403,
+   "sha256": "aef9aa6d4833977da72961d2a5688ab124cd3592d836f5f761ddee9815814417"
   },
   {
    "path": "tools/launchers15.py",
-   "bytes": 1923,
-   "sha256": "7ce25040e6f02c4ebaa60ac2bd900a56b8b0294e32a4c765ec2f08ac6323425c"
+   "bytes": 2101,
+   "sha256": "c4850d440647dfc38096158b0b24c79791c6605f8e07779436db9eb475cf9588"
   },
   {
    "path": "tools/ledger15.py",
-   "bytes": 5664,
-   "sha256": "51429ed96766b0f03779f4fe65bee2ac8427398c545069a8f6e8814d7255eeb8"
+   "bytes": 5883,
+   "sha256": "17e92135655fd5283d2f00eafed4fef583e5cad873505426560f252fc0e87ff5"
   },
   {
    "path": "tools/sig.py",
-   "bytes": 1871,
-   "sha256": "571c5ef55460947117e251df94659d34927f68630d77f7ae21bd2a1b862f06bb"
+   "bytes": 1934,
+   "sha256": "2d0c08c518d5c0b7fb674b1bd1c9cefd2cae63d680e733f407c3ef3d6fcae0e2"
   },
   {
    "path": "tools/wf_hist.py",
-   "bytes": 1736,
-   "sha256": "460c7f1394030f003cf8a492e663ce41694748219169d5f64b18256debf96e41"
+   "bytes": 1991,
+   "sha256": "194e9f3ad7608b31a344853afbb42d4e667c7fa58da2212e038ca42a9cec15df"
   }
  ],
  "drive": {
