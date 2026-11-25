@@ -1,0 +1,50 @@
+{
+  "schema": "qps-jt-flash-nist-reference/v0.1",
+  "role": "INDEPENDENT_VALIDATION_REFERENCE_HEPAK_GOVERNING",
+  "formal_credit_delta": 0,
+  "why": "The QCELL outlet (31 mbar) saturates at about 2.0 K, below the lambda point. CoolProp's helium EOS stops at the lambda point and only extrapolates there. NIST TN1334 covers He-4 from 0.8 K, so it is valid in He II. HEPAK v3.4 remains the governing backend.",
+  "transcription_provenance": {
+    "status": "TRANSCRIBED_FROM_CRYOPLANT_CONTROLS_NOT_REVERIFIED_AGAINST_TN1334_PAGES",
+    "repo": "GBOGEB/cryoplant-project",
+    "commit": "4f7e98406c1fd61329d938b7fa53b8531dfdf888",
+    "files": {
+      "controls/W53_P05N_TN1334_AB_EXTRAPOLATED_REFERENCE_v0.1.yaml": "4f439b85b69150755fe0a475e80344689d8e45bf",
+      "controls/W53_P05V_NIST_JT_FLASH_CROSSCHECK_v0.1.yaml": "88825a8b5b925599d3f0336614c412a7838e8fce"
+    },
+    "note": "No copy of the TN1334 report is held in any GBOGEB repo or on the owner workstation (searched 2026-11-18). Re-verify the three values below against the report pages before promoting this file."
+  },
+  "unit_correction": {
+    "reason": "P05V labels inlet A as 'h_J_per_mol: 11.78' and the saturation pair as J/kg. Neither label is consistent with the physics or with P05N.",
+    "inlet_A_unit": "J/g, as tabulated in TN1334 and as P05N records it (h_J_g: 11.78). P05V's own conversion (x 4002.6 = 47150) also treats it as J/g.",
+    "saturation_unit": "J/mol. As J/kg the latent heat would be 93.1 J/g; He-4 at 2 K is about 23 J/g. As J/mol it is 23.26 J/g.",
+    "flash_fraction_effect": "None. P05V scaled all three enthalpies by the molar mass, so its x = 0.43643 is unchanged by this correction."
+  },
+  "external_reference": {
+    "series": "NIST Technical Note 1334 (revised 1998)",
+    "title": "Thermophysical Properties of Helium-4 from 0.8 to 1500 K with Pressures to 2000 MPa",
+    "authors": ["Vincent D. Arp", "Robert D. McCarty", "Daniel G. Friend"],
+    "NASA_document_id": "19900019365"
+  },
+  "molar_mass_g_per_mol": 4.0026,
+  "inlet_A": {
+    "source": "TN1334 fixed-pressure table, 0.300 MPa, page 61",
+    "T_K": 4.5,
+    "P_MPa": 0.3,
+    "h_J_g": 11.78
+  },
+  "qcell_saturation": {
+    "source": "NIST helium saturation table as cited by cryoplant P05V (table and page not recorded there)",
+    "T_K": 2.0,
+    "P_mbar_abs": 31.23,
+    "h_liquid_J_mol": 6.518,
+    "h_vapor_J_mol": 99.62
+  },
+  "same_reference_state_check": {
+    "method": "Carry the saturated vapour at 2.000 K up to 3.6 K with ideal-gas cp = 5.193 J/g/K, then compare with TN1334's own 3.6 K / 10 kPa vapour row (P05N).",
+    "h_vapor_2K_J_g": 24.8888,
+    "ideal_gas_rise_2K_to_3p6K_J_g": 8.3088,
+    "predicted_3p6K_J_g": 33.1976,
+    "TN1334_3p6K_10kPa_J_g": 33.34,
+    "result": "CONSISTENT_WITHIN_0p15_J_g"
+  }
+}
