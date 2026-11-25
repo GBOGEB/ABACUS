@@ -22,6 +22,51 @@
 | **BDQ** | Burndown queue of uniquely identified manifestations and independently diagnosed causal roots | Root/manifestation transitions on matching immutable source and run IDs | Raw PR count or `~260` observations automatically equal independent roots |
 | **Engineering DoV / Release DoV** | Scope-bound delivery verification vs independent protected admission (security, A10, governance, reviewer, branch rules, exact-head CI) | Independent gate evidence | Green B0 alone permits merging |
 
+## Federated execution-unit compatibility — P0007 SEM-07
+
+ABACUS retains local execution and receipt semantics; CODEX owns global
+semantic vocabulary and Mission Control owns its local mission taxonomy.
+This crosswalk is a shadow/documentation candidate, not a dispatch contract
+or a global semantic-owner disposition.
+
+| Preferred term for new qualified usage | Meaning and accounting unit |
+| --- | --- |
+| 3P* | Existing ABACUS MIP method stages P1/P2/P3; use an explicit method namespace. Not a pulse count. |
+| 3MP | Three Measurement/Improvement Pulses; three source-bound feedback dispositions, including explicitly held outcomes. |
+| G3P | Governed Three-Pulse Wave; one wave containing three pulses. |
+| 3W | Three-Wave Delivery; three delivery packages, not three accepted advances. |
+| GCA-3 | Governed Convergence Advance x3; contiguous locally accepted engineering waves. |
+| G3A | Governed Three-Advance Mission; target three distinct independently qualified accepted checkpoints. |
+| G3A_LOCAL | Proposed reporting label for the ABACUS local G3A verifier's scoped control checkpoints, not a new wire token. |
+| G3A_LEGACY_PULSE_V1 | Proposed reporting label for the historical CODEX three-pulse protocol, not a new wire token or an accepted-checkpoint counter. |
+
+Mission Control's historical 3PSTAR pulse identity remains readable in its
+original source context. Use 3MP for new cross-repository pulse measurement
+and G3P for the three-pulse envelope; never persist bare 3P* as a
+cross-repository measurement or dispatch token.
+
+- GCA-3 accepted N counts only contiguous locally accepted engineering waves.
+- G3A local `accepted_checkpoints` and `actual_n` count local control
+  verification, not federated N_ACCEPTED.
+- `COMPLETE_LOCAL_3_OF_3` with `evidence_scope=LOCAL_CONTROL_ONLY` and
+  `native_evidence_verified=false` cannot prove three independent advances.
+- Pulse receipts and attempted wave counts never supply independent
+  advancement credit without separately qualifying evidence.
+- Offline receipt validation checks declared claims; it does not authenticate
+  native evidence, confer reviewer approval, authorize dispatch, or grant
+  release admission. Even a declared release PASS is not independent proof.
+- Preserve all v1 schema names, fields, status values, historical identities
+  and owner admission holds. Consumers interpret counters using the source
+  schema, namespace and scope.
+
+Source-bound references (review anchors, not authority transfers):
+[CODEX global action taxonomy](https://github.com/GBOGEB/CODEX/blob/d77bb7a0bd1d644403c20c3c330153f30fe430b8/federation/mesh/GLOBAL_ACTION_TAXONOMY_v1.yaml),
+[Mission Control crosswalk](https://github.com/GBOGEB/pipeline-automation-hub/blob/26277220f16cf213250eb9b42d1909fa66961aff/mission-control/v2/MC_GLOSSARY_TAXONOMY_v2.json),
+[P0007 SEM-07](https://github.com/GBOGEB/CODEX/issues/1283),
+and the existing ABACUS G3A/GCA-3 implementations.
+SEM-03/SEM-04 and independent acceptance remain prerequisites for consumer
+activation; no new route or runtime behavior is introduced.
+
 ## Hierarchy and naming
 
 ```text
