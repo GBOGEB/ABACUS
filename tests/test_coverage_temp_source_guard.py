@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 from coverage import CoverageData
 
-SCRIPT = Path(__file__).resolve().parents[3] / "scripts/ci/coverage_temp_source_guard.py"
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts/ci/coverage_temp_source_guard.py"
 spec = importlib.util.spec_from_file_location("coverage_temp_source_guard", SCRIPT)
 guard = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(guard)

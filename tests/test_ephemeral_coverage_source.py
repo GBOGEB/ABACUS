@@ -56,9 +56,22 @@ def test_omission_does_not_hide_other_missing_source():
             )
 
 
+GUARD = "python scripts/ci/coverage_temp_source_guard.py"
+
+
 def test_native_workflows_keep_narrow_scope_without_ignore_errors():
+    """Each workflow narrows the omission either inline or via the guard.
+
+    The guard (scripts/ci/coverage_temp_source_guard.py) omits only an absent
+    tmp*/localpkg/__init__.py and fails closed on any other missing source;
+    its controls live in tests/test_coverage_temp_source_guard.py.
+    """
     for relative in WORKFLOWS:
         workflow = (REPO_ROOT / relative).read_text(encoding="utf-8")
-        assert f"--omit='{OMIT}'" in workflow
-        assert "python -m coverage json" in workflow
         assert "--ignore-errors" not in workflow
+        if GUARD in workflow:
+            assert "--coverage-json" in workflow
+            assert "--receipt" in workflow
+        else:
+            assert f"--omit='{OMIT}'" in workflow
+            assert "python -m coverage json" in workflow
