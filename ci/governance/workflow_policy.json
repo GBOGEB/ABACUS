@@ -197,6 +197,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^binary-engines\\.yml$",
+      "cluster": "specialised",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^code-purple-dashboard-v31\\.yml$",
       "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
