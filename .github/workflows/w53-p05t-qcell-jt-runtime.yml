@@ -49,7 +49,10 @@ jobs:
           x = r['flash_quality_mass_fraction']
           o = r['boundary']['outlet_local_QCELL']
           assert 0.0 <= x <= 1.0
-          assert abs(o['P_mbar_abs'] - 31.0) < 1e-12
+          # Outlet = the TN1334 row actually used, not the 31.0 boundary.
+          assert abs(o['P_mbar_abs'] - 31.23) < 1e-12
+          assert o['declared_boundary_P_mbar_abs'] == 31.0
+          assert abs(o['offset_from_declared_boundary_mbar'] - 0.23) < 1e-9
           assert r['validation'] == (
               'NIST_TN1334_INDEPENDENT_REFERENCE_HEPAK_GOVERNING')
           assert o['T_sat_K'] < 2.1768  # He II outlet

@@ -41,19 +41,34 @@ NIST_TN1334_REFERENCE = (
 NIST_TN1334_VALIDATION = "NIST_TN1334_INDEPENDENT_REFERENCE_HEPAK_GOVERNING"
 
 
-def _receipt(backend, h_a, t_sat, h_f, h_g, validation, extra=None) -> dict:
+def _receipt(
+    backend, h_a, t_sat, h_f, h_g, validation, extra=None, *, outlet_p_pa=QCELL_P_PA
+) -> dict:
+    """Build the receipt.
+
+    ``outlet_p_pa`` is the pressure at which ``t_sat``, ``h_f`` and ``h_g``
+    were evaluated. The outlet block reports that state. When it differs from
+    the declared QCELL boundary, the block also carries the declared value and
+    the offset, so the numbers are never read as properties at 31.0 mbar.
+    """
     x = (h_a - h_f) / (h_g - h_f)
+    outlet = {
+        "P_mbar_abs": outlet_p_pa / 100.0,
+        "T_sat_K": t_sat,
+        "h_f_J_kg": h_f,
+        "h_g_J_kg": h_g,
+    }
+    if outlet_p_pa != QCELL_P_PA:
+        outlet["declared_boundary_P_mbar_abs"] = QCELL_P_PA / 100.0
+        outlet["offset_from_declared_boundary_mbar"] = (
+            outlet_p_pa - QCELL_P_PA
+        ) / 100.0
     result = {
         "schema": "qps-jt-flash-receipt/v0.1",
         "backend": backend,
         "boundary": {
             "inlet_A": {"T_K": A_T_K, "P_bara": A_P_PA / 1e5, "h_J_kg": h_a},
-            "outlet_local_QCELL": {
-                "P_mbar_abs": QCELL_P_PA / 100.0,
-                "T_sat_K": t_sat,
-                "h_f_J_kg": h_f,
-                "h_g_J_kg": h_g,
-            },
+            "outlet_local_QCELL": outlet,
             "process": "isenthalpic_JT",
         },
         "flash_quality_mass_fraction": x,
@@ -125,6 +140,7 @@ def nist_tn1334_receipt(reference_path: Path = NIST_TN1334_REFERENCE) -> dict:
             },
             "transcription_status": ref["transcription_provenance"]["status"],
         },
+        outlet_p_pa=sat["P_mbar_abs"] * 100.0,
     )
 
 

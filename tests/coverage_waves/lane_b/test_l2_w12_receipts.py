@@ -512,7 +512,11 @@ def test_p05s_nist_tn1334_receipt_matches_p05v_without_coolprop():
     bnd = r["boundary"]
     assert bnd["inlet_A"]["h_J_kg"] == pytest.approx(11780.0)
     out = bnd["outlet_local_QCELL"]
-    assert out["P_mbar_abs"] == 31.0
+    # The outlet reports the state the properties were taken at (the TN1334
+    # row, 31.23 mbar), plus the declared 31.0 mbar boundary and the offset.
+    assert out["P_mbar_abs"] == pytest.approx(31.23)
+    assert out["declared_boundary_P_mbar_abs"] == 31.0
+    assert out["offset_from_declared_boundary_mbar"] == pytest.approx(0.23)
     assert out["T_sat_K"] < real_provider.LAMBDA_K  # the outlet is He II
     # Latent heat of He-4 at 2 K is about 23 J/g; this pins the J/mol reading.
     assert (out["h_g_J_kg"] - out["h_f_J_kg"]) / 1000.0 == pytest.approx(
