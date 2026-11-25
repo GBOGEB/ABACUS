@@ -4,7 +4,7 @@
 
 Policy: `ABACUS-CI-SSOT-001`
 
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `4701dad2754b0cf8ce5f1361783df48e24f738f665bf2d6c45758c3d3e2b76b3`
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `606aca7abaac93595ad1cfed7de1369893f9d9f660fb5ec5df2f95daa1f39fc5`
 
 ## Outcome
 
