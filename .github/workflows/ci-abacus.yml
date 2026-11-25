@@ -311,8 +311,7 @@ jobs:
             --benchmark-disable \
             --cov=. \
             --cov-branch \
-            --cov-report=term-missing \
-            --cov-report=xml:"${evidence_dir}/coverage.xml" \
+            --cov-report= \
             --junitxml="${evidence_dir}/junit.xml" \
             || pytest_rc=$?
 
@@ -324,12 +323,13 @@ jobs:
             --max-xfails 0 \
             || census_rc=$?
 
-          # The deleted isort-base-tree fixture is not repository source.
-          # Exclude only the transient package; other NoSource stays red.
-          python -m coverage json \
-            --show-contexts \
-            --omit='/tmp/tmp*/localpkg/__init__.py' \
-            -o "${evidence_dir}/coverage-contexts.json"
+          # Preserve raw coverage data; omit only source-verified deleted fixture files.
+          python scripts/ci/coverage_temp_source_guard.py \
+            --data-file .coverage \
+            --root . \
+            --receipt "${evidence_dir}/missing-source-guard.json" \
+            --xml "${evidence_dir}/coverage.xml" \
+            --coverage-json "${evidence_dir}/coverage-contexts.json"
 
           python scripts/coverage_dab_census.py \
             --coverage-json "${evidence_dir}/coverage-contexts.json" \
